@@ -1,14 +1,21 @@
 library(testthat)
+library(here)
 
-#expect_contains(data/raw/meta_HMP2.csv, list_csv)
-#expect_contains(data/raw/otu_HMP2_16S.csv, list_csv)
-#expect_contains(data/raw/taxonomy_HMP2_16S.csv, list_csv)
-
-expect_named(clean_list_csv,
-             meta_HMP2.csv,
-             ignore.order = FALSE,
-             ignore.case = FALSE,
-             info = NULL,
-             label = NULL
-             )
-
+# test that the .csv files found match the expected ones
+test_that(".csv files found are NOT the expected ones", {
+  
+  # creates a vector with the expected file names
+  expected_files <- c("meta_HMP2.csv", "otu_HMP2_16S.csv", "taxonomy_HMP2_16S.csv")
+  
+  # here() returns the root directory of the project
+  # list.files() searches for .csv files recursively from the root
+  # basename() strips the folder path, keeping only the file names
+  found_files <- basename(list.files(
+    path = here(),
+    pattern = "\\.csv$",
+    recursive = TRUE
+  ))
+  
+  # checks that both vectors contain the same elements, regardless of order
+  expect_setequal(found_files, expected_files)
+})
