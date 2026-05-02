@@ -1,7 +1,15 @@
-# load required libraries
+# ToyModel: generates compositional toy datasets
+# https://github.com/nome-repo/ToyModel
 library(ToyModel)
+
+# vegan: community ecology analysis
+# https://cran.r-project.org/package=vegan
 library(vegan)
+
+# here: easy locate files using top-level file directories
+# https://cran.r-project.org/web/packages/here/vignettes/here.html
 library(here)
+
 
 # defines a function that computes the Pielou mean across all samples
 mean_Pielou <- function(x){
@@ -77,5 +85,9 @@ plot(toy_D30_P50, "CLR", vertex.label=NA)
 
 # allows drawing outside the plot area
 par(xpd = NA)
+
 # draws horizontal lines to visually separate the rows
 abline
+
+# closes the graphics device and saves the PNG file to disk
+dev.off()
