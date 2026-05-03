@@ -9,12 +9,21 @@ source(here::here("biases_parameters_examples", "biases_parameters_examples.R"))
 # https://cran.r-project.org/web/packages/testthat/index.html
 library(testthat)
 
-test_that("The object isn't exactly what you were looking for...",{
+test_that("Houston we have a problem!",{
 
 # test Mean Pielou
-# generating a 3x3 diagonal matrix to test the mean_Pielou function
-test_matrix <- diag(3) 
-expect_lte(mean_Pielou(test_matrix), 1, label = NULL, expected.label = NULL)
+# generates a 3x3 matrix with random numbers to test the function
+set.seed(42)
+test_matrix <- matrix(runif(9), nrow = 3, ncol = 3) 
+
+# testing that the function gives a result lower than 1 and greater than 0
+expect_lt(mean_Pielou(test_matrix), 1, label = NULL, expected.label = NULL) 
+expect_gt(mean_Pielou(test_matrix), 0, label = NULL, expected.label = NULL)
+
+# testing that for a matrix full of 1, the mean_Pielou gives 1 as result
+unitary_matrix <- matrix(rep(1), ncol = 3, nrow = 3)
+expect_equal(mean_Pielou(unitary_matrix), 1)
+
   
 # test the dimension of the correlation matrixes
 expect_shape(cor_D5, dim = c(5, 5))
