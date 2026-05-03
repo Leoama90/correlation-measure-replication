@@ -10,6 +10,12 @@ source(here::here("biases_parameters_examples", "biases_parameters_examples.R"))
 library(testthat)
 
 test_that("The object isn't exactly what you were looking for...",{
+
+# test Mean Pielou
+# generating a 3x3 diagonal matrix to test the mean_Pielou function
+test_matrix <- diag(3) 
+expect_lte(mean_Pielou(test_matrix), 1, label = NULL, expected.label = NULL)
+  
 # test the dimension of the correlation matrixes
 expect_shape(cor_D5, dim = c(5, 5))
 expect_shape(cor_D30, dim = c(30, 30))

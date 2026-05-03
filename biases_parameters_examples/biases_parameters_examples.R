@@ -14,7 +14,7 @@ library(here)
 # defines a function that computes the Pielou mean across all samples
 mean_Pielou <- function(x){
   # divides Shannon diversity by log of number of species, then averages across samples
-  P <- mean( apply(x,1,vegan::diversity) / log(ncol(x)))
+  P <- mean(apply(x,1,vegan::diversity) / log(ncol(x)))
   # returns the result rounded to 2 decimal places
   return(round(P,2))
 }
