@@ -34,9 +34,9 @@ simulation_results <-
     # compute correlation errors and mean Pielou evenness
     data.frame("d" = d,
                "m" = m,
-               "err_l1" = mean(abs(toy$cor_NorTA - toy$cor_L1)),
-               "err_clr" = mean(abs(toy$cor_NorTA - toy$cor_CLR)),
-               "pielou"  = mean(apply(toy$NorTA, 1, vegan::diversity) / log(d)))
+               "ERR_L1" = mean(abs(toy$cor_NorTA - toy$cor_L1)),
+               "ERR_CLR" = mean(abs(toy$cor_NorTA - toy$cor_CLR)),
+               "Pielou"  = mean(apply(toy$NorTA, 1, vegan::diversity) / log(d)))
   }
 
 # stop the cluster to reduce resource use
