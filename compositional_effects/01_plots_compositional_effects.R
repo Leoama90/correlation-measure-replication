@@ -2,10 +2,11 @@ library(tidyverse)
 library(ggpubr)
 library(here)
 
-# setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
-
+# reads the file from the folder
 df <- readRDS(here("compositional_effects_02.rds"))
 
+# for each combination of dimensionality and target evenness,
+# select the closest matching row from the observed data 
 df_sort <- tibble()
 for(di in seq(5, 200, by = 5)){
   for(ei in seq(0.025, .975, by = .025)){
@@ -18,9 +19,12 @@ for(di in seq(5, 200, by = 5)){
   }
 }
 
-# remove variables once no more useful
+# remove variables to save memory
 rm(di, ei, sub_df, rowi)
 
+# compute nearest-neighbour approximation error and flag poorly matched rows;
+# log-transform L1 and CLR errors, flooring at -2 (MAE < 0.01),
+# df_control retains only the poorly matched rows for quality-control purposes
 df_sort <- df_sort %>%
   mutate(pielou_error = abs(pielou_round-pielou)) %>%
   mutate(pielou_error_logical = pielou_error < .005, .after = pielou_error) %>%
@@ -87,6 +91,8 @@ ggarrange(pL1,
           label.x = c(0.03,-.02))
 dev.off()
 
+# create the Plots folder
+# dir.create("../Plots", showWarnings = FALSE)
 
 png(filename = "../Plots/CLR_Compositional.png", 
     width = 1200, 
