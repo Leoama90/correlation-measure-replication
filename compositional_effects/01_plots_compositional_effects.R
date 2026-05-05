@@ -78,7 +78,7 @@ pCLR <- ggplot(df_sort, aes(x = d, y = pielou_round, fill = LOG_ERR_CLR)) +
 #dev.off()
 
 
-png(filename = "../Plots/Normalization_Bias.png", 
+png(filename = "../plots/Normalization_Bias.png", 
     width = 6000, 
     height = 3000, 
     res = 600)
@@ -91,10 +91,10 @@ ggarrange(pL1,
           label.x = c(0.03,-.02))
 dev.off()
 
-# create the Plots folder
-# dir.create("../Plots", showWarnings = FALSE)
+# create the plots folder
+# dir.create("../plots", showWarnings = FALSE)
 
-png(filename = "../Plots/CLR_Compositional.png", 
+png(filename = "../plots/CLR_Compositional.png", 
     width = 1200, 
     height = 1200, 
     res = 300)
@@ -110,7 +110,7 @@ pCLR_Dim <- df_sort %>%
   scale_y_continuous(breaks = c(.01,.02,.05,.1,.15,.2)) +
   ylab("MAE") + 
   xlab("D") +
-  theme(plot.margin = unit(c(2,1,1,1),"cm"))
+  theme(plot.margin = unit(c(2,1,1),"cm"))
 pCLR_Dim
 dev.off()
 
@@ -125,7 +125,7 @@ p_all <- ggarrange(p_L1_CLR,
                    labels = c("A","B"), 
                    label.x = c(.05,.9))
 
-png(filename="../Plots/Normalization_Bias_all.png", 
+png(filename="../plots/Normalization_Bias_all.png", 
     width = 6000, 
     height = 4500, 
     res = 600)
@@ -149,9 +149,9 @@ pCLR_Dim <- ggplot(df_percentiles, aes(x = d, y = ERR_CLR_mean)) +
   theme_bw() +
   scale_y_continuous(breaks = c(.01,.02,.05,.1,.15,.2)) +
   ylab("MAE") + xlab("D") +
-  theme(plot.margin = unit(c(2,1,1,1),"cm"))
+  theme(plot.margin = unit(c(2,1,1),"cm"))
 
-png(filename = "../Plots/CLR_Compositional_percentiles.png", 
+png(filename = "../plots/CLR_Compositional_percentiles.png", 
     width = 1200, 
     height = 1200, 
     res = 300)
