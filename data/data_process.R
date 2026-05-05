@@ -14,12 +14,12 @@ csv_groups <- split(clean_list_csv, prefixes)
 list2env(csv_groups, envir = .GlobalEnv)
 
 # read tables
-otu_ <- read.table("data/raw/otu_HMP2_16S.csv", header=TRUE, 
-                  sep=",", row.names=1)
-meta <- read.table("data/raw/meta_HMP2.csv", header=TRUE,
-                   sep=",", row.names=1)
-taxo <- read.table("data/raw/taxonomy_HMP2_16S.csv", header=TRUE,
-                   sep=",", row.names=1)
+otu_ <- read.table("data/raw/otu_HMP2_16S.csv", header = TRUE, 
+                   sep = ",", row.names = 1)
+meta <- read.table("data/raw/meta_HMP2.csv", header = TRUE,
+                   sep = ",", row.names = 1)
+taxo <- read.table("data/raw/taxonomy_HMP2_16S.csv", header = TRUE,
+                   sep = ",", row.names = 1)
 
 # checks 
 # checks that samples in otu_ and meta tables are the same
