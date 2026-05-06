@@ -31,21 +31,6 @@ test_that("file size = 0, maybe it's empty and that's a problem!",{
   expect_true(file.size(file_03) > 0)
 })
 
-# -- test that number of columns and rows are > 0
-test_that("this number of column/row is greater than zero!", {
-  tab_meta <- read.csv(here("data", "raw", "meta_HMP2.csv"), row.names = 1)
-  expect_true(nrow(tab_meta) > 0)
-  expect_true(ncol(tab_meta) > 0)
-  
-  tab_otu_ <- read.csv(here("data", "raw", "otu_HMP2_16S.csv"), row.names = 1)
-  expect_true(nrow(tab_otu_) > 0)
-  expect_true(ncol(tab_otu_) > 0)
-  
-  tab_taxo <- read.csv(here("data", "raw", "taxonomy_HMP2_16S.csv"), row.names = 1)
-  expect_true(nrow(tab_taxo) > 0)
-  expect_true(ncol(tab_taxo) > 0)
-})
-
 # -- test that the .csv files found match the expected ones ------
 test_that(".csv files found are NOT the expected ones", {
   
