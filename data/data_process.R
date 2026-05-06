@@ -1,3 +1,5 @@
+library(tidyverse)
+
 # check for .csv data in the folders, read the data
 
 # searches for .csv files in the working directory
