@@ -6,11 +6,11 @@ library(VGAM)
 library(MASS)
 library(here)
 
-# -- set parameters ----
+# -- set parameters ------
 dimensions <- seq(5, 200, by = 50)
 magnification <- c(1, 2)
 
-# -- elaborates transformations effects ----
+# -- elaborates transformations effects ------
 # create a cluster, selecting all cores minus one, to allow parallel execution
 cl <- makeCluster(detectCores() - 1)
 registerDoParallel(cl)
@@ -42,7 +42,7 @@ simulation_results <-
 # stop the cluster to reduce resource use
 stopCluster(cl)
 
-# -- save results ----
+# -- save results ------
 # create output folder if it does not exist
 dir.create(here("compositional_effects"), showWarnings = FALSE)
 
