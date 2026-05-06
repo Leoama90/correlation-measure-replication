@@ -2,158 +2,189 @@ library(tidyverse)
 library(ggpubr)
 library(here)
 
-# reads the file from the folder
+# -- Data loading --------
+
+# Load preprocessed compositional effects data
 df <- readRDS(here("compositional_effects_02.rds"))
 
-# for each combination of dimensionality and target evenness,
-# select the closest matching row from the observed data 
+# -- Grid sampling: match Pielou values to target grid --------
+
+# Iterate over all combinations of d and target Pielou evenness values
 df_sort <- tibble()
-for(di in seq(5, 200, by = 5)){
-  for(ei in seq(0.025, .975, by = .025)){
+
+for (di in seq(5, 200, by = 5)) {
+  for (ei in seq(0.025, 0.975, by = 0.025)) {
     
-    sub_df <- df %>% filter(d == di) 
-    rowi <- sub_df[which.min(abs(sub_df$pielou-ei)), ]
-    rowi <- c(rowi, "pielou_round" = ei)
-    df_sort <- bind_rows(df_sort, rowi)
+    # Subset rows for current value of d
+    sub_df <- df %>% filter(d == di)
     
+    # Select the row whose Pielou index is closest to the target ei
+    row_i <- sub_df[which.min(abs(sub_df$pielou - ei)), ]
+    
+    # Append the rounded target Pielou value as a new column
+    row_i <- c(row_i, "pielou_round" = ei)
+    
+    df_sort <- bind_rows(df_sort, row_i)
   }
 }
 
-# remove variables to save memory
-rm(di, ei, sub_df, rowi)
+# Remove loop variables no longer needed
+rm(di, ei, sub_df, row_i)
 
-# compute nearest-neighbour approximation error and flag poorly matched rows;
-# log-transform L1 and CLR errors, flooring at -2 (MAE < 0.01),
-# df_control retains only the poorly matched rows for quality-control purposes
+# -- Feature engineering --------
+# elaborate data to be readable
 df_sort <- df_sort %>%
-  mutate(pielou_error = abs(pielou_round-pielou)) %>%
-  mutate(pielou_error_logical = pielou_error < .005, .after = pielou_error) %>%
-  mutate(LOG_ERR_L1 = log10(ERR_L1)) %>%
-  mutate_at("LOG_ERR_L1", \(x)(ifelse(x < -2, -2, x))) %>%
-  mutate(LOG_ERR_CLR = log10(ERR_CLR)) %>%
-  mutate_at("LOG_ERR_CLR", \(x)(ifelse(x < -2, -2, x)))
+  # Compute absolute deviation between rounded and actual Pielou values
+  mutate(pielou_error = abs(pielou_round - pielou)) %>%
+  # Flag rows where the deviation is small enough to be considered valid
+  mutate(pielou_error_logical = pielou_error < 0.005, .after = pielou_error) %>%
+  # Log-transform L1 error and floor at -2 (i.e., MAE < 0.01 treated as equal)
+  mutate(log_err_l1 = log10(ERR_L1)) %>%
+  mutate(log_err_l1 = if_else(log_err_l1 < -2, -2, log_err_l1)) %>%
+  # Log-transform CLR error and apply the same floor
+  mutate(log_err_clr = log10(ERR_CLR)) %>%
+  mutate(log_err_clr = if_else(log_err_clr < -2, -2, log_err_clr))
 
+# Subset rows that did not match closely to any target Pielou value (quality control)
 df_control <- df_sort %>%
-  filter(pielou_error_logical == FALSE) 
+  filter(pielou_error_logical == FALSE)
 
-myPalette <- RColorBrewer::brewer.pal(11, "Spectral") %>%
-  rev() %>% grDevices::colorRampPalette()
+# -- Colour palette --------
 
-df_sort %>% select(d, pielou_round,LOG_ERR_CLR) %>%
-  pivot_wider(names_from = d, values_from = LOG_ERR_CLR) %>%
-  column_to_rownames("pielou_round") %>% dim()
+# Build an 11-colour diverging palette (Spectral reversed → cool-to-warm)
+my_palette <- RColorBrewer::brewer.pal(11, "Spectral") %>%
+  rev() %>%
+  grDevices::colorRampPalette()
 
+# -- Sanity check: verify grid dimensions --------
 
-# L1 Effects
-#png(filename="../outputs/L1_effects.png",width=3000,height=2400,res=600)
-pL1 <- ggplot(df_sort, aes(x = d, y = pielou_round, fill = LOG_ERR_L1)) +
-  geom_tile() + theme_bw() + 
-  scale_fill_gradientn("MAE", limits = c(-2,0), colours = myPalette(11),
-                       breaks = c(-0.1,-1,-2), labels = c(">1","0.1","< 0.01")) +
+# Pivot to wide format and check that dimensions match the expected grid size
+df_sort %>%
+  select(d, pielou_round, log_err_clr) %>%
+  pivot_wider(names_from = d, values_from = log_err_clr) %>%
+  column_to_rownames("pielou_round") %>%
+  dim()
+
+# -- Heatmap: L1 bias --------
+
+p_l1 <- ggplot(df_sort, aes(x = d, y = pielou_round, fill = log_err_l1)) +
+  geom_tile() +
+  theme_bw() +
+  # Map fill to log-scale MAE with readable break labels
+  scale_fill_gradientn(
+    "MAE",
+    limits  = c(-2, 0),
+    colours = my_palette(11),
+    breaks  = c(-0.1, -1, -2),
+    labels  = c(">1", "0.1", "< 0.01")
+  ) +
+  # Remove tick marks from the colour bar
   guides(fill = guide_colorbar(ticks.colour = NA)) +
   theme(legend.text = element_text(size = 10)) +
-  scale_y_continuous(breaks = seq(.05,.95,.05), expand = c(0,0))  +
-  scale_x_continuous(breaks = seq(10,200,10), expand = c(0,0)) +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
-  ylab(expression(bar(P))) + xlab("D") +
+  scale_y_continuous(breaks = seq(0.05, 0.95, 0.05), expand = c(0, 0)) +
+  scale_x_continuous(breaks = seq(10, 200, 10),       expand = c(0, 0)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  ylab(expression(bar(P))) +
+  xlab("D") +
   ggtitle("L1 Bias")
 
-#pL1
-#dev.off()
+# -- Heatmap: CLR bias --------
 
-# CLR Effects
-#png(filename="../outputs/CLR_effects.png",width=3000,height=2400,res=600)
-pCLR <- ggplot(df_sort, aes(x = d, y = pielou_round, fill = LOG_ERR_CLR)) +
-  geom_tile() + theme_bw() + 
-  scale_fill_gradientn("MAE", limits = c(-2,0), colours = myPalette(11),
-                       breaks = c(-0.1,-1,-2), labels = c(">1","0.1","< 0.01")) +
-  guides(fill=guide_colorbar(ticks.colour = NA)) +
-  theme(legend.text = element_text(size=10)) +
-  scale_y_continuous(breaks = seq(.05,.95,.05), expand = c(0,0))  +
-  scale_x_continuous(breaks = seq(10,200,10), expand = c(0,0)) +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
-  ylab(expression(bar(P))) + xlab("D") +
+p_clr <- ggplot(df_sort, aes(x = d, y = pielou_round, fill = log_err_clr)) +
+  geom_tile() +
+  theme_bw() +
+  scale_fill_gradientn(
+    "MAE",
+    limits  = c(-2, 0),
+    colours = my_palette(11),
+    breaks  = c(-0.1, -1, -2),
+    labels  = c(">1", "0.1", "< 0.01")
+  ) +
+  guides(fill = guide_colorbar(ticks.colour = NA)) +
+  theme(legend.text = element_text(size = 10)) +
+  scale_y_continuous(breaks = seq(0.05, 0.95, 0.05), expand = c(0, 0)) +
+  scale_x_continuous(breaks = seq(10, 200, 10),       expand = c(0, 0)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  ylab(expression(bar(P))) +
+  xlab("D") +
   ggtitle("CLR Bias")
-#pCLR
-#dev.off()
 
+# -- Export: side-by-side heatmaps --------
 
-png(filename = "../plots/Normalization_Bias.png", 
-    width = 6000, 
-    height = 3000, 
-    res = 600)
-
-ggarrange(pL1, 
-          pCLR, 
-          labels = c("L1","CLR"), 
-          common.legend=T, 
-          label.y = .125, 
-          label.x = c(0.03,-.02))
+png(filename = "../Plots/Normalization_Bias.png", width = 6000, height = 3000, res = 600)
+ggarrange(
+  p_l1, p_clr,
+  labels        = c("L1", "CLR"),
+  common.legend = TRUE,
+  label.y       = 0.125,
+  label.x       = c(0.03, -0.02)
+)
 dev.off()
 
-# create the plots folder
-# dir.create("../plots", showWarnings = FALSE)
+# -- Line plot: CLR MAE vs dimensionality (mean only) --------
 
-png(filename = "../plots/CLR_Compositional.png", 
-    width = 1200, 
-    height = 1200, 
-    res = 300)
-
-pCLR_Dim <- df_sort %>%
-  reframe("ERR_CLR_meanD" = mean(ERR_CLR), .by=d) %>%
-  ggplot(aes(x = d, y = ERR_CLR_meanD)) +
+png(filename = "../Plots/CLR_Compositional.png", width = 1200, height = 1200, res = 300)
+p_clr_dim <- df_sort %>%
+  # Compute mean CLR error for each value of d
+  reframe(err_clr_mean_d = mean(ERR_CLR), .by = d) %>%
+  ggplot(aes(x = d, y = err_clr_mean_d)) +
   geom_point(size = 2.5) +
   geom_line(linewidth = 1) +
-  #coord_trans(y = "log") +
   theme_bw() +
-  #scale_y_log10() +
-  scale_y_continuous(breaks = c(.01,.02,.05,.1,.15,.2)) +
-  ylab("MAE") + 
+  scale_y_continuous(breaks = c(0.01, 0.02, 0.05, 0.1, 0.15, 0.2)) +
+  ylab("MAE") +
   xlab("D") +
-  theme(plot.margin = unit(c(2,1,1),"cm"))
-pCLR_Dim
+  theme(plot.margin = unit(c(2, 1, 1, 1), "cm"))
+p_clr_dim
 dev.off()
 
+# -- Export: combined multi-panel figure --------
 
-## All plots merged
-p_L1_CLR <- ggarrange(pL1, pCLR, common.legend=T, ncol=1)
-p_all <- ggarrange(p_L1_CLR, 
-                   pCLR_Dim + theme(axis.text  = element_text(size = 14),
-                                    axis.title = element_text(size = 16)), 
-                   ncol = 2, 
-                   widths = c(.35,.65),
-                   labels = c("A","B"), 
-                   label.x = c(.05,.9))
+# Stack the two heatmaps vertically with a shared legend
+p_l1_clr <- ggarrange(p_l1, p_clr, common.legend = TRUE, ncol = 1)
 
-png(filename="../plots/Normalization_Bias_all.png", 
-    width = 6000, 
-    height = 4500, 
-    res = 600)
+# Combine heatmap panel and line plot side by side
+p_all <- ggarrange(
+  p_l1_clr,
+  p_clr_dim + theme(
+    axis.text  = element_text(size = 14),
+    axis.title = element_text(size = 16)
+  ),
+  ncol    = 2,
+  widths  = c(0.35, 0.65),
+  labels  = c("A", "B"),
+  label.x = c(0.05, 0.90)
+)
+
+png(filename = "../Plots/Normalization_Bias_all.png", width = 6000, height = 4500, res = 600)
 p_all
 dev.off()
 
+# -- Line plot: CLR MAE with 10th-90th percentile error bars --------
 
-
+# Summarise mean and decile bounds of CLR error for each d
 df_percentiles <- df_sort %>%
   group_by(d) %>%
   summarise(
-    ERR_CLR_mean = mean(ERR_CLR),
-    ERR_CLR_p10  = quantile(ERR_CLR, 0.10),
-    ERR_CLR_p90  = quantile(ERR_CLR, 0.90)
+    err_clr_mean = mean(ERR_CLR),
+    err_clr_p10  = quantile(ERR_CLR, 0.10),
+    err_clr_p90  = quantile(ERR_CLR, 0.90)
   )
 
-pCLR_Dim <- ggplot(df_percentiles, aes(x = d, y = ERR_CLR_mean)) +
-  geom_errorbar(aes(ymin = ERR_CLR_p10, ymax = ERR_CLR_p90), width = 2, color = "red") +
-  #geom_line(linewidth = 1.2, color = "black") +
-  geom_point(size = .5, color = "black") +
+# Plot mean CLR error with inter-decile range as error bars
+p_clr_dim <- ggplot(df_percentiles, aes(x = d, y = err_clr_mean)) +
+  geom_errorbar(
+    aes(ymin = err_clr_p10, ymax = err_clr_p90),
+    width = 2,
+    color = "red"
+  ) +
+  geom_point(size = 0.5, color = "black") +
   theme_bw() +
-  scale_y_continuous(breaks = c(.01,.02,.05,.1,.15,.2)) +
-  ylab("MAE") + xlab("D") +
-  theme(plot.margin = unit(c(2,1,1),"cm"))
+  scale_y_continuous(breaks = c(0.01, 0.02, 0.05, 0.1, 0.15, 0.2)) +
+  ylab("MAE") +
+  xlab("D") +
+  theme(plot.margin = unit(c(2, 1, 1, 1), "cm"))
 
-png(filename = "../plots/CLR_Compositional_percentiles.png", 
-    width = 1200, 
-    height = 1200, 
-    res = 300)
-pCLR_Dim
+png(filename = "../Plots/CLR_Compositional_percentiles.png", width = 1200, height = 1200, res = 300)
+p_clr_dim
 dev.off()
