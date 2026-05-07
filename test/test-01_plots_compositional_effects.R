@@ -1,30 +1,24 @@
 library(testthat)
 library(here)
 
+# -- test the that the preprocessed file is in the correct position ------
 
-test_that("I think I've found an error, sir!", {
+test_that("The file is not in the folder", {
   
-  # creates a vector with the expected file name
-  expected_data_frame <- c("compositional_effects_02.rds")
+  # expected full path of the preprocessed file
+  expected_data_frame <- here("compositional_effects", "compositional_effects_02.rds")
   
-  # here() returns the root directory of the project
-  # list.files() searches for .rds files recursively from the root
-  # basename() strips the folder path, keeping only the file names
-  found_data_frame <- basename(list.files(
-    path = here(),
-    pattern = "^compositional_effects_02\\.rds$",
-    recursive = TRUE
-  ))
+  # search recursively and return full paths
+  found_data_frame <- list.files(
+    path       = here(),
+    pattern    = "^compositional_effects_02\\.rds$",
+    recursive  = TRUE,
+    full.names = TRUE
+  )
   
-  # checks that both vectors contain the same elements, regardless of order
+  # check that found paths match the expected one
   expect_setequal(found_data_frame, expected_data_frame)
 })
 
-
-
-
-
-
-
-
+# --
 

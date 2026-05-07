@@ -1,6 +1,6 @@
 library(tidyverse)
 
-# -- check for .csv data in the folders, read the data ------
+# -- check for .csv data in the folders, read the data --------
 
 # searches for .csv files in the working directory
 list_csv <- list.files(pattern = "\\.csv$", recursive = TRUE) 
@@ -23,7 +23,7 @@ meta <- read.table("data/raw/meta_HMP2.csv", header = TRUE,
 taxo <- read.table("data/raw/taxonomy_HMP2_16S.csv", header = TRUE,
                    sep = ",", row.names = 1)
 
-# -- checks ------
+# -- checks --------
 # checks that samples in otu_ and meta tables are the same
 stopifnot(all(rownames(otu_) == rownames(meta)))
 # checks that OTUs in otu_ table match the taxonomic classifications in taxo
@@ -33,7 +33,7 @@ stopifnot(all(apply(otu_, c(1, 2), is.numeric)))
 # checks that all counts in otu table are non-negative
 stopifnot(all(otu_ >= 0))
 
-# -- generate outpusts ------
+# -- generate outpusts --------
 # write Data in .rds file format
 saveRDS(as.matrix(otu_), "data/otu_HMP2.rds")
 saveRDS(meta, "data/meta_HMP2.rds")

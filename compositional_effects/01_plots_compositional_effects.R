@@ -31,8 +31,8 @@ for (di in seq(5, 200, by = 5)) {
 # Remove loop variables no longer needed
 rm(di, ei, sub_df, row_i)
 
-# -- Feature engineering --------
-# elaborate data to be readable
+# -- Pipeline to elaborate data to be readable --------
+
 df_sort <- df_sort %>%
   # Compute absolute deviation between rounded and actual Pielou values
   mutate(pielou_error = abs(pielou_round - pielou)) %>%
