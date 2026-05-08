@@ -1,4 +1,9 @@
+# testthat: allows to write tests for the other scripts
+# https://cran.r-project.org/web/packages/testthat/index.html
 library(testthat)
+
+# here: builds file paths relative to the project root
+# https://cran.r-project.org/web/packages/here/index.html
 library(here)
 
 # -- test the that the preprocessed file is in the correct position ------

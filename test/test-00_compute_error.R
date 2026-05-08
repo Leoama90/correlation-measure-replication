@@ -1,5 +1,13 @@
+# testthat: allows to write tests for the other scripts
+# https://cran.r-project.org/web/packages/testthat/index.html
 library(testthat)
+
+# here: builds file paths relative to the project root
+# https://cran.r-project.org/web/packages/here/index.html
 library(here)
+
+# vegan: tools for descriptive community ecology (diversity indices, ordination)
+# https://cran.r-project.org/web/packages/vegan/index.html
 library(vegan)
 
 # -- load the simulation results to test --------
