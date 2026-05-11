@@ -43,7 +43,7 @@ simulation_results <-
 stopCluster(cl)
 
 # -- save results ------
-# create output folder if it does not exist
+# create output folder
 dir.create(here("compositional_effects"), showWarnings = FALSE)
 
 # save the results in output folder

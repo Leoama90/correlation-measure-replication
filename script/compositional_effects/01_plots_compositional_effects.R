@@ -2,10 +2,13 @@ library(tidyverse)
 library(ggpubr)
 library(here)
 
+# -- Create output directory if it doesn't exist --------
+dir.create(here("Plots"), showWarnings = FALSE, recursive = TRUE)
+
 # -- Data loading --------
 
 # Load preprocessed compositional effects data
-df <- readRDS(here("compositional_effects_02.rds"))
+df <- readRDS(here("compositional_effects", "compositional_effects_02.rds"))
 
 # -- Grid sampling: match Pielou values to target grid --------
 
@@ -60,7 +63,7 @@ my_palette <- RColorBrewer::brewer.pal(11, "Spectral") %>%
 
 # Pivot to wide format and check that dimensions match the expected grid size
 df_sort %>%
-  select(d, pielou_round, log_err_clr) %>%
+  dplyr::select(d, pielou_round, log_err_clr) %>%
   pivot_wider(names_from = d, values_from = log_err_clr) %>%
   column_to_rownames("pielou_round") %>%
   dim()
@@ -82,7 +85,7 @@ p_l1 <- ggplot(df_sort, aes(x = d, y = pielou_round, fill = log_err_l1)) +
   guides(fill = guide_colorbar(ticks.colour = NA)) +
   theme(legend.text = element_text(size = 10)) +
   scale_y_continuous(breaks = seq(0.05, 0.95, 0.05), expand = c(0, 0)) +
-  scale_x_continuous(breaks = seq(10, 200, 10),       expand = c(0, 0)) +
+  scale_x_continuous(breaks = seq(10, 200, 10),      expand = c(0, 0)) +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
   ylab(expression(bar(P))) +
   xlab("D") +
@@ -103,7 +106,7 @@ p_clr <- ggplot(df_sort, aes(x = d, y = pielou_round, fill = log_err_clr)) +
   guides(fill = guide_colorbar(ticks.colour = NA)) +
   theme(legend.text = element_text(size = 10)) +
   scale_y_continuous(breaks = seq(0.05, 0.95, 0.05), expand = c(0, 0)) +
-  scale_x_continuous(breaks = seq(10, 200, 10),       expand = c(0, 0)) +
+  scale_x_continuous(breaks = seq(10, 200, 10),      expand = c(0, 0)) +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
   ylab(expression(bar(P))) +
   xlab("D") +
@@ -111,19 +114,18 @@ p_clr <- ggplot(df_sort, aes(x = d, y = pielou_round, fill = log_err_clr)) +
 
 # -- Export: side-by-side heatmaps --------
 
-png(filename = "../Plots/Normalization_Bias.png", width = 6000, height = 3000, res = 600)
-ggarrange(
+png(filename = here("Plots", "Normalization_Bias.png"), width = 6000, height = 3000, res = 600)
+print(ggarrange(                                         
   p_l1, p_clr,
   labels        = c("L1", "CLR"),
   common.legend = TRUE,
   label.y       = 0.125,
   label.x       = c(0.03, -0.02)
-)
+))
 dev.off()
 
 # -- Line plot: CLR MAE vs dimensionality (mean only) --------
 
-png(filename = "../Plots/CLR_Compositional.png", width = 1200, height = 1200, res = 300)
 p_clr_dim <- df_sort %>%
   # Compute mean CLR error for each value of d
   reframe(err_clr_mean_d = mean(ERR_CLR), .by = d) %>%
@@ -135,7 +137,9 @@ p_clr_dim <- df_sort %>%
   ylab("MAE") +
   xlab("D") +
   theme(plot.margin = unit(c(2, 1, 1, 1), "cm"))
-p_clr_dim
+
+png(filename = here("Plots", "CLR_Compositional.png"), width = 1200, height = 1200, res = 300)
+print(p_clr_dim)                                         
 dev.off()
 
 # -- Export: combined multi-panel figure --------
@@ -156,8 +160,8 @@ p_all <- ggarrange(
   label.x = c(0.05, 0.90)
 )
 
-png(filename = "../Plots/Normalization_Bias_all.png", width = 6000, height = 4500, res = 600)
-p_all
+png(filename = here("Plots", "Normalization_Bias_all.png"), width = 6000, height = 4500, res = 600)
+print(p_all)                                             
 dev.off()
 
 # -- Line plot: CLR MAE with 10th-90th percentile error bars --------
@@ -185,6 +189,6 @@ p_clr_dim <- ggplot(df_percentiles, aes(x = d, y = err_clr_mean)) +
   xlab("D") +
   theme(plot.margin = unit(c(2, 1, 1, 1), "cm"))
 
-png(filename = "../Plots/CLR_Compositional_percentiles.png", width = 1200, height = 1200, res = 300)
-p_clr_dim
+png(filename = here("Plots", "CLR_Compositional_percentiles.png"), width = 1200, height = 1200, res = 300)
+print(p_clr_dim)                                         
 dev.off()
