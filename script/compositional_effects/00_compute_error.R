@@ -1,9 +1,29 @@
+# tidyverse: data science toolkit (dplyr, ggplot2, tidyr, etc.)
+# [https://tidyverse.org](https://tidyverse.org)
 library(tidyverse)
+
+# foreach: parallel foreach loops
+# [https://cran.r-project.org/package=foreach](https://cran.r-project.org/package=foreach)
 library(foreach)
+
+# doParallel: parallel backend for foreach
+# [https://cran.r-project.org/package=doParallel](https://cran.r-project.org/package=doParallel)
 library(doParallel)
+
+# vegan: community ecology analysis
+# [https://cran.r-project.org/package=vegan](https://cran.r-project.org/package=vegan)
 library(vegan)
+
+# VGAM: vector generalized linear models
+# [https://cran.r-project.org/package=VGAM](https://cran.r-project.org/package=VGAM)
 library(VGAM)
+
+# MASS: statistical modeling and analysis
+# [https://cran.r-project.org/package=MASS](https://cran.r-project.org/package=MASS)
 library(MASS)
+
+# here: project-oriented file paths
+# [https://cran.r-project.org/package=here](https://cran.r-project.org/package=here)
 library(here)
 
 # -- set parameters ------

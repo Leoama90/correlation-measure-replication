@@ -1,3 +1,5 @@
+# tidyverse: data science toolkit (dplyr, ggplot2, tidyr, etc.)
+# [https://tidyverse.org](https://tidyverse.org)
 library(tidyverse)
 
 # -- check for .csv data in the folders, read the data --------

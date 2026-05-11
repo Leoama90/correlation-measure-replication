@@ -1,5 +1,13 @@
+# tidyverse: data science toolkit (dplyr, ggplot2, tidyr, etc.)
+# [https://tidyverse.org](https://tidyverse.org)
 library(tidyverse)
+
+# ggpubr: ggplot2 publication-ready plots
+# [https://cran.r-project.org/package=ggpubr](https://cran.r-project.org/package=ggpubr)
 library(ggpubr)
+
+# here: project-oriented file paths
+# [https://cran.r-project.org/package=here](https://cran.r-project.org/package=here)
 library(here)
 
 # -- Create output directory if it doesn't exist --------
