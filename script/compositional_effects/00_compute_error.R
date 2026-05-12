@@ -31,6 +31,7 @@ dimensions <- seq(5, 200, by = 50)
 magnification <- c(1, 2)
 
 # -- elaborates transformations effects ------
+
 # create a cluster, selecting all cores minus one, to allow parallel execution
 cl <- makeCluster(detectCores() - 1)
 registerDoParallel(cl)
@@ -63,6 +64,7 @@ simulation_results <-
 stopCluster(cl)
 
 # -- save results ------
+
 # create output folder
 dir.create(here("compositional_effects"), showWarnings = FALSE)
 
