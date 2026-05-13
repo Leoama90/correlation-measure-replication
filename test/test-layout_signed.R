@@ -1,9 +1,13 @@
 # testthat: unit testing framework for R
 # https://cran.r-project.org/web/packages/testthat/index.html
 library(testthat)
+
 # here: builds file paths relative to the project root
 # https://cran.r-project.org/web/packages/here/index.html
 library(here)
+
+# igraph: graph analysis for R
+# https://cran.r-project.org/web/packages/igraph/index.html
 library(igraph)
 
 # -- test for errors --------
