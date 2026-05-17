@@ -27,7 +27,7 @@ library(parallel)
 library(ToyModel)
 
 
-# -- Different Densities --------
+# -------- Different Densities --------
 
 # Set up the parallel backend with doSNOW
 num_cores <- 4
@@ -84,7 +84,7 @@ stopCluster(cl)
 
 saveRDS(results_block, "results_block.rds")
 
-# -- Gaussian Distributed Correlation Values --------
+# -------- Gaussian Distributed Correlation Values --------
 
 # Set up the parallel backend with doSNOW
 num_cores <- 4
@@ -97,7 +97,7 @@ pb <- txtProgressBar(max = total_iterations, style = 3)
 progress <- function(n) setTxtProgressBar(pb, n)
 opts <- list(progress = progress)
 
-# -- Gaussian Random Values --------
+# -------- Gaussian Random Values --------
 
 n <- Dimension
 results_gauss <- foreach(i = 1:100, .combine = "rbind", .packages = c("mvtnorm", "Matrix", "ToyModel"), .options.snow = opts) %dopar% {

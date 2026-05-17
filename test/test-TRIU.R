@@ -6,7 +6,7 @@ library(testthat)
 # https://cran.r-project.org/web/packages/here/index.html
 library(here)
 
-# -- test TRIU function for errors --------
+# -------- test TRIU function for errors --------
 test_that("there is an error here", {
   
   # load function from script
@@ -27,7 +27,7 @@ test_that("there is an error here", {
   expect_error(TRIU(z_nonsym))
 })
 
-# -- test TRIU function output --------
+# -------- test TRIU function output --------
 test_that("there is a problem with the output of the script", {
   
   # load function from script

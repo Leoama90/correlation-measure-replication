@@ -26,11 +26,12 @@ library(MASS)
 # [https://cran.r-project.org/package=here](https://cran.r-project.org/package=here)
 library(here)
 
-# -- set parameters ------
+# -------- set parameters --------
+
 dimensions <- seq(5, 200, by = 50)
 magnification <- c(1, 2)
 
-# -- elaborates transformations effects ------
+# -------- elaborates transformations effects --------
 
 # create a cluster, selecting all cores minus one, to allow parallel execution
 cl <- makeCluster(detectCores() - 1)
@@ -63,7 +64,7 @@ simulation_results <-
 # stop the cluster to reduce resource use
 stopCluster(cl)
 
-# -- save results ------
+# -------- save results --------
 
 # create output folder
 dir.create(here("compositional_effects"), showWarnings = FALSE)

@@ -6,7 +6,7 @@ library(testthat)
 # https://cran.r-project.org/web/packages/here/index.html
 library(here)
 
-# -- test the that the preprocessed file is in the correct position ------
+# -------- test the that the preprocessed file is in the correct position ------
 
 test_that("The file is not in the folder", {
   
@@ -25,7 +25,7 @@ test_that("The file is not in the folder", {
   expect_setequal(found_data_frame, expected_data_frame)
 })
 
-# -- test correct column name and size --------
+# -------- test correct column name and size --------
 
 test_that("there is a problem with the file columns: either one is empty or doesn't exist!", {
   # read the file
@@ -38,7 +38,7 @@ test_that("there is a problem with the file columns: either one is empty or does
   expect_gt(nrow(df), 0)
 })
 
-# -- check the data frame after the pipelines --------
+# -------- check the data frame after the pipelines --------
 
 test_that("there is a problem with the pipelined dataframe!",{
   # read the file

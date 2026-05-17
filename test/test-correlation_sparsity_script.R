@@ -7,7 +7,7 @@ library(testthat)
 library(Matrix)
 
 
-# -- Test Parameters --------
+# -------- Test Parameters --------
 
 Dimension <- 10  # small dimension for fast testing
 n_taxa_connected <- 5
@@ -15,7 +15,7 @@ corr_val <- 0.7
 total_possible_edges <- Dimension * (Dimension - 1) / 2
 
 
-# -- Block Correlation Matrix Construction --------
+# -------- Block Correlation Matrix Construction --------
 
 test_that("block correlation matrix is built correctly", {
   
@@ -35,7 +35,7 @@ test_that("block correlation matrix is built correctly", {
 })
 
 
-# -- Edge Density Calculation --------
+# -------- Edge Density Calculation --------
 
 test_that("edge density is computed correctly and lies in [0, 1]", {
   
@@ -60,7 +60,7 @@ test_that("edge density is computed correctly and lies in [0, 1]", {
 })
 
 
-# -- Positive Semidefiniteness after nearPD --------
+# -------- Positive Semidefiniteness after nearPD --------
 
 test_that("nearPD produces a valid positive semidefinite correlation matrix", {
   
@@ -84,7 +84,7 @@ test_that("nearPD produces a valid positive semidefinite correlation matrix", {
 })
 
 
-# -- Gaussian Random Matrix Construction --------
+# -------- Gaussian Random Matrix Construction --------
 
 test_that("gaussian random matrix is symmetric and positive semidefinite after correction", {
   

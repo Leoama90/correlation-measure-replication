@@ -10,10 +10,12 @@ library(here)
 # https://cran.r-project.org/web/packages/vegan/index.html
 library(vegan)
 
-# -- load the simulation results to test --------
+# -------- load the simulation results to test --------
+
 results <- readRDS(here("compositional_effects", "compositional_effects_01.rds"))
 
-# -- test output structure --------
+# -------- test output structure --------
+
 test_that("results is a data frame with the expected columns", {
   expect_s3_class(results, "data.frame")
   expect_named(results, c("d", "m", "err_l1", "err_clr", "pielou"))
@@ -26,7 +28,8 @@ test_that("results has the expected number of rows", {
   expect_equal(nrow(results), expected_rows)
 })
 
-# -- test parameter coverage --------
+# -------- test parameter coverage --------
+
 test_that("all dimension values are present in results", {
   expect_setequal(unique(results$d), seq(5, 200, by = 50))
 })
@@ -41,7 +44,8 @@ test_that("each (d, m) combination appears exactly once", {
   expect_false(any(duplicated(combos)))
 })
 
-# -- test metric validity --------
+# -------- test metric validity --------
+
 test_that("ERR_L1 and ERR_CLR are non-negative", {
   # errors are absolute values, so they must never be negative
   expect_true(all(results$ERR_L1 >= 0))
@@ -59,7 +63,7 @@ test_that("no NA values exist in the results", {
   expect_false(anyNA(results))
 })
 
-# -- test output file --------
+# -------- test output file --------
 test_that("output .rds file exists in the expected location", {
   expect_true(file.exists(here("compositional_effects", "compositional_effects_01.rds")))
 })

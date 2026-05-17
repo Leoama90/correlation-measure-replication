@@ -7,7 +7,8 @@ library(testthat)
 library(here)
 
 
-# -- test file existence in the folder --------
+# -------- test file existence in the folder --------
+
 test_that("file not found, where did I put it...?",{
   # give the file position, here() searches it, then store in vector file_01
   file_01 <- here("data", "raw", "meta_HMP2.csv")
@@ -25,7 +26,8 @@ test_that("file not found, where did I put it...?",{
   expect_true(file.exists(file_03))
 })
 
-# -- test that files are not empty --------
+# -------- test that files are not empty --------
+
 test_that("file size = 0, maybe it's empty and that's a problem!",{
   # test that the file is not empty (size > 0) 
   file_01 <- here("data", "raw", "meta_HMP2.csv")
@@ -36,7 +38,8 @@ test_that("file size = 0, maybe it's empty and that's a problem!",{
   expect_true(file.size(file_03) > 0)
 })
 
-# -- test that the .csv files found match the expected ones --------
+# -------- test that the .csv files found match the expected ones --------
+
 test_that(".csv files found are NOT the expected ones", {
   
   # creates a vector with expected file names

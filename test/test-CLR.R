@@ -7,7 +7,7 @@ library(testthat)
 library(here)
 
 
-# -- test CLR function for errors --------
+# -------- test CLR function for errors --------
 
 test_that("there is a problem with the script",{
   
@@ -24,6 +24,7 @@ test_that("there is a problem with the script",{
   expect_no_error(CLR(z))
   # verify transformation of matrix entries
   expect_true(all(CLR(z)) > 0)
+  # check all matrix entries are doubles
   expect_true(is.double(CLR(z)))
   
 })

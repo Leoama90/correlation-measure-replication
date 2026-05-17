@@ -10,7 +10,7 @@ library(here)
 # https://cran.r-project.org/web/packages/igraph/index.html
 library(igraph)
 
-# -- test for errors --------
+# -------- test for errors --------
 test_that("there is an error here", {
   
   # load function from script
@@ -26,7 +26,7 @@ test_that("there is an error here", {
   expect_error(LAYOUT_SIGNED(NULL))
 })
 
-# -- test layout_signed function --------
+# -------- test layout_signed function --------
 test_that("there is a problem with the output of the script", {
   
   # load function from script
@@ -57,7 +57,7 @@ test_that("there is a problem with the output of the script", {
   expect_all_false(is.integer(lg))
 })
 
-# -- test layout_signed function: edge cases --------
+# -------- test layout_signed function: edge cases --------
 test_that("there is a problem with edge cases", {
   
   # load function from script
