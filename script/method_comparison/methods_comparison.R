@@ -33,7 +33,7 @@ library(gridExtra)
 
 source("CLR.R")           # Centered Log-Ratio transformation
 source("TRIU.R")          # Upper triangle extraction from a matrix
-source("LAYOUT_SIGNED.R") # Network layout separating positive and negative edges
+source("layout_signed.R") # Network layout separating positive and negative edges
 
 
 # -------- READ AND FILTER DATA --------
@@ -55,7 +55,8 @@ taxa.filt <- taxa[colnames(otu.filt), ]
 
 # -------- CORRELATION METHODS --------
 
-# -- SPIEC-EASI GLASSO --
+# -------- SPIEC-EASI GLASSO --------
+
 # Sparse network estimation via Graphical LASSO on compositional data
 res.gl <- spiec.easi(data = otu.filt, method = 'glasso',
                      lambda.max = .75, lambda.min.ratio = .5,
@@ -68,16 +69,22 @@ colnames(res.gl$est$data) -> colnames(adj.gl) -> rownames(adj.gl)
 adj.gl[adj.gl >  0] <-  1
 adj.gl[adj.gl <  0] <- -1
 
-# -- SparCC --
+
+# -------- SparCC --------
+
 # Log-ratio-based correlations, robust to compositionality
 res.cc <- sparcc(otu.filt)$Cor
 colnames(res.cc) <- rownames(res.cc) <- colnames(otu.filt)
 
-# -- Rho (propr) --
+
+# -------- Rho (propr) --------
+
 # Symmetric proportionality measure between OTU pairs
 res.rho <- propr::propr(counts = otu.filt, metric = "rho")@matrix
 
-# -- Pearson + CLR --
+
+# -------- Pearson + CLR --------
+
 # Pearson correlation after CLR transformation + Bonferroni p-value correction
 # psych::corr.p used for significance testing
 # https://cran.r-project.org/web/packages/psych/index.html
@@ -105,7 +112,7 @@ df.gl <- tibble("method" = rep("clr", length(TRIU(res.clr))),
 
 # -------- PLOTS --------
 
-# -- Panel A: Scatter Pearson+CLR vs SparCC --
+# -------- Panel A: Scatter Pearson+CLR vs SparCC --------
 p1 <- ggpubr::ggscatter(
   data.frame("PearsonCLR" = TRIU(res.clr), "SparCC" = TRIU(res.cc)),
   x = "PearsonCLR", y = "SparCC",
@@ -116,7 +123,9 @@ p1 <- ggpubr::ggscatter(
   theme_bw() + xlab("Pearson+CLR") +
   theme(plot.title = element_text(hjust = 0.5))
 
-# -- Panel B: Scatter Pearson+CLR vs Rho --
+
+# -------- Panel B: Scatter Pearson+CLR vs Rho --------
+
 p2 <- ggpubr::ggscatter(
   data.frame("PearsonCLR" = TRIU(res.clr), "Rho" = TRIU(res.rho)),
   x = "PearsonCLR", y = "Rho",
@@ -127,7 +136,9 @@ p2 <- ggpubr::ggscatter(
   theme_bw() + xlab("Pearson+CLR") +
   theme(plot.title = element_text(hjust = 0.5))
 
-# -- Panel C: Histogram of CLR vs GLASSO correlation distributions --
+
+# -------- Panel C: Histogram of CLR vs GLASSO correlation distributions --------
+
 # Dashed line at y=200 as visual reference threshold
 p4.all <- ggplot(df.gl, aes(x = value, fill = method, color = method)) +
   geom_histogram(position = "identity", alpha = .5, breaks = seq(-1, 1, by = .1)) +
@@ -186,7 +197,9 @@ names(colpal) <- unique(taxa.filt[, "family"])
 # Node size proportional to mean CLR abundance
 vertex.size <- colMeans(CLR(otu.filt) - min(CLR(otu.filt)))
 
-# -- Panel D: CLR network --
+
+# -------- Panel D: CLR network --------
+
 # Blue edges = positive correlations, red edges = negative correlations
 set.seed(42)
 p.graph.CLR <- as.grob(~plot(g.clr, vertex.label = NA,
@@ -197,7 +210,9 @@ p.graph.CLR <- as.grob(~plot(g.clr, vertex.label = NA,
                              edge.width   = .5,
                              layout       = LAYOUT_SIGNED(g.clr)))
 
-# -- Panel E: GLASSO network --
+
+# -------- Panel E: GLASSO network --------
+
 # Same layout as CLR network for direct visual comparison
 set.seed(42)
 p.graph.glasso <- as.grob(~plot(g.gl, vertex.label = NA,
@@ -222,14 +237,18 @@ ggarrange(
 )
 dev.off()
 
-# -- Taxonomy color legend (family level) --
+
+# -------- Taxonomy color legend (family level) --------
+
 png(filename = "scripts/tmp_files/colorLegend.png", width = 1200, height = 1200, res = 200)
 par(mar = c(2, 0, 2, 0))
 plot.new()
 legend("center", legend = names(colpal), fill = colpal, title = "Family", ncol = 2)
 dev.off()
 
-# -- Summary table: edge count and % positive/negative edges per method --
+
+# -------- Summary table: edge count and % positive/negative edges per method --------
+
 netw.info <- data.frame(
   "Edges"    = sapply(list(g.mb, g.gl, g.clr), igraph::ecount),
   "Positive" = paste(100 * sapply(list(g.mb, g.gl, g.clr),
@@ -253,9 +272,11 @@ ggplot() +
                     xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = Inf)
 dev.off()
 
-# -- Alternative composition using pre-saved images from disk --
+
+# -------- Alternative composition using pre-saved images from disk --------
 # cowplot: advanced composition of ggplot2 graphics
 # https://cran.r-project.org/web/packages/cowplot/index.html
+
 p.mb  <- cowplot::ggdraw() + cowplot::draw_image("scripts/tmp_files/graph_mb.png")
 p.gl  <- cowplot::ggdraw() + cowplot::draw_image("scripts/tmp_files/graph_gl.png")
 p.clr <- cowplot::ggdraw() + cowplot::draw_image("scripts/tmp_files/graph_clr.png")
