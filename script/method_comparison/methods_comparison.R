@@ -28,19 +28,34 @@ library(ggplotify)
 # https://cran.r-project.org/web/packages/gridExtra/index.html
 library(gridExtra)
 
+# here: builds file paths relative to the project root
+# https://cran.r-project.org/web/packages/here/index.html
+library(here)
+
+
+# -------- CREATE OUTPUT DIRECTORIES --------
+
+dir.create(here("script", "tmp_files"), recursive = TRUE, showWarnings = FALSE)
+dir.create(here("outputs"),              recursive = TRUE, showWarnings = FALSE)
+
 
 # -------- CUSTOM FUNCTIONS --------
 
-source("CLR.R")           # Centered Log-Ratio transformation
-source("TRIU.R")          # Upper triangle extraction from a matrix
-source("layout_signed.R") # Network layout separating positive and negative edges
+# Centered Log-Ratio transformation
+source(here("script", "method_comparison", "CLR.R"))
+
+# Upper triangle extraction from a matrix
+source(here("script", "method_comparison", "TRIU.R"))
+
+# Network layout separating positive and negative edges
+source(here("script", "method_comparison", "layout_signed.R"))
 
 
 # -------- READ AND FILTER DATA --------
 
-otu  <- readRDS("../../data/otu_HMP2.rds")
-meta <- readRDS("../../data/meta_HMP2.rds")
-taxa <- readRDS("../../data/taxonomy.rds")
+otu  <- readRDS(here("data", "otu_HMP2.rds"))
+meta <- readRDS(here("data", "meta_HMP2.rds"))
+taxa <- readRDS(here("data", "taxonomy.rds"))
 
 # Select samples from subject 69-001 in healthy status
 otu.69001.H <- otu[meta$SubjectID == "69-001" & meta$CL4_2 == "Healthy", ]
@@ -58,9 +73,10 @@ taxa.filt <- taxa[colnames(otu.filt), ]
 # -------- SPIEC-EASI GLASSO --------
 
 # Sparse network estimation via Graphical LASSO on compositional data
+# ncores = 1: parallelization disabled to avoid workers not finding SpiecEasi
 res.gl <- spiec.easi(data = otu.filt, method = 'glasso',
                      lambda.max = .75, lambda.min.ratio = .5,
-                     pulsar.params = list(ncores = 6, thresh = 0.05))
+                     pulsar.params = list(ncores = 1, thresh = 0.05))
 
 # Adjacency matrix: binarized partial correlations (+1/-1)
 adj.gl <- cov2cor(as.matrix(getOptCov(res.gl)))
@@ -227,7 +243,7 @@ p.graph.glasso <- as.grob(~plot(g.gl, vertex.label = NA,
 # -------- SAVE FINAL OUTPUT --------
 
 # -- Main figure: 6 panels (A-F), 3 columns x 2 rows --
-png("../Plots/Methods_comparison.png", width = 3600, height = 2400, res = 300)
+png(here("outputs", "Methods_comparison.png"), width = 3600, height = 2400, res = 300)
 ggarrange(
   plotlist = list(p1, p2, p4,
                   p.graph.CLR, p.graph.glasso,
@@ -240,7 +256,7 @@ dev.off()
 
 # -------- Taxonomy color legend (family level) --------
 
-png(filename = "scripts/tmp_files/colorLegend.png", width = 1200, height = 1200, res = 200)
+png(filename = here("script", "tmp_files", "colorLegend.png"), width = 1200, height = 1200, res = 200)
 par(mar = c(2, 0, 2, 0))
 plot.new()
 legend("center", legend = names(colpal), fill = colpal, title = "Family", ncol = 2)
@@ -260,7 +276,7 @@ netw.info <- data.frame(
 )
 rownames(netw.info) <- c("MB", "GLASSO", "CLR")
 
-png(filename = "scripts/tmp_files/table.png", width = 1200, height = 1200, res = 300)
+png(filename = here("script", "tmp_files", "table.png"), width = 1200, height = 1200, res = 300)
 ggplot() +
   theme(axis.line = element_blank(), axis.text.x = element_blank(),
         axis.text.y = element_blank(), axis.ticks = element_blank(),
@@ -277,13 +293,13 @@ dev.off()
 # cowplot: advanced composition of ggplot2 graphics
 # https://cran.r-project.org/web/packages/cowplot/index.html
 
-p.mb  <- cowplot::ggdraw() + cowplot::draw_image("scripts/tmp_files/graph_mb.png")
-p.gl  <- cowplot::ggdraw() + cowplot::draw_image("scripts/tmp_files/graph_gl.png")
-p.clr <- cowplot::ggdraw() + cowplot::draw_image("scripts/tmp_files/graph_clr.png")
-p.leg <- cowplot::ggdraw() + cowplot::draw_image("scripts/tmp_files/colorLegend.png")
-p.ven <- cowplot::ggdraw() + cowplot::draw_image("scripts/tmp_files/ggvenn.png")
-p.inf <- cowplot::ggdraw() + cowplot::draw_image("scripts/tmp_files/table.png")
+p.mb  <- cowplot::ggdraw() + cowplot::draw_image(here("script", "tmp_files", "graph_mb.png"))
+p.gl  <- cowplot::ggdraw() + cowplot::draw_image(here("script", "tmp_files", "graph_gl.png"))
+p.clr <- cowplot::ggdraw() + cowplot::draw_image(here("script", "tmp_files", "graph_clr.png"))
+p.leg <- cowplot::ggdraw() + cowplot::draw_image(here("script", "tmp_files", "colorLegend.png"))
+p.ven <- cowplot::ggdraw() + cowplot::draw_image(here("script", "tmp_files", "ggvenn.png"))
+p.inf <- cowplot::ggdraw() + cowplot::draw_image(here("script", "tmp_files", "table.png"))
 
-png(filename = "outputs/Graph_Comparison.png", width = 1600, height = 1000, res = 300)
+png(filename = here("outputs", "Graph_Comparison.png"), width = 1600, height = 1000, res = 300)
 gridExtra::grid.arrange(p.mb, p.gl, p.clr, p.ven, p.leg, p.inf, ncol = 3)
 dev.off()

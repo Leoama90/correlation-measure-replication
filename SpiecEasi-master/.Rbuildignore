@@ -1,0 +1,14 @@
+## Ignore build and temp file
+^\.travis\.yml$
+^figure*
+^.README\.*
+^inst/.README\.*
+^README\.Rmd$
+^inst/extdata\.*
+^inst/TUTORIAL*
+^LICENSE\.md$
+^\.github$
+^codecov\.yml$
+^doc$
+^Meta$
+..Rcheck
