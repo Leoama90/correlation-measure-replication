@@ -24,8 +24,8 @@ taxa <- readRDS(here("data", "taxonomy.rds"))
 otu.69001.H <- otu[meta$SubjectID == "69-001" & meta$CL4_2 == "Healthy", ]
 
 # Remove rarest OTUs using prevalence and median of non-zero values
-otu.filt <- otu.69001.H[, colSums(otu.69001.H > 0) / nrow(otu.69001.H) >= .33]
-otu.filt <- otu.filt[, apply(otu.filt, 2, function(x) median(x[x > 0]) >= 5)]
+otu.filt  <- otu.69001.H[, colSums(otu.69001.H > 0) / nrow(otu.69001.H) >= .33]
+otu.filt  <- otu.filt[, apply(otu.filt, 2, function(x) median(x[x > 0]) >= 5)]
 taxa.filt <- taxa[colnames(otu.filt), ]
 
 # -------- DIFFERENT ZERO STRATEGIES --------
