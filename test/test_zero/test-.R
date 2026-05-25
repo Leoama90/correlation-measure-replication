@@ -11,6 +11,10 @@ library(testthat)
 # https://cran.r-project.org/web/packages/tidyverse/index.html
 library(tidyverse)
 
+# here: builds file paths relative to the project root
+# https://cran.r-project.org/web/packages/here/index.html
+library(here)
+
 # gridExtra: arrange multiple grid-based plots on a page
 # https://cran.r-project.org/web/packages/gridExtra/index.html
 library(gridExtra)
@@ -51,6 +55,3 @@ library(ToyModel)
 # https://cran.r-project.org/web/packages/zCompositions/index.html
 library(zCompositions)
 
-# here: builds file paths relative to the project root
-# https://cran.r-project.org/web/packages/here/index.html
-library(here)

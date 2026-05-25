@@ -33,6 +33,10 @@ install.packages("vegan")
 # https://cran.r-project.org/web/packages/here/index.html
 install.packages("here")
 
+# testthat: unit testing framework for R
+# https://cran.r-project.org/web/packages/testthat/index.html
+install.packages("testthat")
+
 # lightweight package with necessary function to generate metagenomics data
 # https://github.com/Fuschi/ToyModel
 install_github("https://github.com/Fuschi/ToyModel")
