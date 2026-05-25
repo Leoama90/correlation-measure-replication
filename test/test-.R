@@ -1,42 +1,48 @@
-# List of all the packages necessary to reproduce the analysis with the associated
-# command to install them.
+# -------- the begin of all the tests! --------
+# this is script has the collection of all the libraries needed in this project
+# its aim is to simplify the writing of tests by having all the libraries here 
+# commented and ready to use
 
 # tidyverse: useful to manage data (dplyr) and make nice plots (ggplot2)
 # https://cran.r-project.org/web/packages/tidyverse/index.html
-install.packages("tidyverse")
+library(tidyverse)
 
 # gridExtra: arrange multiple grid-based plots on a page
 # https://cran.r-project.org/web/packages/gridExtra/index.html
-install.packages("gridExtra")
+library(gridExtra)
 
 # SpiecEasi: package with spiec.easi and sparCC methods
 # https://github.com/zdk123/SpiecEasi
-install_github("zdk123/SpiecEasi")
+library(SpiecEasi)
 
 # propr: package with proportionality rho method
 # https://github.com/tpq/propr
-install_github("https://github.com/tpq/propr")
+library(propr)
 
 # ggpubr: nice plots based on ggplot2
 # https://cran.r-project.org/web/packages/ggpubr/index.html
-install.packages("ggpubr")
+library(ggpubr)
 
 # ggVennDiagram: Venn diagram based on ggplot2
 # https://cran.r-project.org/web/packages/ggVennDiagram/index.html
-install.packages("ggVennDiagram")
+library(ggVennDiagram)
 
 # qualpalr: generate distinct qualitative color palette
 # https://cran.r-project.org/web/packages/qualpalr/index.html
-install.packages("qualpalr")
+library(qualpalr)
 
 # cowplot: draw ggplot2 in new figures
 # https://cran.r-project.org/web/packages/cowplot/index.html
-install.packages("cowplot")
+library(cowplot)
 
 # vegan: used to elaborates shannon entropy
 # https://cran.r-project.org/web/packages/vegan/index.html
-install.packages("vegan")
+library(vegan)
 
 # lightweight package with necessary function to generate metagenomics data
 # https://github.com/Fuschi/ToyModel
-install_github("https://github.com/Fuschi/ToyModel")
+library(ToyModel)
+
+# Imputation of zeros, left-censored and missing values in compositional data
+# https://cran.r-project.org/web/packages/zCompositions/index.html
+library(zCompositions)
