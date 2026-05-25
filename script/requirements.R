@@ -9,14 +9,6 @@ install.packages("tidyverse")
 # https://cran.r-project.org/web/packages/gridExtra/index.html
 install.packages("gridExtra")
 
-# SpiecEasi: package with spiec.easi and sparCC methods
-# https://github.com/zdk123/SpiecEasi
-install_github("zdk123/SpiecEasi")
-
-# propr: package with proportionality rho method
-# https://github.com/tpq/propr
-install_github("https://github.com/tpq/propr")
-
 # ggpubr: nice plots based on ggplot2
 # https://cran.r-project.org/web/packages/ggpubr/index.html
 install.packages("ggpubr")
@@ -37,6 +29,18 @@ install.packages("cowplot")
 # https://cran.r-project.org/web/packages/vegan/index.html
 install.packages("vegan")
 
+# here: builds file paths relative to the project root
+# https://cran.r-project.org/web/packages/here/index.html
+install.packages("here")
+
 # lightweight package with necessary function to generate metagenomics data
 # https://github.com/Fuschi/ToyModel
 install_github("https://github.com/Fuschi/ToyModel")
+
+# SpiecEasi: package with spiec.easi and sparCC methods
+# https://github.com/zdk123/SpiecEasi
+install_github("zdk123/SpiecEasi")
+
+# propr: package with proportionality rho method
+# https://github.com/tpq/propr
+install_github("https://github.com/tpq/propr")

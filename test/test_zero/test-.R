@@ -3,6 +3,10 @@
 # its aim is to simplify the writing of tests by having all the libraries here 
 # commented and ready to use
 
+# testthat: unit testing framework for R
+# https://cran.r-project.org/web/packages/testthat/index.html
+library(testthat)
+
 # tidyverse: useful to manage data (dplyr) and make nice plots (ggplot2)
 # https://cran.r-project.org/web/packages/tidyverse/index.html
 library(tidyverse)
@@ -46,3 +50,7 @@ library(ToyModel)
 # Imputation of zeros, left-censored and missing values in compositional data
 # https://cran.r-project.org/web/packages/zCompositions/index.html
 library(zCompositions)
+
+# here: builds file paths relative to the project root
+# https://cran.r-project.org/web/packages/here/index.html
+library(here)
