@@ -32,11 +32,11 @@ taxa.filt <- taxa[colnames(otu.filt), ]
 
 # Compute CLR-based correlation matrices under four zero-replacement strategies:
 # CZM: Count Zero Multiplicative
-cor(CLR(as.matrix(zCompositions::cmultRepl(otu.filt, method = "CZM", label = 0)))) -> cor.czm
+cor.czm <- cor(CLR(as.matrix(zCompositions::cmultRepl(otu.filt, method = "CZM", label = 0)))) 
 # GBM: Geometric Bayesian Multiplicative
-cor(CLR(as.matrix(zCompositions::cmultRepl(otu.filt, method = "GBM", label = 0)))) -> cor.gbm
+cor.gbm <- cor(CLR(as.matrix(zCompositions::cmultRepl(otu.filt, method = "GBM", label = 0))))  
 # BL: Beta-binomial Log-ratio
-cor(CLR(as.matrix(zCompositions::cmultRepl(otu.filt, method = "BL",  label = 0)))) -> cor.bl
+cor.bl <- cor(CLR(as.matrix(zCompositions::cmultRepl(otu.filt, method = "BL",  label = 0)))) 
 # Simple scalar replacement: zeros set to 0.65 (65% of detection limit)
 otu.filt.65 <- otu.filt
 otu.filt.65[otu.filt.65 == 0] <- .65
@@ -57,27 +57,30 @@ cor_df <- tibble(
 )
 
 # Reshape to long format for grouped summaries
-cor_long <- cor_df |>
+cor_long <- cor_df %>%
   pivot_longer(cols = c(CZM, GBM, BL, PC65),
                names_to  = "Method",
                values_to = "Correlation")
 
 # For each OTU pair, compute the max absolute spread across methods
 # and flag pairs where the spread exceeds 0.1
-tbl <- cor_long |>
-  group_by(var1, var2) |>
+tbl <- cor_long %>%
+  group_by(var1, var2) %>%
   summarise(max_abs_diff = max(Correlation) - min(Correlation),
-            mean_corr    = mean(Correlation), .groups = "drop") |>
+            mean_corr    = mean(Correlation), .groups = "drop") %>%
   mutate(higher = ifelse(max_abs_diff > .1, TRUE, FALSE))
 
 # -------- PLOT --------
 
 # Save histogram of max absolute differences as PNG
 png(width = 1600, height = 1200, res = 300,
-    filename = "../Plots/correlation_differences_between_zeroRepl.png")
-tbl |>
-  ggplot(aes(x = max_abs_diff)) +
-  geom_histogram(bins = 50, fill = "lightblue", color = "darkblue") +
-  theme_bw() +
-  xlab("Maximum Absolute Difference in Correlation\nbetween Zero-Replacement Strategies\n(CZM, GBM, BL, 65% detection threshold)")
+    filename = here("Plots", "correlation_differences_between_zeroRepl.png"))
+
+# create histogram plot
+p <- tbl %>%
+    ggplot(aes(x = max_abs_diff)) +
+    geom_histogram(bins = 50, fill = "lightgreen", color = "darkgreen") +
+    theme_bw() +
+    xlab("Maximum Absolute Difference in Correlation\nbetween Zero-Replacement Strategies\n(CZM, GBM, BL, 65% detection threshold)")
+print(p)
 dev.off()
