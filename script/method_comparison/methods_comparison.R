@@ -1,5 +1,3 @@
-# -------- LIBRARIES --------
-
 # Collection of packages for data wrangling and visualization
 # https://cran.r-project.org/web/packages/tidyverse/index.html
 library(tidyverse)
@@ -36,7 +34,7 @@ library(here)
 # -------- CREATE OUTPUT DIRECTORIES --------
 
 dir.create(here("script", "tmp_files"), recursive = TRUE, showWarnings = FALSE)
-dir.create(here("outputs"),              recursive = TRUE, showWarnings = FALSE)
+dir.create(here("outputs"),             recursive = TRUE, showWarnings = FALSE)
 
 
 # -------- CUSTOM FUNCTIONS --------
@@ -53,22 +51,26 @@ source(here("script", "method_comparison", "layout_signed.R"))
 
 # -------- READ AND FILTER DATA --------
 
+# Load OTU abundance matrix (samples x OTUs)
 otu  <- readRDS(here("data", "otu_HMP2.rds"))
+# Load sample metadata
 meta <- readRDS(here("data", "meta_HMP2.rds"))
+# Load OTU taxonomic annotations
 taxa <- readRDS(here("data", "taxonomy.rds"))
 
 # Select samples from subject 69-001 in healthy status
 otu.69001.H <- otu[meta$SubjectID == "69-001" & meta$CL4_2 == "Healthy", ]
 
 # Filter rare OTUs:
-#   - prevalence >= 33% of samples
-#   - median of non-zero values >= 5 reads
+# prevalence >= 33% of samples
 otu.filt  <- otu.69001.H[, colSums(otu.69001.H > 0) / nrow(otu.69001.H) >= .33]
+# median of non-zero values >= 5 reads
 otu.filt  <- otu.filt[, apply(otu.filt, 2, function(x) median(x[x > 0]) >= 5)]
 taxa.filt <- taxa[colnames(otu.filt), ]
 
 
 # -------- CORRELATION METHODS --------
+
 
 # -------- SPIEC-EASI GLASSO --------
 
@@ -79,11 +81,28 @@ res.gl <- spiec.easi(data = otu.filt, method = 'glasso',
                      pulsar.params = list(ncores = 1, thresh = 0.05))
 
 # Adjacency matrix: binarized partial correlations (+1/-1)
+# getOptCov() is valid for GLASSO, which estimates a covariance matrix
 adj.gl <- cov2cor(as.matrix(getOptCov(res.gl)))
 adj.gl <- adj.gl * as.matrix(getRefit(res.gl))
 colnames(res.gl$est$data) -> colnames(adj.gl) -> rownames(adj.gl)
 adj.gl[adj.gl >  0] <-  1
 adj.gl[adj.gl <  0] <- -1
+
+
+# -------- SPIEC-EASI MB --------
+
+# Sparse network estimation via Meinshausen-Bühlmann neighborhood selection
+res.mb <- spiec.easi(data = otu.filt, method = 'mb',
+                     lambda.max = .75, lambda.min.ratio = .5,
+                     pulsar.params = list(ncores = 1, thresh = 0.05))
+
+# MB estimates directional regression coefficients (getOptBeta), not a covariance matrix.
+# Symmetrize by averaging i->j and j->i coefficients to obtain an undirected adjacency matrix
+beta.mb          <- as.matrix(getOptBeta(res.mb))
+adj.mb           <- (beta.mb + t(beta.mb)) / 2
+colnames(adj.mb) <- rownames(adj.mb) <- colnames(otu.filt)
+adj.mb[adj.mb >  0] <-  1
+adj.mb[adj.mb <  0] <- -1
 
 
 # -------- SparCC --------
@@ -107,11 +126,15 @@ res.rho <- propr::propr(counts = otu.filt, metric = "rho")@matrix
 res.clr <- cor(CLR(otu.filt), method = "pearson")
 diag(res.clr) <- 0
 
-p.adjust <- psych::corr.p(r = res.clr, n = nrow(otu.filt),
+# Compute p-values for the correlation matrix with Bonferroni correction
+p.adjust <- psych::corr.p(r = res.clr,
+                          n = nrow(otu.filt),
                           adjust = "bonferroni", ci = FALSE)$p
+# Mirror upper triangle into lower triangle to make the matrix symmetric
 p.adjust[lower.tri(p.adjust)] <- t(p.adjust)[lower.tri(p.adjust)]
 diag(p.adjust) <- 1
-adj.clr <- res.clr * (p.adjust <= .05)  # Keep only significant correlations
+# Keep only significant correlations
+adj.clr <- res.clr * (p.adjust <= .05)
 
 
 # -------- PREPARE DATA FOR PLOTS --------
@@ -131,12 +154,13 @@ df.gl <- tibble("method" = rep("clr", length(TRIU(res.clr))),
 # -------- Panel A: Scatter Pearson+CLR vs SparCC --------
 p1 <- ggpubr::ggscatter(
   data.frame("PearsonCLR" = TRIU(res.clr), "SparCC" = TRIU(res.cc)),
-  x = "PearsonCLR", y = "SparCC",
+  x   = "PearsonCLR", y = "SparCC",
   add = "reg.line", conf.int = TRUE,
   add.params = list(color = "red", fill = "lightgray")) +
   ggpubr::stat_cor(aes(label = after_stat(r.label)),
                    label.x = .45, label.y = -.25, size = 6) +
-  theme_bw() + xlab("Pearson+CLR") +
+  theme_bw() +
+  xlab("Pearson+CLR") +
   theme(plot.title = element_text(hjust = 0.5))
 
 
@@ -144,11 +168,12 @@ p1 <- ggpubr::ggscatter(
 
 p2 <- ggpubr::ggscatter(
   data.frame("PearsonCLR" = TRIU(res.clr), "Rho" = TRIU(res.rho)),
-  x = "PearsonCLR", y = "Rho",
+  x   = "PearsonCLR", y = "Rho",
   add = "reg.line", conf.int = TRUE,
   add.params = list(color = "red", fill = "lightgray")) +
   ggpubr::stat_cor(aes(label = after_stat(r.label)),
-                   label.x = .45, label.y = -.25, size = 6) +
+                   label.x = .45,
+                   label.y = -.25, size = 6) +
   theme_bw() + xlab("Pearson+CLR") +
   theme(plot.title = element_text(hjust = 0.5))
 
@@ -177,29 +202,20 @@ p4.zoom <- ggplot(df.gl, aes(x = value, fill = method, color = method)) +
 
 # Composition: main histogram + inset in the upper left
 p4 <- p4.all +
-  annotation_custom(ggplotGrob(p4.zoom), xmin = -1.1, xmax = -.3, ymin = 1400, ymax = 1900)
+  annotation_custom(ggplotGrob(p4.zoom),
+                    xmin = -1.1,
+                    xmax = -.3,
+                    ymin = 1400,
+                    ymax = 1900)
 
 
 # -------- BUILD GRAPHS --------
 
 # igraph: library for network analysis and visualization
 # https://cran.r-project.org/web/packages/igraph/index.html
+g.mb  <- igraph::graph_from_adjacency_matrix(adj.mb,  mode = "undirected", weighted = TRUE)
 g.gl  <- igraph::graph_from_adjacency_matrix(adj.gl,  mode = "undirected", weighted = TRUE)
 g.clr <- igraph::graph_from_adjacency_matrix(adj.clr, mode = "undirected", weighted = TRUE)
-
-# -- Panel F: Venn diagram of shared edges between GLASSO and CLR --
-# ggVennDiagram: Venn diagrams with ggplot2
-# https://cran.r-project.org/web/packages/ggVennDiagram/index.html
-p.venn <- ggVennDiagram::ggVennDiagram(
-  x = list(
-    "GLASSO" = paste(igraph::as_edgelist(g.gl)[, 1],  "-",
-                     igraph::as_edgelist(g.gl)[, 2],  sep = ""),
-    "CLR"    = paste(igraph::as_edgelist(g.clr)[, 1], "-",
-                     igraph::as_edgelist(g.clr)[, 2], sep = "")
-  ), label_alpha = 0) +
-  ggplot2::scale_fill_gradient("Shared \n Links", low = "white", high = "red") +
-  ggplot2::scale_color_manual(values = c("gray20", "gray20", "gray20")) +
-  theme(legend.position = "right")
 
 
 # -------- NETWORK VISUALIZATION --------
@@ -240,6 +256,21 @@ p.graph.glasso <- as.grob(~plot(g.gl, vertex.label = NA,
                                 layout       = LAYOUT_SIGNED(g.clr)))
 
 
+# -------- Panel F: Venn diagram of shared edges between GLASSO and CLR --------
+# ggVennDiagram: Venn diagrams with ggplot2
+# https://cran.r-project.org/web/packages/ggVennDiagram/index.html
+p.venn <- ggVennDiagram::ggVennDiagram(
+  x = list(
+    "GLASSO" = paste(igraph::as_edgelist(g.gl)[, 1],  "-",
+                     igraph::as_edgelist(g.gl)[, 2],  sep = ""),
+    "CLR"    = paste(igraph::as_edgelist(g.clr)[, 1], "-",
+                     igraph::as_edgelist(g.clr)[, 2], sep = "")
+  ), label_alpha = 0) +
+  ggplot2::scale_fill_gradient("Shared \n Links", low = "white", high = "red") +
+  ggplot2::scale_color_manual(values = c("gray20", "gray20", "gray20")) +
+  theme(legend.position = "right")
+
+
 # -------- SAVE FINAL OUTPUT --------
 
 # -- Main figure: 6 panels (A-F), 3 columns x 2 rows --
@@ -251,6 +282,48 @@ ggarrange(
   labels = c("A", "B", "C", "D", "E", "F"),
   ncol = 3, nrow = 2
 )
+dev.off()
+
+
+# -------- SAVE NETWORK PLOTS TO DISK --------
+# These PNG files are required by cowplot::draw_image() in the next section
+
+# MB network
+png(filename = here("script", "tmp_files", "graph_mb.png"), width = 1200, height = 1200, res = 200)
+set.seed(42)
+plot(g.mb, vertex.label = NA,
+     vertex.color = colpal[taxa.filt[, "family"]],
+     vertex.size  = vertex.size,
+     edge.color   = ifelse(igraph::E(g.mb)$weight > 0, rgb(0, 0, 1), rgb(1, 0, 0)),
+     edge.width   = .5,
+     layout       = LAYOUT_SIGNED(g.mb))
+dev.off()
+
+# GLASSO network
+png(filename = here("script", "tmp_files", "graph_gl.png"), width = 1200, height = 1200, res = 200)
+set.seed(42)
+plot(g.gl, vertex.label = NA,
+     vertex.color = colpal[taxa.filt[, "family"]],
+     vertex.size  = vertex.size,
+     edge.color   = ifelse(igraph::E(g.gl)$weight > 0, rgb(0, 0, 1), rgb(1, 0, 0)),
+     edge.width   = .5,
+     layout       = LAYOUT_SIGNED(g.gl))
+dev.off()
+
+# CLR network
+png(filename = here("script", "tmp_files", "graph_clr.png"), width = 1200, height = 1200, res = 200)
+set.seed(42)
+plot(g.clr, vertex.label = NA,
+     vertex.color = colpal[taxa.filt[, "family"]],
+     vertex.size  = vertex.size,
+     edge.color   = ifelse(igraph::E(g.clr)$weight > 0, rgb(0, 0, 1), rgb(1, 0, 0)),
+     edge.width   = .5,
+     layout       = LAYOUT_SIGNED(g.clr))
+dev.off()
+
+# Venn diagram
+png(filename = here("script", "tmp_files", "ggvenn.png"), width = 1200, height = 1200, res = 200)
+print(p.venn)
 dev.off()
 
 
@@ -278,10 +351,10 @@ rownames(netw.info) <- c("MB", "GLASSO", "CLR")
 
 png(filename = here("script", "tmp_files", "table.png"), width = 1200, height = 1200, res = 300)
 ggplot() +
-  theme(axis.line = element_blank(), axis.text.x = element_blank(),
-        axis.text.y = element_blank(), axis.ticks = element_blank(),
+  theme(axis.line    = element_blank(), axis.text.x  = element_blank(),
+        axis.text.y  = element_blank(), axis.ticks   = element_blank(),
         axis.title.x = element_blank(), axis.title.y = element_blank(),
-        legend.position = "none", panel.background = element_blank(),
+        legend.position = "none", panel.background   = element_blank(),
         panel.border = element_blank(), panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(), plot.background = element_blank()) +
   annotation_custom(gridExtra::tableGrob(netw.info),
