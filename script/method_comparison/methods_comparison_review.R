@@ -31,7 +31,7 @@ library(gridExtra)
 library(here)
 
 
-# -------- CUSTOM FUNCTIONS --------
+# -------- load other scripts needed for the test (custom functions) --------
 
 # loads Centered Log-Ratio transform function
 source(here("script", "method_comparison", "CLR.R"))
