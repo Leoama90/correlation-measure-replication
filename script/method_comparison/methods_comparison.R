@@ -121,11 +121,11 @@ res.rho <- propr::propr(counts = otu.filt, metric = "rho")@matrix
 # -------- Pearson + CLR --------
 
 # Pearson correlation after CLR transformation + Bonferroni p-value correction
-# psych::corr.p used for significance testing
-# https://cran.r-project.org/web/packages/psych/index.html
 res.clr <- cor(CLR(otu.filt), method = "pearson")
 diag(res.clr) <- 0
 
+# https://cran.r-project.org/web/packages/psych/index.html
+# psych::corr.p used for significance testing
 # Compute p-values for the correlation matrix with Bonferroni correction
 p.adjust <- psych::corr.p(r = res.clr,
                           n = nrow(otu.filt),
