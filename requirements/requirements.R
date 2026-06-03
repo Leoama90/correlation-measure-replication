@@ -60,6 +60,10 @@ install.packages("Matrix")
 # https://cran.r-project.org/web/packages/mvtnorm/index.html
 install.packages("mvtnorm")
 
+# progress: displays text progress bars for long-running loops
+# https://cran.r-project.org/web/packages/progress/index.html
+install.packages("progress")
+
 # qualpalr: generate distinct qualitative color palette
 # https://cran.r-project.org/web/packages/qualpalr/index.html
 install.packages("qualpalr")
