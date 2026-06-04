@@ -3,6 +3,9 @@
 # its aim is to simplify the writing of tests by having all the libraries here 
 # commented and ready to use
 
+# to write a test, open this script then use "save as" in the appropriate folder
+# then you can just start to write
+
 # testthat: unit testing framework for R
 # https://cran.r-project.org/web/packages/testthat/index.html
 library(testthat)
@@ -54,4 +57,10 @@ library(ToyModel)
 # Imputation of zeros, left-censored and missing values in compositional data
 # https://cran.r-project.org/web/packages/zCompositions/index.html
 library(zCompositions)
+
+# three dots must be changed for the error message
+test_that("...",{
+# put the test function between curly brackets 
+  
+})
 
