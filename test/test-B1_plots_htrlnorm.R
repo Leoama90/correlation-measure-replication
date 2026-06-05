@@ -13,7 +13,7 @@ library(here)
 # load script to test
 source(here("script", "sparsity_effects", "B1_plots_htrlnorm.R"))
 
-# -------- test sul dataframe df --------
+# -------- test on the dataframe df --------
 
 # check that the "df" data frame does not have the phi_2 column
 test_that("Data frame still has the phi_2 column", {
@@ -51,7 +51,7 @@ test_that("ERR_CLR values are all non-negative", {
   expect_true(all(df$ERR_CLR >= 0))
 })
 
-# -------- test sul plot p --------
+# -------- test on the plot p --------
 
 # check that the plot object p exists and is a ggplot
 test_that("p is a ggplot object", {
@@ -64,7 +64,7 @@ test_that("Plot contains a geom_tile layer", {
   expect_true("GeomTile" %in% geom_classes)
 })
 
-# -------- test sul file di output --------
+# -------- test the output file --------
 
 # check that the output file error.rds was created
 test_that("error.rds file was saved", {

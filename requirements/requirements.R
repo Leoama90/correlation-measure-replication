@@ -52,6 +52,10 @@ install.packages("igraph")
 # https://cran.r-project.org/package=MASS
 install.packages("MASS")
 
+# magick: advanced image processing and manipulation (read, write, transform images)
+# https://cran.r-project.org/web/packages/magick/index.html
+install.packages("magick")
+
 # Matrix: tools for working with dense and sparse matrices, including nearPD()
 # https://cran.r-project.org/web/packages/Matrix/index.html
 install.packages("Matrix")
