@@ -176,4 +176,4 @@ for (iter in 1:nIteration) {
   
 }
 
-saveRDS(result, "Sparsity_Effects_zinbin_rare_ecdf.rds")
+saveRDS(result, here("script", "sparsity_effects", "Sparsity_Effects_zinbin_rare_ecdf.rds"))

@@ -49,4 +49,4 @@ p <- df %>%
   theme(legend.position = "top")
 
 # Save the ggplot object to an RDS file for later reuse
-saveRDS(p, "error.rds")
+saveRDS(p, "error_zinb.rds")

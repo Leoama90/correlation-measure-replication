@@ -205,4 +205,4 @@ for(iter in 1:nIteration){
   
 }
 # save the final results to disk
-saveRDS(result, "Sparsity_Effects_htrlnorm.rds")
+saveRDS(result, here("script", "sparsity_effects", "Sparsity_Effects_htrlnorm.rds"))

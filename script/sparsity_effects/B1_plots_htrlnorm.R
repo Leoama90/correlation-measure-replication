@@ -49,4 +49,4 @@ p <- df %>%
   xlab("Correlation") + ylab("Zero %") 
 
 # Save the plot object to an RDS file for later use
-saveRDS(p, "error.rds")
+saveRDS(p, here("script", "sparsity_effects", "error_htlrlnorm.rds"))
