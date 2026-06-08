@@ -2,6 +2,10 @@
 # https://cran.r-project.org/web/packages/ggpubr/index.html
 library(ggpubr)
 
+# here: builds file paths relative to the project root
+# https://cran.r-project.org/web/packages/here/index.html
+library(here)
+
 # tidyverse: useful to manage data (dplyr) and make nice plots (ggplot2)
 # https://cran.r-project.org/web/packages/tidyverse/index.html
 library(tidyverse)
@@ -49,4 +53,4 @@ p <- df %>%
   theme(legend.position = "top")
 
 # Save the ggplot object to an RDS file for later reuse
-saveRDS(p, "error_zinb.rds")
+saveRDS(p, here("script", "sparsity_effects", "error_zinb.rds"))

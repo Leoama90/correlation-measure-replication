@@ -22,9 +22,6 @@ library(tidyverse)
 # https://github.com/Fuschi/ToyModel
 library(ToyModel)
 
-# set working directory to the project subfolder
-setwd(here("script", "sparsity_effects"))
-
 # load OTU abundance matrix (samples x OTUs)
 otu  <- readRDS(here("data", "otu_HMP2.rds"))
 # load sample metadata

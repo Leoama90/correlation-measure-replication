@@ -18,9 +18,6 @@ library(tidyverse)
 font_import()
 loadfonts(device = "postscript")
 
-# set working directory to the project subfolder
-setwd(here("script", "sparsity_effects"))
-
 # generate a 40x40 adjacency matrix filled with zeros (no edges)
 adj <- matrix(0, nrow = 40, ncol = 40)
 

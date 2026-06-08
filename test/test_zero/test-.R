@@ -1,3 +1,78 @@
+# This is the begin of all the tests. Here there are all the libraries used in the
+# whole project. 
+# To start writing a test, just copy and paste this script and then rename it.
+
+# cowplot: draw ggplot2 in new figures
+# https://cran.r-project.org/web/packages/cowplot/index.html
+library(cowplot)
+
+# doParallel: parallel backend for foreach
+# https://cran.r-project.org/package=doParallel
+library(doParallel)
+
+# doSNOW: parallel backend for foreach, supports progress bars via snow clusters
+# https://cran.r-project.org/web/packages/doSNOW/index.html
+library(doSNOW)
+
+# extrafont: used to use fonts other than the standard PostScript fonts
+# https://cran.r-project.org/web/packages/extrafont/index.html
+library(extrafont)
+
+# foreach: parallel foreach loops
+# https://cran.r-project.org/package=foreach
+library(foreach)
+
+# ggplotify: converts base R plots and grobs into ggplot2 objects (as.grob)
+# https://cran.r-project.org/web/packages/ggplotify/index.html
+library(ggplotify)
+
+# ggpubr: nice plots based on ggplot2
+# https://cran.r-project.org/web/packages/ggpubr/index.html
+library(ggpubr)
+
+# ggVennDiagram: Venn diagram based on ggplot2
+# https://cran.r-project.org/web/packages/ggVennDiagram/index.html
+library(ggVennDiagram)
+
+# grid: low-level graphics, viewport and grob management
+# https://cran.r-project.org/web/packages/grid/index.html
+library(grid)
+# gridExtra: arrange multiple grid-based plots on a page
+# https://cran.r-project.org/web/packages/gridExtra/index.html
+library(gridExtra)
+
+# here: builds file paths relative to the project root
+# https://cran.r-project.org/web/packages/here/index.html
+library(here)
+
+# igraph: used to create and analyze network graphs
+# https://cran.r-project.org/web/packages/igraph/index.html
+library(igraph)
+
+# MASS: statistical modeling and analysis
+# https://cran.r-project.org/package=MASS
+library(MASS)
+
+# magick: advanced image processing and manipulation (read, write, transform images)
+# https://cran.r-project.org/web/packages/magick/index.html
+library(magick)
+
+# Matrix: tools for working with dense and sparse matrices, including nearPD()
+# https://cran.r-project.org/web/packages/Matrix/index.html
+library(Matrix)
+
+# mvtnorm: generates multivariate normal and t distributions
+# https://cran.r-project.org/web/packages/mvtnorm/index.html
+library(mvtnorm)
+
+# progress: displays text progress bars for long-running loops
+# https://cran.r-project.org/web/packages/progress/index.html
+library(progress)
+
+# qualpalr: generate distinct qualitative color palette
+# https://cran.r-project.org/web/packages/qualpalr/index.html
+library(qualpalr)
+
 # testthat: unit testing framework for R
 # https://cran.r-project.org/web/packages/testthat/index.html
 library(testthat)
@@ -6,177 +81,26 @@ library(testthat)
 # https://cran.r-project.org/web/packages/tidyverse/index.html
 library(tidyverse)
 
-# here: builds file paths relative to the project root
-# https://cran.r-project.org/web/packages/here/index.html
-library(here)
+# vegan: used to elaborates shannon entropy
+# https://cran.r-project.org/web/packages/vegan/index.html
+library(vegan)
 
-# ggpubr: nice plots based on ggplot2
-# https://cran.r-project.org/web/packages/ggpubr/index.html
-library(ggpubr)
+# VGAM: vector generalized linear models
+# https://cran.r-project.org/package=VGAM
+library(VGAM)
 
-# tests/test_example_couple.R
+# zCompositions: imputation of zeros, left-censored and missing values in compositional data
+# https://cran.r-project.org/web/packages/zCompositions/index.html
+library(zCompositions)
 
-library(testthat)
-library(tidyverse)
-library(here)
+# propr: package with proportionality rho method
+# https://github.com/tpq/propr
+library(https://github.com/tpq/propr)
 
-source(here("script", "method_comparison", "CLR.R"))
+# SpiecEasi: package with spiec.easi and sparCC methods
+# https://github.com/zdk123/SpiecEasi
+library(zdk123/SpiecEasi)
 
-set.seed(42)
-n_samples <- 20
-n_otus    <- 10
-
-make_otu <- function() {
-  m <- matrix(
-    sample(0:100, n_samples * n_otus, replace = TRUE),
-    nrow = n_samples,
-    dimnames = list(
-      paste0("Sample_", seq_len(n_samples)),
-      paste0("OTU_",    seq_len(n_otus))
-    )
-  )
-  m[sample(length(m), size = floor(length(m) * 0.4))] <- 0
-  m
-}
-
-otu_raw <- make_otu()
-
-# -------- CLR transformation --------
-test_that("CLR output has same dimensions as input", {
-  otu_pos <- otu_raw + 0.5
-  otu_clr <- CLR(otu_pos)
-  
-  expect_equal(dim(otu_clr), dim(otu_pos))
-})
-
-test_that("CLR rows sum to (approximately) zero", {
-  otu_pos <- otu_raw + 0.5
-  otu_clr <- CLR(otu_pos)
-  
-  row_sums <- rowSums(otu_clr)
-  expect_true(all(abs(row_sums) < 1e-10),
-              info = "Each sample's CLR values must sum to 0")
-})
-
-# -------- Pearson correlation matrix --------
-test_that("PCLR is a square symmetric matrix with ones on the diagonal", {
-  otu_clr <- CLR(otu_raw + 0.5)
-  PCLR    <- cor(otu_clr)
-  
-  expect_equal(nrow(PCLR), ncol(PCLR))
-  expect_equal(nrow(PCLR), ncol(otu_clr))
-  expect_true(isSymmetric(PCLR))
-  expect_true(all(abs(diag(PCLR) - 1) < 1e-10),
-              info = "Diagonal of correlation matrix must be 1")
-})
-
-# -------- Prevalence vector --------
-test_that("prevalence values are in [0, 1] and correctly named", {
-  otu_prev <- setNames(colSums(otu_raw > 0) / nrow(otu_raw), colnames(otu_raw))
-  
-  expect_true(all(otu_prev >= 0 & otu_prev <= 1))
-  expect_equal(names(otu_prev), colnames(otu_raw))
-})
-
-
-# -------- Long-format pairwise table --------
-test_that("info table contains only upper-triangle pairs (no duplicates, no self-pairs)", {
-  otu_clr  <- CLR(otu_raw + 0.5)
-  PCLR     <- cor(otu_clr)
-  otu_prev <- setNames(colSums(otu_raw > 0) / nrow(otu_raw), colnames(otu_raw))
-  
-  info <- data.frame(PCLR) %>%
-    rownames_to_column("OTU_I") %>%
-    pivot_longer(!OTU_I, names_to = "OTU_J", values_to = "cor") %>%
-    filter(OTU_I > OTU_J) %>%
-    mutate(prev_I = otu_prev[OTU_I],
-           prev_J = otu_prev[OTU_J])
-  
-  expect_true(all(info$OTU_I != info$OTU_J),
-              info = "Self-correlations must be excluded")
-  
-  pair_keys <- paste(info$OTU_I, info$OTU_J)
-  expect_equal(length(pair_keys), length(unique(pair_keys)),
-               label = "Each OTU pair must appear exactly once")
-  
-  n <- ncol(otu_raw)
-  expect_equal(nrow(info), n * (n - 1) / 2)
-})
-
-test_that("zero_I and zero_J are percentages complementary to prevalence", {
-  otu_prev <- setNames(colSums(otu_raw > 0) / nrow(otu_raw), colnames(otu_raw))
-  otu_clr  <- CLR(otu_raw + 0.5)
-  PCLR     <- cor(otu_clr)
-  
-  info <- data.frame(PCLR) %>%
-    rownames_to_column("OTU_I") %>%
-    pivot_longer(!OTU_I, names_to = "OTU_J", values_to = "cor") %>%
-    filter(OTU_I > OTU_J) %>%
-    mutate(prev_I = otu_prev[OTU_I], prev_J = otu_prev[OTU_J]) %>%
-    mutate(zero_I = 100 * round(1 - prev_I, 2),
-           zero_J = 100 * round(1 - prev_J, 2))
-  
-  expect_true(all(info$zero_I >= 0 & info$zero_I <= 100))
-  expect_true(all(info$zero_J >= 0 & info$zero_J <= 100))
-  expect_true(all(abs(info$zero_I - 100 * round(1 - info$prev_I, 2)) < 1e-9))
-})
-
-# -------- info_filt: filter on prevalence and correlation --------
-test_that("info_filt respects prevalence <= 0.5 and |cor| >= 0.4 thresholds", {
-  otu_prev <- setNames(colSums(otu_raw > 0) / nrow(otu_raw), colnames(otu_raw))
-  otu_clr  <- CLR(otu_raw + 0.5)
-  PCLR     <- cor(otu_clr)
-  
-  info <- data.frame(PCLR) %>%
-    rownames_to_column("OTU_I") %>%
-    pivot_longer(!OTU_I, names_to = "OTU_J", values_to = "cor") %>%
-    filter(OTU_I > OTU_J) %>%
-    mutate(prev_I = otu_prev[OTU_I], prev_J = otu_prev[OTU_J])
-  
-  info_filt <- info %>%
-    filter(prev_I <= .5, prev_J <= .5, abs(cor) >= .4)
-  
-  expect_true(all(info_filt$prev_I   <= .5))
-  expect_true(all(info_filt$prev_J   <= .5))
-  expect_true(all(abs(info_filt$cor) >= .4))
-})
-
-# -------- Detection classification --------
-test_that("detection labels cover all four cases and are mutually exclusive", {
-  otu_test <- matrix(
-    c(0, 0,
-      0, 5,
-      3, 0,
-      4, 6),
-    nrow = 4, byrow = TRUE,
-    dimnames = list(NULL, c("OTU_A", "OTU_B"))
-  )
-  
-  detection <- as_tibble(otu_test) %>%
-    mutate(detection = case_when(
-      OTU_A == 0 & OTU_B == 0 ~ "Both are 0",
-      OTU_A == 0              ~ "OTU_A is 0",
-      OTU_B == 0              ~ "OTU_B is 0",
-      OTU_A  > 0 & OTU_B  > 0 ~ "Both are > 0"
-    ))
-  
-  expect_equal(detection$detection[1], "Both are 0")
-  expect_equal(detection$detection[2], "OTU_A is 0")
-  expect_equal(detection$detection[3], "OTU_B is 0")
-  expect_equal(detection$detection[4], "Both are > 0")
-  expect_false(any(is.na(detection$detection)),
-               info = "Every sample must receive a detection label")
-})
-
-test_that("detection vector has the same number of rows as the OTU matrix", {
-  detection <- as_tibble(otu_raw) %>%
-    mutate(detection = case_when(
-      OTU_1 == 0 & OTU_2 == 0 ~ "Both are 0",
-      OTU_1 == 0              ~ "OTU_1 is 0",
-      OTU_2 == 0              ~ "OTU_2 is 0",
-      TRUE                    ~ "Both are > 0"
-    )) %>%
-    select(detection)
-  
-  expect_equal(nrow(detection), nrow(otu_raw))
-})
+# ToyModel: lightweight package with necessary function to generate metagenomics data
+# https://github.com/Fuschi/ToyModel
+library(https://github.com/Fuschi/ToyModel)
