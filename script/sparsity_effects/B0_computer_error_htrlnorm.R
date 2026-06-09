@@ -42,7 +42,7 @@ rm(otu, otu.69001.H, meta)
 # fit ZINB parameters from real data for each filtered OTU and
 # save the 10th and 90th percentile of the parameter distributions
 HMP2.quantile.params <- apply(otu.filt, 2, function(x){
-  HurdleTruncatedLogNormal::mle.htrlnorm(x)$estimate
+  ToyModel::mle.htrlnorm(x)$estimate
 }) %>% apply(1, function(x) quantile(x, probs = c(.1, .9)))
 
 # fit a linear model between mean and max abundance (log scale) across OTUs
@@ -115,7 +115,7 @@ for(iter in 1:nIteration){
   
   # simulate a background dataset of 200 uncorrelated OTUs (identity correlation matrix)
   random_HMP2 <- ToyModel::toy_model(n = 10^4, cor = diag(200), M = 1,
-                                     qdist = HurdleTruncatedLogNormal::qhtrlnorm,
+                                     qdist = ToyModel::qhtrlnorm,
                                      param = params_random_HMP2)
   # store the underlying normal correlation matrix of the background dataset
   # random_cor0_HMP2 <- random_HMP2$cor_normal
@@ -160,7 +160,7 @@ for(iter in 1:nIteration){
                   # simulate a pair of OTUs with the given sparsity and correlation
                   couple <-
                     ToyModel::toy_model(n = 10^4, cor = params_set[i, "cor"], M = 1,
-                                        qdist = HurdleTruncatedLogNormal::qhtrlnorm,
+                                        qdist = ToyModel::qhtrlnorm,
                                         param = data.frame(
                                         "meanlog" = c(params_set[i, "meanlog_1"], params_set[i, "meanlog_2"]),
                                         "sdlog"   = c(params_set[i, "sdlog_1"],   params_set[i, "sdlog_2"]),
