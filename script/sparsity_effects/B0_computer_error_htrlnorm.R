@@ -83,6 +83,7 @@ predict_max <- function(new_xs){
 
 # set total number of outer iterations
 nIteration <- 100
+
 # initialize progress bar
 pb <- progress_bar$new(
   format = "[:bar] :elapsed | eta: :eta",

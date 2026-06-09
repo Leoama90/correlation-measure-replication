@@ -35,16 +35,16 @@ p <- df %>%
                        values = c(seq(0,.5,by = .05),1),
                        limits = c(0,1),
                        labels = c("0","0.25","0.5","0.75","1")) +
-  # Remove tick marks from the colorbar
+  # Remove tick marks from the colourbar
   guides(fill = guide_colorbar(ticks.colour = NA)) +
   # Set legend text size
   theme(legend.text = element_text(size = 10)) +
   # Set y-axis breaks every 0.1 with no padding
-  scale_y_continuous(breaks = seq(0,.9,.1), expand = c(0,0))  +
+  scale_y_continuous(breaks = seq(0,.9,.1),   expand = c(0,0)) +
   # Set x-axis breaks every 0.2 with no padding
   scale_x_continuous(breaks = seq(-.8,.8,.2), expand = c(0,0)) +
   # Rotate x-axis labels 90° for readability
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
   # Label the axes
   xlab("Correlation") + ylab("Zero %") 
 

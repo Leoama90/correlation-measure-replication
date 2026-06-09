@@ -18,10 +18,10 @@ df <- readRDS(here("script", "sparsity_effects", "Sparsity_Effects_zinbin_rare_e
   mutate("ERR_CLR" = abs(cor_normal - cor_NorTA_PCLR))
 
 # Safety check: stop execution if any CLR error exceeds 1 (would indicate a data issue)
-if(any(df$ERR_CLR > 1)) stop("Find Error greater than 1")
+if(any(df$ERR_CLR > 1)) stop("Found Error greater than 1")
 
 # Build a 12-color diverging palette (Spectral, reversed) with black appended,
-# then wrap it in colorRampPalette for smooth interpolation
+# then wrap it in colourRampPalette for smooth interpolation
 myPalette <- 
   c(RColorBrewer::brewer.pal(n = 11, "Spectral")) %>% rev() %>% c(., "#000000") %>%
   grDevices::colorRampPalette()
@@ -37,7 +37,7 @@ p <- df %>%
                        values = c(seq(0,.5, by = .05), 1),
                        limits = c(0, 1),
                        labels = c("0", "0.25", "0.5", "0.75", "1")) +
-  # Remove colorbar tick marks for a cleaner legend appearance
+  # Remove colourbar tick marks for a cleaner legend appearance
   guides(fill = guide_colorbar(ticks.colour = NA)) +
   theme(legend.text = element_text(size     = 10)) +
   # Set y-axis (phi) breaks every 0.1, no padding
@@ -48,7 +48,7 @@ p <- df %>%
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
   # Label axes: r for correlation input, phi (Greek letter) for zero-inflation
   xlab("r") + ylab(expression(phi))  +
-  theme(axis.title = element_text(size = 12)) +
+  theme(axis.title  = element_text(size  = 12)) +
   # Place the colorbar legend at the top of the plot
   theme(legend.position = "top")
 
