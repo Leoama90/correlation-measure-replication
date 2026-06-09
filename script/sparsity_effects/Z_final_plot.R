@@ -20,9 +20,9 @@ library(tidyverse)
 
 
 # Load a saved ggplot object for error visualization and move legend to top
-p_err_zinb    <- readRDS("error_zinb.rds") + theme(legend.position = "top")
+p_err_zinb    <- readRDS(here("script", "sparsity_effects", "error_zinb.rds")) + theme(legend.position = "top")
 # Load a saved ggplot object showing an example couple (pair of elements)
-p_couple      <- readRDS("example_couple.rds")
+p_couple      <- readRDS(here("script", "sparsity_effects", "example_couple.rds"))
 
 # Combine the two plots side by side, sharing a single legend placed at the top
 pall <- ggarrange(p_err_zinb, p_couple, common.legend = T, legend = "top", labels = c("A", ""))

@@ -59,7 +59,7 @@ idx.min   <- c("OTU_269", "OTU_313")
 
 # Classify each sample by detection pattern for the 'min' pair (OTU_269 vs OTU_313)
 detection <- otu.filt %>% as_tibble() %>%
-  select(all_of(idx.min)) %>%
+  select(tidyselect::all_of(idx.min)) %>%
   # Label each sample: which OTUs are zero vs. both detected
   mutate(detection = case_when(
     OTU_269 == 0 & OTU_313 == 0~"Both are 0",
@@ -67,7 +67,7 @@ detection <- otu.filt %>% as_tibble() %>%
     OTU_313 == 0~"OTU_313 is 0",
     OTU_269 > 0 & OTU_313 > 0~"Both are > 0",
   )) %>%
-  select(detection)
+  dplyr::select(detection)
 
 # Define a named color palette for the four detection categories
 palette_named <- c(
@@ -82,7 +82,7 @@ palette_named <- alpha(palette_named, .8)
 
 # Scatter plot of raw counts for the min-correlation pair, colored by detection pattern
 p.min <- otu.filt %>% as_tibble() %>%
-  select(all_of(idx.min)) %>%
+  select(tidyselect::all_of(idx.min)) %>%
   cbind(detection) %>%
   ggscatter(x = "OTU_269", 
             y = "OTU_313", 
@@ -101,7 +101,7 @@ p.min <- otu.filt %>% as_tibble() %>%
 
 # Same scatter plot but using CLR-transformed values instead of raw counts
 p.min.clr <- otu.filt.CLR %>% as_tibble %>%
-  dplyr::select(all_of(idx.min)) %>%
+  dplyr::select(tidyselect::all_of(idx.min)) %>%
   cbind(detection) %>%
   ggscatter(x = "OTU_269", 
             y = "OTU_313", 
@@ -119,14 +119,14 @@ p.min.clr <- otu.filt.CLR %>% as_tibble %>%
 
 # Classify each sample by detection pattern for the 'max' pair (OTU_269 vs OTU_97)
 detection <- otu.filt %>% as_tibble() %>%
-  select(all_of(idx.max)) %>%
+  select(tidyselect::all_of(idx.max)) %>%
   mutate(detection = case_when(
     OTU_269 == 0 & OTU_97 == 0~"Both are 0",
     OTU_269 == 0~"OTU_269 is 0",
     OTU_97  == 0~"OTU_97 is 0",
     OTU_269 > 0 & OTU_97 > 0~"Both are > 0", 
   )) %>%
-  select(detection)
+  dplyr::select(detection)
 
 # New named palette for the max pair (same structure, different OTU label)
 palette_named <- c(
@@ -139,7 +139,7 @@ palette_named <- alpha(palette_named, .8)
 
 # Scatter plot of raw counts for the max-correlation pair
 p.max <- otu.filt %>% as_tibble() %>%
-  select(all_of(idx.max)) %>%
+  select(tidyselect::all_of(idx.max)) %>%
   cbind(detection) %>%
   ggscatter(x = "OTU_269", 
             y = "OTU_97", 
@@ -157,7 +157,7 @@ p.max <- otu.filt %>% as_tibble() %>%
 
 # Same scatter plot but using CLR-transformed values for the max pair
 p.max.clr <- otu.filt.CLR %>% as_tibble %>%
-  dplyr::select(all_of(idx.max)) %>%
+  dplyr::select(tidyselect::all_of(idx.max)) %>%
   cbind(detection) %>%
   ggscatter(x = "OTU_269", 
             y = "OTU_97", 
