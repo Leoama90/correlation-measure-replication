@@ -31,13 +31,13 @@ library(gridExtra)
 library(here)
 
 
-# -------- CREATE OUTPUT DIRECTORIES --------
+# -------- create output directories --------
 
 dir.create(here("script", "tmp_files"), recursive = TRUE, showWarnings = FALSE)
 dir.create(here("outputs"),             recursive = TRUE, showWarnings = FALSE)
 
 
-# -------- CUSTOM FUNCTIONS --------
+# -------- load custom functions --------
 
 # Centered Log-Ratio transformation
 source(here("script", "method_comparison", "CLR.R"))
@@ -49,14 +49,14 @@ source(here("script", "method_comparison", "TRIU.R"))
 source(here("script", "method_comparison", "layout_signed.R"))
 
 
-# -------- READ AND FILTER DATA --------
+# -------- read and filter data --------
 
 # Load OTU abundance matrix (samples x OTUs)
-otu  <- readRDS(here("data", "otu_HMP2.rds"))
+otu  <- readRDS(here("data", "otu_HMP2.rds" ))
 # Load sample metadata
 meta <- readRDS(here("data", "meta_HMP2.rds"))
 # Load OTU taxonomic annotations
-taxa <- readRDS(here("data", "taxonomy.rds"))
+taxa <- readRDS(here("data", "taxonomy.rds" ))
 
 # Select samples from subject 69-001 in healthy status
 otu.69001.H <- otu[meta$SubjectID == "69-001" & meta$CL4_2 == "Healthy", ]
@@ -69,7 +69,7 @@ otu.filt  <- otu.filt[, apply(otu.filt, 2, function(x) median(x[x > 0]) >= 5)]
 taxa.filt <- taxa[colnames(otu.filt), ]
 
 
-# -------- CORRELATION METHODS --------
+# -------- Correlation Methods --------
 
 
 # -------- SPIEC-EASI GLASSO --------
@@ -137,7 +137,7 @@ diag(p.adjust) <- 1
 adj.clr <- res.clr * (p.adjust <= .05)
 
 
-# -------- PREPARE DATA FOR PLOTS --------
+# -------- prepare data for plots --------
 
 # CLR correlations filtered by GLASSO mask (selected edges only)
 res.gl.clr <- TRIU(res.clr * abs(adj.gl)) %>% .[. != 0]
@@ -145,20 +145,26 @@ res.gl.clr <- TRIU(res.clr * abs(adj.gl)) %>% .[. != 0]
 # Dataframe for histogram: full CLR distribution vs. GLASSO subset
 df.gl <- tibble("method" = rep("clr", length(TRIU(res.clr))),
                 "value"  = TRIU(res.clr)) %>%
-  rbind(tibble("method" = rep("gl", length(res.gl.clr)),
-               "value"  = res.gl.clr))
+   rbind(tibble("method" = rep("gl", length(res.gl.clr)),
+                "value"  = res.gl.clr))
+
 
 
 # -------- PLOTS --------
 
+
 # -------- Panel A: Scatter Pearson+CLR vs SparCC --------
 p1 <- ggpubr::ggscatter(
   data.frame("PearsonCLR" = TRIU(res.clr), "SparCC" = TRIU(res.cc)),
-  x   = "PearsonCLR", y = "SparCC",
-  add = "reg.line", conf.int = TRUE,
+  x   = "PearsonCLR", 
+  y   = "SparCC",
+  add = "reg.line", 
+  conf.int   = TRUE,
   add.params = list(color = "red", fill = "lightgray")) +
   ggpubr::stat_cor(aes(label = after_stat(r.label)),
-                   label.x = .45, label.y = -.25, size = 6) +
+                   label.x =  .45, 
+                   label.y = -.25, 
+                   size    =    6) +
   theme_bw() +
   xlab("Pearson+CLR") +
   theme(plot.title = element_text(hjust = 0.5))
@@ -168,22 +174,25 @@ p1 <- ggpubr::ggscatter(
 
 p2 <- ggpubr::ggscatter(
   data.frame("PearsonCLR" = TRIU(res.clr), "Rho" = TRIU(res.rho)),
-  x   = "PearsonCLR", y = "Rho",
-  add = "reg.line", conf.int = TRUE,
+  x   = "PearsonCLR", 
+  y   = "Rho",
+  add = "reg.line", 
+  conf.int   = TRUE,
   add.params = list(color = "red", fill = "lightgray")) +
   ggpubr::stat_cor(aes(label = after_stat(r.label)),
-                   label.x = .45,
-                   label.y = -.25, size = 6) +
+                   label.x =  .45,
+                   label.y = -.25, 
+                   size    =    6) +
   theme_bw() + xlab("Pearson+CLR") +
   theme(plot.title = element_text(hjust = 0.5))
 
 
 # -------- Panel C: Histogram of CLR vs GLASSO correlation distributions --------
 
-# Dashed line at y=200 as visual reference threshold
+# Dashed line at y = 200 as visual reference threshold
 p4.all <- ggplot(df.gl, aes(x = value, fill = method, color = method)) +
   geom_histogram(position = "identity", alpha = .5, breaks = seq(-1, 1, by = .1)) +
-  geom_hline(yintercept = 200, linetype = "twodash", color = "black", linewidth = 1) +
+  geom_hline(yintercept  = 200, linetype = "twodash", color = "black", linewidth = 1) +
   xlim(c(-1, 1)) + theme_bw() +
   scale_color_manual(values = c("steelblue1", "forestgreen")) +
   scale_fill_manual(values  = c("steelblue1", "forestgreen")) +
@@ -197,7 +206,10 @@ p4.zoom <- ggplot(df.gl, aes(x = value, fill = method, color = method)) +
   scale_color_manual(values = c("steelblue1", "forestgreen")) +
   scale_fill_manual(values  = c("steelblue1", "forestgreen")) +
   theme_void() + theme(legend.position = "none") +
-  geom_rect(aes(xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = +Inf),
+  geom_rect(aes(xmin = -Inf, 
+                xmax =  Inf, 
+                ymin = -Inf, 
+                ymax = +Inf),
             col = "black", alpha = 0, linewidth = 1)
 
 # Composition: main histogram + inset in the upper left

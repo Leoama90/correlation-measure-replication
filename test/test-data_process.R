@@ -1,10 +1,12 @@
+# here: builds file paths relative to the project root
+# https://cran.r-project.org/web/packages/here/index.html
+library(here)
+
 # testthat: allows to write tests for the other scripts
 # https://cran.r-project.org/web/packages/testthat/index.html
 library(testthat)
 
-# here: builds file paths relative to the project root
-# https://cran.r-project.org/web/packages/here/index.html
-library(here)
+
 
 
 # -------- test file existence in the folder --------
@@ -49,8 +51,8 @@ test_that(".csv files found are NOT the expected ones", {
   # list.files() searches for .csv files recursively from the root
   # basename() strips folder path, keeping only the file names
   found_files <- basename(list.files(
-    path = here(),
-    pattern = "\\.csv$",
+    path      = here(),
+    pattern   = "\\.csv$",
     recursive = TRUE
   ))
   
