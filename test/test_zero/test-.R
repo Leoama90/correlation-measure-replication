@@ -95,12 +95,12 @@ library(zCompositions)
 
 # propr: package with proportionality rho method
 # https://github.com/tpq/propr
-library(https://github.com/tpq/propr)
+library(propr)
 
 # SpiecEasi: package with spiec.easi and sparCC methods
 # https://github.com/zdk123/SpiecEasi
-library(zdk123/SpiecEasi)
+library(SpiecEasi)
 
 # ToyModel: lightweight package with necessary function to generate metagenomics data
 # https://github.com/Fuschi/ToyModel
-library(https://github.com/Fuschi/ToyModel)
+library(ToyModel)

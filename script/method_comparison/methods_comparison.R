@@ -1,14 +1,6 @@
-# Collection of packages for data wrangling and visualization
-# https://cran.r-project.org/web/packages/tidyverse/index.html
-library(tidyverse)
-
-# Sparse microbial network estimation (SPIEC-EASI: MB and GLASSO)
-# https://github.com/zdk123/SpiecEasi  ← Bioconductor/GitHub
-library(SpiecEasi)
-
-# Proportionality analysis for compositional data (rho, phi)
-# https://cran.r-project.org/web/packages/propr/index.html
-library(propr)
+# Converts base R plots and grobs into ggplot2 objects (as.grob)
+# https://cran.r-project.org/web/packages/ggplotify/index.html
+library(ggplotify)
 
 # ggplot2 extensions for publication-ready graphics (scatter, stat_cor)
 # https://cran.r-project.org/web/packages/ggpubr/index.html
@@ -18,10 +10,6 @@ library(ggpubr)
 # https://cran.r-project.org/web/packages/grid/index.html
 library(grid)
 
-# Converts base R plots and grobs into ggplot2 objects (as.grob)
-# https://cran.r-project.org/web/packages/ggplotify/index.html
-library(ggplotify)
-
 # Arranges multiple plots in grids (grid.arrange, tableGrob)
 # https://cran.r-project.org/web/packages/gridExtra/index.html
 library(gridExtra)
@@ -30,6 +18,17 @@ library(gridExtra)
 # https://cran.r-project.org/web/packages/here/index.html
 library(here)
 
+# Proportionality analysis for compositional data (rho, phi)
+# https://cran.r-project.org/web/packages/propr/index.html
+library(propr)
+
+# Sparse microbial network estimation (SPIEC-EASI: MB and GLASSO)
+# https://github.com/zdk123/SpiecEasi  ← Bioconductor/GitHub
+library(SpiecEasi)
+
+# Collection of packages for data wrangling and visualization
+# https://cran.r-project.org/web/packages/tidyverse/index.html
+library(tidyverse)
 
 # -------- create output directories --------
 

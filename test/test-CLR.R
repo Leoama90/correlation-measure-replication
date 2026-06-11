@@ -1,10 +1,10 @@
-# testthat: unit testing framework for R
-# https://cran.r-project.org/web/packages/testthat/index.html
-library(testthat)
-
 # here: builds file paths relative to the project root
 # https://cran.r-project.org/web/packages/here/index.html
 library(here)
+
+# testthat: unit testing framework for R
+# https://cran.r-project.org/web/packages/testthat/index.html
+library(testthat)
 
 
 # -------- test CLR function for errors --------

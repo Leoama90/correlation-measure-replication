@@ -19,7 +19,7 @@ CLR <- function(X, mar=1){
   if(!(mar%in%c(1,2))) stop("mar has as possible values only 1 and 2.")
   
   # replace zeros with 0.65 to avoid log(0) = -Inf
-  X[X==0] <- .65
+  X[X==0] <- 0.65
   
   # compute the geometric mean (in log scale) along the specified margin
   ref <- apply(X, mar, function(x) mean(log(x)) )

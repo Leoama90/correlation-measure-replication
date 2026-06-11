@@ -40,15 +40,15 @@ test_that("all magnification values are present in results", {
 
 test_that("each (d, m) combination appears exactly once", {
   # duplicated rows would indicate a parallelization merge error
-  combos <- paste(results$d, results$m)
-  expect_false(any(duplicated(combos)))
+  duos <- paste(results$d, results$m)
+  expect_false(any(duplicated(duos)))
 })
 
 # -------- test metric validity --------
 
 test_that("ERR_L1 and ERR_CLR are non-negative", {
   # errors are absolute values, so they must never be negative
-  expect_true(all(results$ERR_L1 >= 0))
+  expect_true(all(results$ERR_L1  >= 0))
   expect_true(all(results$ERR_CLR >= 0))
 })
 
@@ -64,6 +64,7 @@ test_that("no NA values exist in the results", {
 })
 
 # -------- test output file --------
+
 test_that("output .rds file exists in the expected location", {
   expect_true(file.exists(here("compositional_effects", "compositional_effects_01.rds")))
 })

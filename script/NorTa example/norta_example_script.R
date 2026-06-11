@@ -11,7 +11,7 @@ library(ToyModel)
 library(VGAM)
 
 
-# -------- SIMULATION PARAMETERS --------
+# -------- simulation parameters --------
 
 # Sample size
 n <- 10^3
@@ -19,24 +19,24 @@ n <- 10^3
 # Correlation matrix: D variables with a strong negative correlation between var 2 and var 4
 D <- 5
 R <- diag(D)
-R[4,2] <- R[2,4] <- -.9
+R[4, 2] <- R[2, 4] <- -0.9
 
 
-# -------- NorTA PROCEDURE --------
+# -------- NorTA procedure --------
 
 # generate a multivariate Normal distribution with the desired correlation structure
-rnorm <- mvtnorm::rmvnorm(n=n, sigma=R)
+rnorm <- mvtnorm::rmvnorm(n = n, sigma = R)
 
 # choose margins to Uniform [0,1] via the Normal CDF 
-unif <- stats::pnorm(rnorm)
+unif  <- stats::pnorm(rnorm)
 
 # apply inverse CDF of a zero-inflated negative binomial to each margin (NorTA step)
-NorTA <- matrix(0, nrow=n, ncol=D)
-NorTA[,1] <- qzinegbin(p=unif[,1], munb=20, size=30, pstr0=.25)
-NorTA[,2] <- qzinegbin(p=unif[,2], munb=20, size=30, pstr0=.25)
-NorTA[,3] <- qzinegbin(p=unif[,3], munb=20, size=30, pstr0=.25)
-NorTA[,4] <- qzinegbin(p=unif[,4], munb=20, size=30, pstr0=.25)
-NorTA[,5] <- qzinegbin(p=unif[,5], munb=20, size=30, pstr0=.25)
+NorTA      <- matrix(0, nrow = n, ncol = D)
+NorTA[, 1] <- qzinegbin(p = unif[, 1], munb = 20, size = 30, pstr0 = 0.25)
+NorTA[, 2] <- qzinegbin(p = unif[, 2], munb = 20, size = 30, pstr0 = 0.25)
+NorTA[, 3] <- qzinegbin(p = unif[, 3], munb = 20, size = 30, pstr0 = 0.25)
+NorTA[, 4] <- qzinegbin(p = unif[, 4], munb = 20, size = 30, pstr0 = 0.25)
+NorTA[, 5] <- qzinegbin(p = unif[, 5], munb = 20, size = 30, pstr0 = 0.25)
 
 # verify the empirical correlation between var 2 and var 4 (expected ≈ −0.9)
-cor(NorTA[,2], NorTA[,4])
+cat("The empiric correlation between var 2 and var 4 is:", cor(NorTA[, 2], NorTA[, 4]), "\n")

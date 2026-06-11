@@ -1,13 +1,13 @@
-# testthat: unit testing framework for R
-# https://cran.r-project.org/web/packages/testthat/index.html
-library(testthat)
-
 # Matrix: needed for nearPD() and eigenvalue checks
 # https://cran.r-project.org/web/packages/Matrix/index.html
 library(Matrix)
 
+# testthat: unit testing framework for R
+# https://cran.r-project.org/web/packages/testthat/index.html
+library(testthat)
 
-# -------- Test Parameters --------
+
+# -------- test Parameters --------
 
 Dimension <- 10  # small dimension for fast testing
 n_taxa_connected <- 5
@@ -15,7 +15,7 @@ corr_val <- 0.7
 total_possible_edges <- Dimension * (Dimension - 1) / 2
 
 
-# -------- Block Correlation Matrix Construction --------
+# -------- block correlation matrix construction --------
 
 test_that("block correlation matrix is built correctly", {
   
@@ -35,7 +35,7 @@ test_that("block correlation matrix is built correctly", {
 })
 
 
-# -------- Edge Density Calculation --------
+# -------- edge density calculation --------
 
 test_that("edge density is computed correctly and lies in [0, 1]", {
   
@@ -60,7 +60,7 @@ test_that("edge density is computed correctly and lies in [0, 1]", {
 })
 
 
-# -------- Positive Semidefiniteness after nearPD --------
+# -------- positive semidefiniteness after nearPD --------
 
 test_that("nearPD produces a valid positive semidefinite correlation matrix", {
   
@@ -84,7 +84,7 @@ test_that("nearPD produces a valid positive semidefinite correlation matrix", {
 })
 
 
-# -------- Gaussian Random Matrix Construction --------
+# -------- gaussian random matrix construction --------
 
 test_that("gaussian random matrix is symmetric and positive semidefinite after correction", {
   

@@ -1,7 +1,3 @@
-# tidyverse: data science toolkit (dplyr, ggplot2, tidyr, etc.)
-# [https://tidyverse.org](https://tidyverse.org)
-library(tidyverse)
-
 # ggpubr: ggplot2 publication-ready plots
 # [https://cran.r-project.org/package=ggpubr](https://cran.r-project.org/package=ggpubr)
 library(ggpubr)
@@ -10,16 +6,23 @@ library(ggpubr)
 # [https://cran.r-project.org/package=here](https://cran.r-project.org/package=here)
 library(here)
 
-# -------- Create output directory if it doesn't exist --------
+# tidyverse: data science toolkit (dplyr, ggplot2, tidyr, etc.)
+# [https://tidyverse.org](https://tidyverse.org)
+library(tidyverse)
+
+
+# -------- create output directory if it doesn't exist --------
 
 dir.create(here("Plots"), showWarnings = FALSE, recursive = TRUE)
 
-# -------- Data loading --------
+
+# -------- data loading --------
 
 # Load preprocessed compositional effects data
-df <- readRDS(here("compositional_effects", "compositional_effects_02.rds"))
+df <- readRDS(here("script", "compositional_effects", "compositional_effects_02.rds"))
 
-# -------- Grid sampling: match Pielou values to target grid --------
+
+# -------- grid sampling: match Pielou values to target grid --------
 
 # Iterate over all combinations of d and target Pielou evenness values
 df_sort <- tibble()
@@ -43,7 +46,8 @@ for (di in seq(5, 200, by = 5)) {
 # Remove loop variables no longer needed
 rm(di, ei, sub_df, row_i)
 
-# -------- Pipeline to elaborate data to be readable --------
+
+# -------- pipeline to elaborate data to be readable --------
 
 df_sort <- df_sort %>%
   # Compute absolute deviation between rounded and actual Pielou values
@@ -51,24 +55,26 @@ df_sort <- df_sort %>%
   # Flag rows where the deviation is small enough to be considered valid
   mutate(pielou_error_logical = pielou_error < 0.005, .after = pielou_error) %>%
   # Log-transform L1 error and floor at -2 (i.e., MAE < 0.01 treated as equal)
-  mutate(log_err_l1 = log10(ERR_L1)) %>%
-  mutate(log_err_l1 = if_else(log_err_l1 < -2, -2, log_err_l1)) %>%
+  mutate(log_err_l1   = log10(ERR_L1)) %>%
+  mutate(log_err_l1   = if_else(log_err_l1  < -2, -2, log_err_l1)) %>%
   # Log-transform CLR error and apply the same floor
-  mutate(log_err_clr = log10(ERR_CLR)) %>%
-  mutate(log_err_clr = if_else(log_err_clr < -2, -2, log_err_clr))
+  mutate(log_err_clr  = log10(ERR_CLR)) %>%
+  mutate(log_err_clr  = if_else(log_err_clr < -2, -2, log_err_clr))
 
 # Subset rows that did not match closely to any target Pielou value (quality control)
 df_control <- df_sort %>%
   filter(pielou_error_logical == FALSE)
 
-# -------- Colour palette --------
+
+# -------- colour palette --------
 
 # Build an 11-colour diverging palette (Spectral reversed → cool-to-warm)
 my_palette <- RColorBrewer::brewer.pal(11, "Spectral") %>%
   rev() %>%
   grDevices::colorRampPalette()
 
-# -------- Sanity check: verify grid dimensions --------
+
+# -------- sanity check: verify grid dimensions --------
 
 # Pivot to wide format and check that dimensions match the expected grid size
 df_sort %>%
@@ -77,7 +83,8 @@ df_sort %>%
   column_to_rownames("pielou_round") %>%
   dim()
 
-# -------- Heatmap: L1 bias --------
+
+# -------- heatmap: L1 bias --------
 
 p_l1 <- ggplot(df_sort, aes(x = d, y = pielou_round, fill = log_err_l1)) +
   geom_tile() +
@@ -100,7 +107,8 @@ p_l1 <- ggplot(df_sort, aes(x = d, y = pielou_round, fill = log_err_l1)) +
   xlab("D") +
   ggtitle("L1 Bias")
 
-# -------- Heatmap: CLR bias --------
+
+# -------- heatmap: CLR bias --------
 
 p_clr <- ggplot(df_sort, aes(x = d, y = pielou_round, fill = log_err_clr)) +
   geom_tile() +
@@ -121,7 +129,8 @@ p_clr <- ggplot(df_sort, aes(x = d, y = pielou_round, fill = log_err_clr)) +
   xlab("D") +
   ggtitle("CLR Bias")
 
-# -------- Export: side-by-side heatmaps --------
+
+# -------- export: side-by-side heatmaps --------
 
 png(filename = here("Plots", "Normalization_Bias.png"), width = 6000, height = 3000, res = 600)
 print(ggarrange(                                         
@@ -133,7 +142,7 @@ print(ggarrange(
 ))
 dev.off()
 
-# -------- Line plot: CLR MAE vs dimensionality (mean only) --------
+# -------- line plot: CLR MAE vs dimensionality (mean only) --------
 
 p_clr_dim <- df_sort %>%
   # Compute mean CLR error for each value of d
@@ -151,7 +160,8 @@ png(filename = here("Plots", "CLR_Compositional.png"), width = 1200, height = 12
 print(p_clr_dim)                                         
 dev.off()
 
-# -------- Export: combined multi-panel figure --------
+
+# -------- export: combined multi-panel figure --------
 
 # Stack the two heatmaps vertically with a shared legend
 p_l1_clr <- ggarrange(p_l1, p_clr, common.legend = TRUE, ncol = 1)
@@ -173,7 +183,8 @@ png(filename = here("Plots", "Normalization_Bias_all.png"), width = 6000, height
 print(p_all)                                             
 dev.off()
 
-# -------- Line plot: CLR MAE with 10th-90th percentile error bars --------
+
+# -------- line plot: CLR MAE with 10th-90th percentile error bars --------
 
 # Summarise mean and decile bounds of CLR error for each d
 df_percentiles <- df_sort %>%
