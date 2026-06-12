@@ -24,11 +24,13 @@ R[4, 2] <- R[2, 4] <- -0.9
 
 # -------- NorTA procedure --------
 
+# set seed for reproducibility
+set.seed(42)
 # generate a multivariate Normal distribution with the desired correlation structure
-rnorm <- mvtnorm::rmvnorm(n = n, sigma = R)
+norm_dist <- mvtnorm::rmvnorm(n = n, sigma = R)
 
 # choose margins to Uniform [0,1] via the Normal CDF 
-unif  <- stats::pnorm(rnorm)
+unif  <- stats::pnorm(norm_dist)
 
 # apply inverse CDF of a zero-inflated negative binomial to each margin (NorTA step)
 NorTA      <- matrix(0, nrow = n, ncol = D)
