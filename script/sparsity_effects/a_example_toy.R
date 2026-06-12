@@ -1,3 +1,7 @@
+# extrafont: used to use fonts other than the standard PostScript fonts
+# https://cran.r-project.org/web/packages/extrafont/index.html
+library(extrafont)
+
 # here: builds file paths relative to the project root
 # https://cran.r-project.org/web/packages/here/index.html
 library(here)
@@ -5,10 +9,6 @@ library(here)
 # igraph: used to create and analyze network graphs
 # https://cran.r-project.org/web/packages/igraph/index.html
 library(igraph)
-
-# extrafont: used to use fonts other than the standard PostScript fonts
-# https://cran.r-project.org/web/packages/extrafont/index.html
-library(extrafont)
 
 # tidyverse: useful to manage data (dplyr) and make nice plots (ggplot2)
 # https://cran.r-project.org/web/packages/tidyverse/index.html

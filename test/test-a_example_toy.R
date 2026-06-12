@@ -1,25 +1,26 @@
-# doSNOW: parallel backend for foreach, supports progress bars via snow clusters
-# https://cran.r-project.org/web/packages/doSNOW/index.html
-library(doSNOW)
-
-# foreach: parallel foreach loops
-# https://cran.r-project.org/package=foreach
-library(foreach)
-
 # here: builds file paths relative to the project root
 # https://cran.r-project.org/web/packages/here/index.html
 library(here)
-
-# progress: displays text progress bars for long-running loops
-# https://cran.r-project.org/web/packages/progress/index.html
-library(progress)
 
 # tidyverse: useful to manage data (dplyr) and make nice plots (ggplot2)
 # https://cran.r-project.org/web/packages/tidyverse/index.html
 library(tidyverse)
 
+# testthat: unit testing framework for R
+# https://cran.r-project.org/web/packages/testthat/index.html
+library(testthat)
+
 # load the function to test
 source(here("script", "sparsity_effects", "a_example_toy.R"))
+
+
+# -------- testing adjancency matrix --------
+
+# check that the adjacency matrix has exactly 40 rows and 40 columns
+test_that("The adjacency matrix is not 40x40", {
+  expect_equal(nrow(adj), 40)
+  expect_equal(ncol(adj), 40)
+})
 
 # check that adj is a matrix
 test_that("This is not a matrix", {
@@ -30,6 +31,9 @@ test_that("This is not a matrix", {
 test_that("The adj matrix is not squared", {
   expect_true(ncol(adj) == nrow(adj))
 })
+
+
+# -------- test for the graph --------
 
 # check that the graph has exactly 40 nodes
 test_that("The graph does not have 40 nodes", {
@@ -49,14 +53,8 @@ test_that("The graph is not undirected", {
 # check that the single edge connects node 5 and node 25
 test_that("The edge is not between node 5 and node 25", {
   edge_list <- as_edgelist(g)
-  expect_true(any((edge_list[,1] == 5 & edge_list[,2] == 25) |
-                    (edge_list[,1] == 25 & edge_list[,2] == 5)))
-})
-
-# check that the adjacency matrix has exactly 40 rows and 40 columns
-test_that("The adjacency matrix is not 40x40", {
-  expect_equal(nrow(adj), 40)
-  expect_equal(ncol(adj), 40)
+  expect_true(any((edge_list[, 1] == 5  & edge_list[, 2] == 25 ) |
+                  (edge_list[, 1] == 25 & edge_list[, 2] == 5)))
 })
 
 # check that the sum of all elements is 2
@@ -90,6 +88,8 @@ test_that("Node sizes are not reproducible with the same seed", {
   expect_equal(V(g)$size, expected_sizes)
 })
 
+# -------- test for the edges --------
+
 # check that the edge color is set to darkgray
 test_that("Edge color is not darkgray", {
   expect_equal(E(g)$color, "darkgray")
@@ -101,9 +101,11 @@ test_that("Edge width is not 2", {
 })
 
 # check that the edge line type is set to 2 (dashed)
-test_that("Edge lty is not 2", {
-  expect_equal(E(g)$lty, 2)
+test_that("Edge lty   is not 2", {
+  expect_equal(E(g)$lty,   2)
 })
+
+# -------- test for the final output of the script --------
 
 # check that the output PNG file was created
 test_that("The output file was not created", {
