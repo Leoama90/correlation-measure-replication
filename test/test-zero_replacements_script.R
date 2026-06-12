@@ -32,7 +32,7 @@ test_that("the column number or row is not the expected one", {
 test_that("the names doesn't match!", {
   
   # get otu.filt column names
-  otu.filt_colname <- colnames(otu.filt)
+  otu.filt_colname  <- colnames(otu.filt)
   # get taxa.filt row names
   taxa.filt_rowname <- rownames(taxa.filt)
   # compare taxa.filt row names with otu.filt column names

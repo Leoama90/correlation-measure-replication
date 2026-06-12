@@ -91,12 +91,18 @@ p.min <- otu.filt %>% as_tibble() %>%
             size  = 2, 
             palette  = palette_named,
             add.params = list(color = "#800080", fill = "lightgray"),
-            conf.int = TRUE) +        # show confidence interval around regression
+            
+            conf.int = TRUE) +        
+  # show confidence interval around regression
   # Annotate with Pearson r value
   stat_cor(aes(label = after_stat(r.label)), color = rgb(.5,0,0), label.x.npc = 0) +
+  
   xlab(expression("Count OTU 269 ("*phi*"~73%)")) +
+  
   ylab(expression("Count OTU 313 ("*phi*"~55%)")) +
+  
   theme(axis.title   = element_text(size = 12)) +
+  
   theme(legend.title = element_blank())
 
 # Same scatter plot but using CLR-transformed values instead of raw counts
@@ -110,11 +116,17 @@ p.min.clr <- otu.filt.CLR %>% as_tibble %>%
             size  = 2, 
             palette  = palette_named,
             add.params = list(color = "#800080", fill = "lightgray"),
+            
             conf.int = TRUE) +
+  
   stat_cor(aes(label = after_stat(r.label)), color = rgb(.5,0,0), label.x.npc = 0) +
+  
   xlab(expression("CLR OTU 269 ("*phi*"~73%)")) +
+  
   ylab(expression("CLR OTU 313 ("*phi*"~55%)")) +
+  
   theme(axis.title   = element_text(size = 12)) +
+  
   theme(legend.title = element_blank())
 
 # Classify each sample by detection pattern for the 'max' pair (OTU_269 vs OTU_97)
@@ -150,9 +162,13 @@ p.max <- otu.filt %>% as_tibble() %>%
             add.params = list(color = "#800080", fill = "lightgray"),
             conf.int = TRUE) +
   stat_cor(aes(label = after_stat(r.label)), color = rgb(.5,0,0), label.x.npc = 0) +
+  
   xlab(expression("Count_OTU_269 ("*phi*"~73%)")) +
+  
   ylab(expression("Count_OTU_97  ("*phi*"~56%)")) +
+  
   theme(axis.title   = element_text(size = 12)) +
+  
   theme(legend.title = element_blank())
 
 # Same scatter plot but using CLR-transformed values for the max pair
@@ -166,11 +182,17 @@ p.max.clr <- otu.filt.CLR %>% as_tibble %>%
             size  = 1.5, 
             palette  = palette_named,
             add.params = list(color = "#800080", fill = "lightgray"),
+            
             conf.int = TRUE) +
+  
   stat_cor(aes(label = after_stat(r.label)), color = rgb(.5,0,0), label.x.npc = 0) +
+  
   xlab(expression("CLR_OTU_269 ("*phi*"~73%)")) +
+  
   ylab(expression("CLR_OTU_97  ("*phi*"~56%)")) +
+  
   theme(axis.title   = element_text(size = 12)) +
+  
   theme(legend.title = element_blank())
 
 # Arrange all four scatter plots into a 2x2 panel figure (panels B, C, D, E)

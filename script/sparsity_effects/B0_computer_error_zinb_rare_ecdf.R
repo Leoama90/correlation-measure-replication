@@ -34,47 +34,55 @@ library(VGAM)
 # -------- read data --------
 
 # load OTU abundance matrix (samples x OTUs)
-otu  <- readRDS(here("data", "otu_HMP2.rds"))
+otu  <- readRDS(here("data", "otu_HMP2.rds" ))
 # load sample metadata
 meta <- readRDS(here("data", "meta_HMP2.rds"))
 
-# Select samples belonging to 69-001 subject in health status
+# select samples belonging to subject 69-001 in healthy status
 otu.69001.H <- otu[meta$SubjectID == "69-001" & meta$CL4_2 == "Healthy", ]
 
-# Remove rarest OTUs using prevalence and median of non-zero values
+# remove rarest OTUs: keep only OTUs present in at least 33% of samples (prevalence filter)
 otu.filt <- otu.69001.H[, colSums(otu.69001.H > 0) / nrow(otu.69001.H) >= .33]
+# further filter: keep only OTUs whose median non-zero abundance is >= 5 (abundance filter)
 otu.filt <- otu.filt[, apply(otu.filt, 2, function(x) median(x[x > 0]) >= 5)]
+# rarefy: rescale all samples to the same total read count (minimum library size)
 otu.filt <- round(otu.filt / rowSums(otu.filt) * min(rowSums(otu.filt)))
+# remove objects no longer needed to free memory
 rm(otu, otu.69001.H, meta)
 
-# Fit ZINB params from real data for each filtered OTU and
-# save the first and ninth decile of the distribution
+# fit ZINB (zero-inflated negative binomial) parameters from real data for each filtered OTU;
+# returns a matrix with one row per OTU and columns: munb, size, pstr0
 HMP2.params <- apply(otu.filt, 2, function(x) {
   SpiecEasi::fitdistr(as.numeric(x), "zinegbin")$par
 }) %>%
   t() %>%
   as.data.frame()
 
+# compute the 10th and 90th percentile of each ZINB parameter across OTUs,
+# used to trim extreme parameter values before simulation
 HMP2.quantile.params <- HMP2.params %>%
   apply(2, function(x) quantile(x, probs = c(.1, .9)))
 
+# retain only OTUs whose fitted parameters fall within the [10%, 90%] range
+# for all three parameters (munb, size, pstr0), removing outlier OTUs
 HMP2.params.filt <- HMP2.params %>%
   filter(
-    munb  >= HMP2.quantile.params["10%", "munb"],
-    munb  <= HMP2.quantile.params["90%", "munb"],
-    size  >= HMP2.quantile.params["10%", "size"],
-    size  <= HMP2.quantile.params["90%", "size"],
+    munb  >= HMP2.quantile.params["10%", "munb" ],
+    munb  <= HMP2.quantile.params["90%", "munb" ],
+    size  >= HMP2.quantile.params["10%", "size" ],
+    size  <= HMP2.quantile.params["90%", "size" ],
     pstr0 >= HMP2.quantile.params["10%", "pstr0"],
     pstr0 <= HMP2.quantile.params["90%", "pstr0"]
   )
 
-# Create the progress bar
+# initialize a progress bar tracking total iterations across inner and outer loops
 nIteration <- 100
 pb <- progress_bar$new(
   format = "[:bar] :elapsed | eta: :eta",
-  total  = nIteration * 380,
+  total  = nIteration * 380,  
   width  = 60
 )
+# callback passed to doSNOW so each parallel worker advances the progress bar by one tick
 progress <- function(n) { pb$tick() }
 
 set.seed(42)
@@ -84,8 +92,9 @@ for (iter in 1:nIteration) {
   
   # -------- START OUTER LOOP --------
   
-  
-  # GENERATION OF THE UNDERLYING DATASET
+  # sample 200 random parameter combinations from the filtered HMP2 ZINB distributions
+  # using uniform random quantiles, then simulate a 10,000-sample background dataset
+  # with no correlation structure (identity correlation matrix)
   params_random_HMP2 <- data.frame(
     "munb"  = quantile(HMP2.params.filt$munb,  probs = runif(runif(200))),
     "size"  = quantile(HMP2.params.filt$size,  probs = runif(runif(200))),
@@ -93,21 +102,26 @@ for (iter in 1:nIteration) {
   )
   
   random_HMP2 <- ToyModel::toy_model(
-    n     = 10^4,
-    cor   = diag(200),
+    n     = 10^4,   
+    cor   = diag(200),  
     M     = 1,
     qdist = VGAM::qzinegbin,
     param = params_random_HMP2
   )
+  # store the underlying normal correlation matrix for later reference
   random_cor0_HMP2 <- random_HMP2$cor_normal
   
-  # CREATE PARAMETERS OF THE SUPERVISED COUPLE OF VARIABLES
+  
+  # -------- create parameters of the supervised couple of variables --------
+  
+  # build a grid of all combinations of input correlation and zero-inflation (pstr0),
+  # then randomly draw munb and size parameters from the filtered HMP2 empirical distribution
   params_set <- expand_grid(
-    "cor"    = seq(-.9, .9, by = .1),
-    "pstr0_1" = seq(0, .95, by = .05)
+    "cor"     = seq(-.9, .9, by = .1),   
+    "pstr0_1" = seq(0, .95, by = .05)    
   ) %>%
     mutate(
-      pstr0_2 = pstr0_1, .after = pstr0_1,
+      pstr0_2 = pstr0_1, .after = pstr0_1,        
       munb_1  = quantile(HMP2.params.filt$munb, probs = runif(n())),
       munb_2  = quantile(HMP2.params.filt$munb, probs = runif(n())),
       size_1  = quantile(HMP2.params.filt$size, probs = runif(n())),
@@ -115,7 +129,7 @@ for (iter in 1:nIteration) {
     ) %>%
     as.data.frame()
   
-  # Create the cluster for parallel execution
+  # create a SNOW cluster with 6 workers for parallel execution of the inner loop
   cl <- makeCluster(6)
   registerDoSNOW(cl)
   
@@ -123,44 +137,55 @@ for (iter in 1:nIteration) {
   # -------- START INNER LOOP --------
   
   
+  # iterate over all parameter combinations in parallel;
+  # for each combination, simulate a supervised OTU pair, embed it into the
+  # background dataset, and compute the CLR-transformed Pearson correlation
   df <- foreach(
     i             = 1:nrow(params_set),
-    .combine      = "rbind",
-    .packages     = c("ToyModel"),
+    # stack results into a single data frame
+    .combine      = "rbind",      
+    # packages required on each worker
+    .packages     = c("ToyModel"),  
     .options.snow = list(progress = progress)
   ) %dopar% {
     
+    # simulate a pair of OTUs with the specified correlation and ZINB parameters
     couple <- ToyModel::toy_model(
       n     = 10^4,
       cor   = params_set[i, "cor"],
       M     = 1,
       qdist = VGAM::qzinegbin,
       param = data.frame(
-        "munb"  = c(params_set[i,  "munb_1"], params_set[i, "munb_2"]),
-        "size"  = c(params_set[i,  "size_1"], params_set[i, "size_2"]),
+        "munb"  = c(params_set[i,  "munb_1"], params_set[i, "munb_2" ]),
+        "size"  = c(params_set[i,  "size_1"], params_set[i, "size_2" ]),
         "pstr0" = c(params_set[i, "pstr0_1"], params_set[i, "pstr0_2"])
       )
     )
     
+    # embed the simulated OTU pair into the background dataset at positions 25 and 125,
+    # replacing the original OTUs with the supervised couple
     random_HMP2_NorTA_i         <- random_HMP2$NorTA
     random_HMP2_NorTA_i[, 25]   <- couple$NorTA[, 1]
     random_HMP2_NorTA_i[, 125]  <- couple$NorTA[, 2]
     
+    # apply CLR (centred log-ratio) transformation and compute the full correlation matrix;
+    # the entry [25, 125] gives the PCLR correlation between the supervised OTU pair
     cor_PCLR <- random_HMP2_NorTA_i %>%
       ToyModel::clr() %>%
       cor()
     
+    # return one row per parameter combination with inputs and the estimated correlation
     data.frame(
       "iteration"      = iter,
-      "cor_input"      = params_set[i, "cor"],
-      "cor_normal"     = couple$cor_normal[1, 2],
-      "munb_1"         = params_set[i, "munb_1"],
-      "munb_2"         = params_set[i, "munb_2"],
-      "size_1"         = params_set[i, "size_1"],
-      "size_2"         = params_set[i, "size_2"],
+      "cor_input"      = params_set[i, "cor"    ],  
+      "cor_normal"     = couple$cor_normal[1, 2 ],  
+      "munb_1"         = params_set[i, "munb_1" ],
+      "munb_2"         = params_set[i, "munb_2" ],
+      "size_1"         = params_set[i, "size_1" ],
+      "size_2"         = params_set[i, "size_2" ],
       "pstr0_1"        = params_set[i, "pstr0_1"],
       "pstr0_2"        = params_set[i, "pstr0_2"],
-      "cor_NorTA_PCLR" = cor_PCLR[25, 125]
+      "cor_NorTA_PCLR" = cor_PCLR[25, 125]          
     )
   }
   
@@ -168,7 +193,9 @@ for (iter in 1:nIteration) {
   # -------- END INNER LOOP --------
   
   
+  # shut down the parallel cluster to release resources
   stopCluster(cl)
+  # accumulate results from this outer iteration
   result <- bind_rows(result, df)
   
   
@@ -176,4 +203,5 @@ for (iter in 1:nIteration) {
   
 }
 
+# save the full simulation results to disk for downstream analysis
 saveRDS(result, here("script", "sparsity_effects", "Sparsity_Effects_zinbin_rare_ecdf.rds"))

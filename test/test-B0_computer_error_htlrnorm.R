@@ -29,15 +29,15 @@ library(testthat)
 # -------- test data loading --------
 
 # load OTU abundance matrix (samples x OTUs) and sample metadata
-otu  <- readRDS(here("data", "otu_HMP2.rds"))
+otu  <- readRDS(here("data", "otu_HMP2.rds" ))
 meta <- readRDS(here("data", "meta_HMP2.rds"))
 
 # verify that otu is a numeric matrix and meta is a list,
 # as required by all downstream operations
 test_that("otu is a numeric matrix and meta is a list", {
-  expect_true(is.matrix(otu))
+  expect_true(is.matrix(otu ))
   expect_true(is.numeric(otu))
-  expect_true(is.list(meta))
+  expect_true(is.list(meta  ))
 })
 
 # -------- test the filtering functions --------
@@ -93,7 +93,7 @@ test_that("quantile params matrix has correct shape and row names", {
 
 # fit a linear model between mean and max abundance (log scale) across OTUs
 df_mean_max <- tibble(
-  y = apply(log(otu_filt + 1), 2, max),
+  y = apply(log(otu_filt + 1), 2, max ),
   x = apply(log(otu_filt + 1), 2, mean)
 )
 model <- lm(y ~ x, data = df_mean_max)
@@ -101,9 +101,9 @@ model <- lm(y ~ x, data = df_mean_max)
 # generate all combinations of sparsity (phi) and correlation values to test,
 # then assign random log-normal parameters and predicted maxima to each combination
 params_set <- expand_grid(
-  phi_1 = seq(0, 0.95, by = 0.05),
-  phi_2 = seq(0, 0.95, by = 0.05),
-  cor   = seq(-0.9, 0.9, by = 0.1)
+  phi_1 = seq(   0, 0.95, by = 0.05),
+  phi_2 = seq(   0, 0.95, by = 0.05),
+  cor   = seq(-0.9, 0.9,  by = 0.1 )
 ) %>%
   mutate(
     meanlog_1 = runif(n(), hmp2_quantile_params["10%", "meanlog"], hmp2_quantile_params["90%", "meanlog"]),
@@ -119,7 +119,7 @@ test_that("params_set has expected columns and all values within defined ranges"
   expected_cols <- c("phi_1", "phi_2", "cor", "meanlog_1", "meanlog_2", "sdlog_1", "sdlog_2")
   expect_true(all(expected_cols %in% names(params_set)))
   # correlation values must stay within [-0.9, 0.9]
-  expect_true(all(params_set$cor   >= -0.9 & params_set$cor   <= 0.9))
+  expect_true(all(params_set$cor   >= -0.9 & params_set$cor   <= 0.9 ))
   # phi values must stay within [0, 0.95]
   expect_true(all(params_set$phi_1 >=  0   & params_set$phi_1 <= 0.95))
   expect_true(all(params_set$phi_2 >=  0   & params_set$phi_2 <= 0.95))

@@ -29,7 +29,7 @@ make_otu <- function() {
     # Assign row and column names for samples and OTUs
     dimnames = list(
       paste0("Sample_", seq_len(n_samples)),
-      paste0("OTU_",    seq_len(n_otus))
+      paste0("OTU_",    seq_len(n_otus   ))
     )
   )
   # Set 40% of entries to zero to simulate sparsity
