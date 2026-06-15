@@ -19,7 +19,7 @@ n <- 10^3
 # Correlation matrix: D variables with a strong negative correlation between var 2 and var 4
 D <- 5
 R <- diag(D)
-R[4, 2] <- R[2, 4] <- -0.9
+R[4, 2] <- R[2, 4] <- - 0.9
 
 
 # -------- NorTA procedure --------
@@ -40,5 +40,5 @@ NorTA[, 3] <- qzinegbin(p = unif[, 3], munb = 20, size = 30, pstr0 = 0.25)
 NorTA[, 4] <- qzinegbin(p = unif[, 4], munb = 20, size = 30, pstr0 = 0.25)
 NorTA[, 5] <- qzinegbin(p = unif[, 5], munb = 20, size = 30, pstr0 = 0.25)
 
-# verify the empirical correlation between var 2 and var 4 (expected ≈ −0.9)
+# verify the empirical correlation between var 2 and var 4 (expected ≈ − 0.9)
 cat("The empiric correlation between var 2 and var 4 is:", cor(NorTA[, 2], NorTA[, 4]), "\n")

@@ -40,8 +40,8 @@ registerDoSNOW(cl)
 
 # define the parameters
 Dimension <- 500
-Connected_Taxa_Sequence <- seq(200, 0, -1)
-Correlation_Sequence    <- seq(.5,.9,.1)
+Connected_Taxa_Sequence <- seq(200, 0, - 1)
+Correlation_Sequence    <- seq(0.5, 0.9, 0.1)
 
 # total possible edges
 total_possible_edges    <- Dimension * (Dimension - 1) / 2
@@ -89,7 +89,7 @@ results_block <-  foreach(corr_val = Correlation_Sequence, .combine = "rbind") %
 close(pb)
 stopCluster(cl)
 
-saveRDS(results_block, "results_block.rds")
+saveRDS(results_block, here("script", "correlation_sparsity", "results_block.rds"))
 
 # -------- gaussian distributed correlation values --------
 
@@ -147,7 +147,7 @@ results_gauss <- foreach(i = 1:100,
 }
 
 # save results
-saveRDS(results_gauss, "results_gauss.rds")
+saveRDS(results_gauss, here("script", "correlation_sparsity", "results_gauss.rds"))
 
 
 # create the plot with improved aesthetics
@@ -176,7 +176,7 @@ p_gauss <- results_gauss %>%
   geom_hline(yintercept = median(results_gauss$ERR_CLR), 
              linetype   = "dotdash", 
              color      = "darkgoldenrod1", 
-             linewidth  = .75)
+             linewidth  = 0.75)
 #annotate("text", x = .2, y = Inf, label = "A", hjust = -0.1, vjust = 1.1, size = 6, color = "black")
 print(p_gauss)
 
@@ -211,13 +211,13 @@ p_block <- results_block %>%
              linewidth  = 1.5) +
   
   annotate("text", 
-           x     = 10, 
-           y     = median(results_gauss$ERR_CLR), 
-           label = sprintf("median mae from gaussian-weighted\ncorrelation matrices ≈ %.0e", median(results_gauss$ERR_CLR)), 
-           hjust = 1.1, 
-           vjust = -.1, 
-           size  = 4, 
-           color = "darkgoldenrod4") +
+           x     =   10, 
+           y     =   median(results_gauss$ERR_CLR), 
+           label =   sprintf("median mae from gaussian-weighted\ncorrelation matrices ≈ %.0e", median(results_gauss$ERR_CLR)), 
+           hjust =   1.1, 
+           vjust = - 0.1, 
+           size  =   4, 
+           color =   "darkgoldenrod4") +
   
   labs(y     = "MAE", 
        x     = "Edge Density (%)", 
@@ -227,7 +227,7 @@ print(p_block)
 # arrange together multiple ggplots (p_gauss and p_block in this case)
 pall <- ggpubr::ggarrange(
   
-  p_gauss, p_block, widths = c(.3, .7), labels = c("A", "B")
+  p_gauss, p_block, widths = c(0.3, 0.7), labels = c("A", "B")
   
 )
 
