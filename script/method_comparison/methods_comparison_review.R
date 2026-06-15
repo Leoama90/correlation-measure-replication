@@ -214,11 +214,11 @@ p0.phy <- ggscatter(data.frame("PearsonCLR" = TRIU(res.clr.phy),
   
   # overlay Pearson R label, anchored to the top-left corner of the panel
   stat_cor(aes(label = after_stat(r.label)),
-             label.x = -Inf, 
-             label.y =  Inf,
-             hjust   = -0.1, 
-             vjust   =  1.5, 
-             size    =    6) +
+             label.x = - Inf, 
+             label.y =   Inf,
+             hjust   = - 0.1, 
+             vjust   =   1.5, 
+             size    =   6.0 ) +
   
   theme_bw() +
   
@@ -236,11 +236,11 @@ p1.phy <- ggscatter(data.frame("PearsonCLR" = TRIU(res.clr.phy),
 
   # overlay Pearson R label, anchored to the top-left corner of the panel
   stat_cor(aes(label = after_stat(r.label)),
-                   label.x = -Inf, 
-                   label.y =  Inf,
-                   hjust   = -0.1, 
-                   vjust   =  1.5, 
-                   size    =    6) +
+                   label.x = - Inf, 
+                   label.y =   Inf,
+                   hjust   = - 0.1, 
+                   vjust   =   1.5, 
+                   size    =   6.0 ) +
   
   theme_bw() +
   
@@ -257,11 +257,11 @@ p2.phy <- ggscatter(data.frame("PearsonCLR" = TRIU(res.clr.phy),
   
   # overlay Pearson R label, anchored to the top-left corner of the panel
   stat_cor(aes(label = after_stat(r.label)),
-                   label.x = -Inf, 
-                   label.y =  Inf,
-                   hjust   = -0.1, 
-                   vjust   =  1.5, 
-                   size    =    6) +
+                   label.x = - Inf, 
+                   label.y =   Inf,
+                   hjust   = - 0.1, 
+                   vjust   =   1.5, 
+                   size    =   6.0 ) +
   
   theme_bw() +
   
@@ -275,7 +275,7 @@ p2.phy <- ggscatter(data.frame("PearsonCLR" = TRIU(res.clr.phy),
 # blank plot used as row label "OTU level"
 label_otu <- ggplot() +
   theme_void() +
-  annotate("text", x = 0.5, y = 0.5, label = "OTU level", angle = 90, size = 6)
+  annotate("text", x = 0.5, y = 0.5, label = "OTU level",    angle = 90, size = 6)
 
 # blank plot used as row label "Phylum level"
 label_phylum <- ggplot() +

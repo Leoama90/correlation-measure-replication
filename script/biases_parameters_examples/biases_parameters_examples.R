@@ -1,22 +1,22 @@
+# here: easy locate files using top-level file directories
+# https://cran.r-project.org/web/packages/here/vignettes/here.html
+library(here)
+
 # ToyModel: generates compositional toy datasets
 # https://github.com/nome-repo/ToyModel
 library(ToyModel)
+
 
 # vegan: community ecology analysis
 # https://cran.r-project.org/package=vegan
 library(vegan)
 
-# here: easy locate files using top-level file directories
-# https://cran.r-project.org/web/packages/here/vignettes/here.html
-library(here)
-
-
 # defines a function that computes the Pielou mean across all samples
 mean_Pielou <- function(x){
   # divides Shannon diversity by log of number of species, then averages across samples
-  P <- mean(apply(x,1,vegan::diversity) / log(ncol(x)))
+  P <- mean(apply(x, 1, diversity) / log(ncol(x)))
   # returns the result rounded to 2 decimal places
-  return(round(P,2))
+  return(round(P, 2))
 }
 
 # creates 5x5, 30x30 and 100x100 identity matrices to use as correlation structures
@@ -28,34 +28,34 @@ cor_D100 <- diag(100)
 set.seed(10)
 
 # generates a toy dataset with 5 dimensions and high evenness (Pielou ~ 100%)
-toy_D5_P100 <- ToyModel::toy_model(n      = 10^4, 
-                                   cor    = cor_D5, 
-                                   M      = 1, 
-                                   qdist  = qnorm,
-                                   param  = c("mean" = 0, "sd" = 1), force.positive = T, 
-                                   method = "pearson")
+toy_D5_P100 <- toy_model(n      = 10^4, 
+                         cor    = cor_D5, 
+                         M      = 1, 
+                         qdist  = qnorm,
+                         param  = c("mean" = 0, "sd" = 1), force.positive = T, 
+                         method = "pearson")
 
 # generates a toy dataset with 5 dimensions and medium evenness (Pielou ~ 50%)
-toy_D5_P50  <- ToyModel::toy_model(n      = 10^4, 
-                                   cor    = cor_D5, 
-                                   M      = 15.5, 
-                                   qdist  = qnorm,
-                                   param  = c("mean" = 0, "sd" = 1), force.positive = T, 
-                                   method ="pearson")
+toy_D5_P50  <- toy_model(n      = 10^4, 
+                         cor    = cor_D5, 
+                         M      = 15.5, 
+                         qdist  = qnorm,
+                         param  = c("mean" = 0, "sd" = 1), force.positive = T, 
+                         method = "pearson")
 
 # generates a toy dataset with 30 dimensions and medium evenness (Pielou ~ 50%)
-toy_D30_P50 <- ToyModel::toy_model(n      = 10^4, 
-                                   cor    = cor_D30, 
-                                   M      = 64, 
-                                   qdist  = qnorm,
-                                   param  = c("mean" = 0, "sd" = 1), force.positive = T, 
-                                   method = "pearson")
+toy_D30_P50 <- toy_model(n      = 10^4, 
+                         cor    = cor_D30, 
+                         M      = 64, 
+                         qdist  = qnorm,
+                         param  = c("mean" = 0, "sd" = 1), force.positive = T, 
+                         method = "pearson")
 
 # creates the outputs folder at the project root if it does not already exist
 dir.create(here("outputs"), showWarnings = FALSE)
 
 # opens a PNG graphics device and sets the output file path, size and resolution
-png(filename = here("outputs", "biases_example.png"), 
+png(filename = here("Plots", "biases_example.png"), 
     width    = 8000, 
     height   = 4400, 
     res      = 600)
@@ -64,9 +64,9 @@ png(filename = here("outputs", "biases_example.png"),
 layout(matrix(c(1:12), 
               nrow    = 4, 
               byrow   = T), 
-              heights = c(.1,.3,.3,.3))
+              heights = c(0.1, 0.3, 0.3, 0.3))
 # sets plot margins
-par(mar = c(0,4,1,4))
+par(mar = c(0, 4, 1, 4))
 
 # adds a blank plot with the column header "Generated"
 plot.new()
@@ -97,7 +97,7 @@ plot(toy_D5_P100, "Normal", vertex.label = NA)
 text(x   = -1, 
      y   = -1, 
      "A", 
-     cex = 2)
+     cex =  2)
 plot(toy_D5_P100, "L1",     vertex.label = NA)
 plot(toy_D5_P100, "CLR",    vertex.label = NA)
 
@@ -106,7 +106,7 @@ plot(toy_D5_P50, "Normal",  vertex.label = NA)
 text(x   = -1, 
      y   = -1, 
      "B", 
-     cex = 2)
+     cex =  2)
 plot(toy_D5_P50, "L1",      vertex.label = NA)
 plot(toy_D5_P50, "CLR",     vertex.label = NA)
 
