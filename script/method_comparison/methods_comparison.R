@@ -18,6 +18,10 @@ library(gridExtra)
 # https://cran.r-project.org/web/packages/here/index.html
 library(here)
 
+# igraph: used to create and analyze network graphs
+# https://cran.r-project.org/web/packages/igraph/index.html
+library(igraph)
+
 # Sparse microbial network estimation (SPIEC-EASI: MB and GLASSO)
 # https://github.com/zdk123/SpiecEasi  ← Bioconductor/GitHub
 library(SpiecEasi)
@@ -56,13 +60,13 @@ taxa <- readRDS(here("data", "taxonomy.rds" ))
 # Select samples from subject 69-001 in healthy status
 otu.69001.H <- otu[meta$SubjectID == "69-001" & meta$CL4_2 == "Healthy", ]
 
-# Filter rare OTUs:
+# filter rare OTUs:
 # prevalence >= 33% of samples
 otu.filt  <- otu.69001.H[, colSums(otu.69001.H > 0) / nrow(otu.69001.H) >= 0.33]
 # median of non-zero values >= 5 reads
 otu.filt  <- otu.filt[, apply(otu.filt, 2, function(x) median(x[x > 0]) >= 5)]
-taxa.filt <- taxa[colnames(otu.filt), ]
-
+# filter taxa to match OTU columns in otu.filt
+taxa.filt <- taxa[colnames(otu.filt), ]  
 
 # -------- Correlation Methods --------
 
@@ -145,14 +149,16 @@ res.gl.clr <- TRIU(res.clr * abs(adj.gl)) %>% .[. != 0]
 # Dataframe for histogram: full CLR distribution vs. GLASSO subset
 df.gl <- tibble("method" = rep("clr", length(TRIU(res.clr))),
                 "value"  = TRIU(res.clr)) %>%
-   rbind(tibble("method" = rep("gl", length(res.gl.clr)),
+   rbind(tibble("method" = rep("gl",  length(res.gl.clr)),
                 "value"  = res.gl.clr))
 
 
 # -------- Plots --------
 
+# creates a folder where to store all the outputs from this script
+dir.create(here("outputs", "methods_comparison_outputs", "tmp_files"), recursive = TRUE, showWarnings = FALSE)
 
-# -------- panel A: Scatter Pearson+CLR vs SparCC --------
+# -------- panel A: Scatter Pearson + CLR vs SparCC --------
 
 p1 <- ggscatter(
   data.frame("PearsonCLR" = TRIU(res.clr), "SparCC" = TRIU(res.cc)),
@@ -174,7 +180,7 @@ p1 <- ggscatter(
   theme(plot.title = element_text(hjust = 0.5))
 
 
-# -------- panel B: Scatter Pearson+CLR vs Rho --------
+# -------- panel B: Scatter Pearson + CLR vs Rho --------
 
 p2 <- ggscatter(
   data.frame("PearsonCLR" = TRIU(res.clr), "Rho" = TRIU(res.rho)),
@@ -189,7 +195,9 @@ p2 <- ggscatter(
                    label.y = -0.25, 
                    size    =  6.00) +
   
-  theme_bw() + xlab("Pearson+CLR") +
+  theme_bw() + 
+  
+  xlab("Pearson+CLR") +
   
   theme(plot.title = element_text(hjust = 0.5))
 
@@ -217,7 +225,7 @@ p4.all <- ggplot(df.gl, aes(x = value, fill = method, color = method)) +
 # zoomed inset of the histogram tail (y <= 200)
 p4.zoom <- ggplot(df.gl, aes(x = value, fill = method, color = method)) +
   
-  geom_histogram(position   = "identity", alpha = 0.5, breaks = seq(-1, 1, by = .1)) +
+  geom_histogram(position   = "identity", alpha = 0.5, breaks = seq(-1, 1, by = 0.1)) +
   
   coord_cartesian(ylim      = c(0, 200)) +
   
@@ -225,12 +233,14 @@ p4.zoom <- ggplot(df.gl, aes(x = value, fill = method, color = method)) +
   
   scale_fill_manual(values  = c("steelblue1", "forestgreen")) +
   
-  theme_void() + theme(legend.position = "none") +
+  theme_void() + 
   
-  geom_rect(aes(xmin  = -Inf, 
-                xmax  =  Inf, 
-                ymin  = -Inf, 
-                ymax  = +Inf),
+  theme(legend.position = "none") +
+  
+  geom_rect(aes(xmin  = - Inf, 
+                xmax  =   Inf, 
+                ymin  = - Inf, 
+                ymax  = + Inf),
                 col   = "black", 
                 alpha = 0, 
             linewidth = 1)
@@ -254,9 +264,9 @@ p4 <- p4.all +
 
 # igraph: library for network analysis and visualization
 # https://cran.r-project.org/web/packages/igraph/index.html
-g.mb  <- igraph::graph_from_adjacency_matrix(adj.mb,  mode = "undirected", weighted = TRUE)
-g.gl  <- igraph::graph_from_adjacency_matrix(adj.gl,  mode = "undirected", weighted = TRUE)
-g.clr <- igraph::graph_from_adjacency_matrix(adj.clr, mode = "undirected", weighted = TRUE)
+g.mb  <- graph_from_adjacency_matrix(adj.mb,  mode = "undirected", weighted = TRUE)
+g.gl  <- graph_from_adjacency_matrix(adj.gl,  mode = "undirected", weighted = TRUE)
+g.clr <- graph_from_adjacency_matrix(adj.clr, mode = "undirected", weighted = TRUE)
 
 
 # -------- network visualization --------
@@ -279,7 +289,7 @@ set.seed(42)
 p.graph.CLR <- as.grob(~plot(g.clr, vertex.label = NA,
                              vertex.color = colpal[taxa.filt[, "family"]],
                              vertex.size  = vertex.size,
-                             edge.color   = ifelse(igraph::E(g.clr)$weight > 0,
+                             edge.color   = ifelse(E(g.clr)$weight > 0,
                                                    rgb(0, 0, 1), 
                                                    rgb(1, 0, 0)),
                              edge.width   = 0.5,
@@ -293,7 +303,7 @@ set.seed(42)
 p.graph.glasso <- as.grob(~plot(g.gl, vertex.label = NA,
                                 vertex.color = colpal[taxa.filt[, "family"]],
                                 vertex.size  = vertex.size,
-                                edge.color   = ifelse(igraph::E(g.gl)$weight > 0,
+                                edge.color   = ifelse(E(g.gl)$weight > 0,
                                                       rgb(0, 0, 1), 
                                                       rgb(1, 0, 0)),
                                 edge.width   = 0.5,
@@ -305,15 +315,15 @@ p.graph.glasso <- as.grob(~plot(g.gl, vertex.label = NA,
 # https://cran.r-project.org/web/packages/ggVennDiagram/index.html
 p.ven <- ggVennDiagram::ggVennDiagram(
   x = list(
-    "GLASSO" = paste(igraph::as_edgelist(g.gl) [, 1], "-",
-                     igraph::as_edgelist(g.gl) [, 2], sep = ""),
-    "CLR"    = paste(igraph::as_edgelist(g.clr)[, 1], "-",
-                     igraph::as_edgelist(g.clr)[, 2], sep = "")
+    "GLASSO" = paste(as_edgelist(g.gl) [, 1], "-",
+                     as_edgelist(g.gl) [, 2], sep = ""),
+    "CLR"    = paste(as_edgelist(g.clr)[, 1], "-",
+                     as_edgelist(g.clr)[, 2], sep = "")
   ), label_alpha = 0) +
   
-  ggplot2::scale_fill_gradient("Shared \n Links", low = "white", high = "red") +
+  scale_fill_gradient("Shared \n Links", low = "white", high = "red") +
   
-  ggplot2::scale_color_manual(values = c("gray20", "gray20", "gray20")) +
+  scale_color_manual(values = c("gray20", "gray20", "gray20")) +
   
   theme(legend.position = "right")
 
@@ -322,8 +332,8 @@ p.ven <- ggVennDiagram::ggVennDiagram(
 
 # -------- Main figure: 6 panels (A-F), 3 columns x 2 rows --------
 
-png(here("outputs", "Methods_comparison.png"), width = 3600, height = 2400, res = 300)
-ggarrange(
+png(here("outputs", "methods_comparison_outputs", "Methods_comparison.png"), width = 3600, height = 2400, res = 300)
+print(ggarrange(
   plotlist = list(p1, p2, p4,
                   p.graph.CLR, 
                   p.graph.glasso,
@@ -333,7 +343,7 @@ ggarrange(
   labels = c("A", "B", "C", "D", "E", "F"),
   ncol   = 3, 
   nrow   = 2
-)
+))
 dev.off()
 
 
@@ -341,12 +351,12 @@ dev.off()
 
 # These PNG files are required by cowplot::draw_image() in the next section
 # MB network
-p.mb <- png(filename = here("script", "tmp_files", "graph_mb.png"), width = 1200, height = 1200, res = 200)
+p.mb <- png(filename = here("outputs", "methods_comparison_outputs", "tmp_files", "graph_mb.png"), width = 1200, height = 1200, res = 200)
 set.seed(42)
 plot(g.mb, vertex.label = NA,
      vertex.color = colpal[taxa.filt[, "family"]],
      vertex.size  = vertex.size,
-     edge.color   = ifelse(igraph::E(g.mb)$weight > 0, 
+     edge.color   = ifelse(E(g.mb)$weight > 0, 
                            rgb(0, 0, 1), 
                            rgb(1, 0, 0)),
      edge.width   = 0.5,
@@ -354,12 +364,12 @@ plot(g.mb, vertex.label = NA,
 dev.off()
 
 # GLASSO network
-p.gl <- png(filename = here("script", "tmp_files", "graph_gl.png"), width = 1200, height = 1200, res = 200)
+p.gl <- png(filename = here("outputs", "methods_comparison_outputs", "tmp_files", "graph_gl.png"), width = 1200, height = 1200, res = 200)
 set.seed(42)
 plot(g.gl, vertex.label = NA,
      vertex.color = colpal[taxa.filt[, "family"]],
      vertex.size  = vertex.size,
-     edge.color   = ifelse(igraph::E(g.gl)$weight > 0, 
+     edge.color   = ifelse(E(g.gl)$weight > 0, 
                            rgb(0, 0, 1), 
                            rgb(1, 0, 0)),
      edge.width   = 0.5,
@@ -367,12 +377,12 @@ plot(g.gl, vertex.label = NA,
 dev.off()
 
 # CLR network
-p.clr <- png(filename = here("script", "tmp_files", "graph_clr.png"), width = 1200, height = 1200, res = 200)
+p.clr <- png(filename = here("outputs", "methods_comparison_outputs", "tmp_files", "graph_clr.png"), width = 1200, height = 1200, res = 200)
 set.seed(42)
 plot(g.clr, vertex.label = NA,
      vertex.color = colpal[taxa.filt[, "family"]],
      vertex.size  = vertex.size,
-     edge.color   = ifelse(igraph::E(g.clr)$weight > 0, 
+     edge.color   = ifelse(E(g.clr)$weight > 0, 
                            rgb(0, 0, 1), 
                            rgb(1, 0, 0)),
      edge.width   = 0.5,
@@ -380,14 +390,14 @@ plot(g.clr, vertex.label = NA,
 dev.off()
 
 # Venn diagram
-png(filename = here("script", "tmp_files", "ggvenn.png"), width = 1200, height = 1200, res = 200)
+png(filename = here("outputs", "methods_comparison_outputs", "tmp_files", "ggvenn.png"), width = 1200, height = 1200, res = 200)
 print(p.ven)
 dev.off()
 
 
 # -------- taxonomy color legend (family level) --------
 
-p.clr <- png(filename = here("script", "tmp_files", "colorLegend.png"), width = 1200, height = 1200, res = 200)
+p.clr <- png(filename = here("outputs", "methods_comparison_outputs", "tmp_files", "colorLegend.png"), width = 1200, height = 1200, res = 200)
 par(mar = c(2, 0, 2, 0))
 plot.new()
 legend("center", legend = names(colpal), fill = colpal, title = "Family", ncol = 2)
@@ -400,18 +410,18 @@ dev.off()
 # and CLR networks in a a data frame 
 
 netw.info <- data.frame(
-  "Edges"    = sapply(list(g.mb, g.gl, g.clr), igraph::ecount),
+  "Edges"    = sapply(list(g.mb, g.gl, g.clr),  ecount),
   "Positive" = paste(100 * sapply(list(g.mb, g.gl, g.clr),
-                                  function(x) round(sum(igraph::E(x)$weight > 0) /
-                                                      igraph::ecount(x), 2)), "%", sep = ""),
+                                  function(x) round(sum(E(x)$weight > 0) /
+                                                       ecount(x), 2)), "%", sep = ""),
   "Negative" = paste(100 * sapply(list(g.mb, g.gl, g.clr),
-                                  function(x) round(sum(igraph::E(x)$weight < 0) /
-                                                      igraph::ecount(x), 2)), "%", sep = "")
+                                  function(x) round(sum(E(x)$weight < 0) /
+                                                       ecount(x), 2)), "%", sep = "")
 )
 rownames(netw.info) <- c("MB", "GLASSO", "CLR")
 
 # generate a .png that allows to visualize the results
-p.inf <- png(filename = here("script", "tmp_files", "table.png"), width = 1200, height = 1200, res = 300)
+p.inf <- png(filename = here("outputs", "methods_comparison_outputs", "tmp_files", "table.png"), width = 1200, height = 1200, res = 300)
 print(
   ggplot() +
   
@@ -422,7 +432,7 @@ print(
         panel.border     = element_blank(), panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(), plot.background  = element_blank()) +
   
-  annotation_custom(gridExtra::tableGrob(netw.info),
+  annotation_custom(tableGrob(netw.info),
                     xmin = -Inf, 
                     xmax =  Inf, 
                     ymin = -Inf, 
@@ -436,14 +446,14 @@ dev.off()
 # https://cran.r-project.org/web/packages/cowplot/index.html
 
 # Load pre-saved network plots and supplementary figures as ggdraw objects
-p.mb  <- cowplot::ggdraw() + cowplot::draw_image(here("script", "tmp_files", "graph_mb.png"))
-p.gl  <- cowplot::ggdraw() + cowplot::draw_image(here("script", "tmp_files", "graph_gl.png"))
-p.clr <- cowplot::ggdraw() + cowplot::draw_image(here("script", "tmp_files", "graph_clr.png"))
-p.leg <- cowplot::ggdraw() + cowplot::draw_image(here("script", "tmp_files", "colorLegend.png"))
-p.ven <- cowplot::ggdraw() + cowplot::draw_image(here("script", "tmp_files", "ggvenn.png"))
-p.inf <- cowplot::ggdraw() + cowplot::draw_image(here("script", "tmp_files", "table.png"))
+p.mb  <- cowplot::ggdraw() + cowplot::draw_image(here("outputs", "methods_comparison_outputs", "tmp_files", "graph_mb.png"))
+p.gl  <- cowplot::ggdraw() + cowplot::draw_image(here("outputs", "methods_comparison_outputs", "tmp_files", "graph_gl.png"))
+p.clr <- cowplot::ggdraw() + cowplot::draw_image(here("outputs", "methods_comparison_outputs", "tmp_files", "graph_clr.png"))
+p.leg <- cowplot::ggdraw() + cowplot::draw_image(here("outputs", "methods_comparison_outputs", "tmp_files", "colorLegend.png"))
+p.ven <- cowplot::ggdraw() + cowplot::draw_image(here("outputs", "methods_comparison_outputs", "tmp_files", "ggvenn.png"))
+p.inf <- cowplot::ggdraw() + cowplot::draw_image(here("outputs", "methods_comparison_outputs", "tmp_files", "table.png"))
 
 # Arrange all panels into a 3-column grid and export as a single PNG
-png(filename = here("outputs", "Graph_Comparison.png"), width = 1600, height = 1000, res = 300)
+png(filename = here("outputs", "methods_comparison_outputs", "Graph_Comparison.png"), width = 1600, height = 1000, res = 300)
 grid.arrange(p.mb, p.gl, p.clr, p.ven, p.leg, p.inf, ncol = 3)
 dev.off()

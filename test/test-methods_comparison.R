@@ -31,6 +31,7 @@ library(ToyModel)
 # Imputation of zeros, left-censored and missing values in compositional data
 # https://cran.r-project.org/web/packages/zCompositions/index.html
 library(zCompositions)
+
 # load function to test
 source(here("script", "method_comparison", "methods_comparison.R"))
 
@@ -74,7 +75,7 @@ test_that("The selected matrixes entries are not equal 1 or -1", {
 
 test_that("The matrix is not squared", {
   # all correlation matrixes must be square
-  expect_equal(nrow(res.cc),  ncol(res.cc))
+  expect_equal(nrow(res.cc ), ncol(res.cc ))
   expect_equal(nrow(res.rho), ncol(res.rho))
   expect_equal(nrow(res.clr), ncol(res.clr))
 })
