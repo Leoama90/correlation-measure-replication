@@ -18,10 +18,6 @@ library(gridExtra)
 # https://cran.r-project.org/web/packages/here/index.html
 library(here)
 
-# Proportionality analysis for compositional data (rho, phi)
-# https://cran.r-project.org/web/packages/propr/index.html
-library(propr)
-
 # Sparse microbial network estimation (SPIEC-EASI: MB and GLASSO)
 # https://github.com/zdk123/SpiecEasi  ← Bioconductor/GitHub
 library(SpiecEasi)
@@ -132,7 +128,8 @@ diag(res.clr) <- 0
 # Compute p-values for the correlation matrix with Bonferroni correction
 p.adjust <- psych::corr.p(r = res.clr,
                           n = nrow(otu.filt),
-                          adjust = "bonferroni", ci = FALSE)$p
+                          adjust = "bonferroni", 
+                          ci = FALSE)$p
 # Mirror upper triangle into lower triangle to make the matrix symmetric
 p.adjust[lower.tri(p.adjust)] <- t(p.adjust)[lower.tri(p.adjust)]
 diag(p.adjust) <- 1
@@ -164,12 +161,16 @@ p1 <- ggscatter(
   add = "reg.line", 
   conf.int   = TRUE,
   add.params = list(color = "red", fill = "lightgray")) +
+  
   stat_cor(aes(label = after_stat(r.label)),
                    label.x =  0.45, 
                    label.y = -0.25, 
-                   size    =    6) +
+                   size    =  6.00) +
+  
   theme_bw() +
+  
   xlab("Pearson+CLR") +
+  
   theme(plot.title = element_text(hjust = 0.5))
 
 
@@ -182,11 +183,14 @@ p2 <- ggscatter(
   add = "reg.line", 
   conf.int   = TRUE,
   add.params = list(color = "red", fill = "lightgray")) +
+  
   stat_cor(aes(label = after_stat(r.label)),
                    label.x =  0.45,
                    label.y = -0.25, 
-                   size    =    6) +
+                   size    =  6.00) +
+  
   theme_bw() + xlab("Pearson+CLR") +
+  
   theme(plot.title = element_text(hjust = 0.5))
 
 
@@ -199,33 +203,51 @@ p4.all <- ggplot(df.gl, aes(x = value, fill = method, color = method)) +
   
   geom_hline(yintercept  = 200, linetype = "twodash", color = "black", linewidth = 1) +
   
-  xlim(c(-1, 1)) + theme_bw() +
+  xlim(c(-1, 1)) + 
+  
+  theme_bw() +
   
   scale_color_manual(values = c("steelblue1", "forestgreen")) +
+  
   scale_fill_manual(values  = c("steelblue1", "forestgreen")) +
+  
   theme(plot.title = element_text(hjust = 0.5),
         legend.position = "right", legend.direction = "vertical")
 
 # zoomed inset of the histogram tail (y <= 200)
 p4.zoom <- ggplot(df.gl, aes(x = value, fill = method, color = method)) +
-  geom_histogram(position = "identity", alpha = .5, breaks = seq(-1, 1, by = .1)) +
-  coord_cartesian(ylim = c(0, 200)) +
+  
+  geom_histogram(position   = "identity", alpha = 0.5, breaks = seq(-1, 1, by = .1)) +
+  
+  coord_cartesian(ylim      = c(0, 200)) +
+  
   scale_color_manual(values = c("steelblue1", "forestgreen")) +
+  
   scale_fill_manual(values  = c("steelblue1", "forestgreen")) +
+  
   theme_void() + theme(legend.position = "none") +
-  geom_rect(aes(xmin = -Inf, 
-                xmax =  Inf, 
-                ymin = -Inf, 
-                ymax = +Inf),
-            col = "black", alpha = 0, linewidth = 1)
+  
+  geom_rect(aes(xmin  = -Inf, 
+                xmax  =  Inf, 
+                ymin  = -Inf, 
+                ymax  = +Inf),
+                col   = "black", 
+                alpha = 0, 
+            linewidth = 1)
+
+# Extract the actual max count from the histogram to position the inset dynamically
+# This avoids hardcoding y coordinates that may not match the data range
+y_max <- max(ggplot_build(p4.all)$data[[1]]$count)
 
 # Composition: main histogram + inset in the upper left
+# ymin/ymax are set proportionally to the actual Y range for robust positioning
 p4 <- p4.all +
+  
   annotation_custom(ggplotGrob(p4.zoom),
                     xmin = -1.1,
                     xmax = -0.3,
-                    ymin = 1400,
-                    ymax = 1900)
+                    ymin = y_max * 0.70,
+                    ymax = y_max * 0.95)
 
 
 # -------- build graphs --------
@@ -258,7 +280,8 @@ p.graph.CLR <- as.grob(~plot(g.clr, vertex.label = NA,
                              vertex.color = colpal[taxa.filt[, "family"]],
                              vertex.size  = vertex.size,
                              edge.color   = ifelse(igraph::E(g.clr)$weight > 0,
-                                                   rgb(0, 0, 1), rgb(1, 0, 0)),
+                                                   rgb(0, 0, 1), 
+                                                   rgb(1, 0, 0)),
                              edge.width   = 0.5,
                              layout       = LAYOUT_SIGNED(g.clr)))
 
@@ -271,7 +294,8 @@ p.graph.glasso <- as.grob(~plot(g.gl, vertex.label = NA,
                                 vertex.color = colpal[taxa.filt[, "family"]],
                                 vertex.size  = vertex.size,
                                 edge.color   = ifelse(igraph::E(g.gl)$weight > 0,
-                                                      rgb(0, 0, 1), rgb(1, 0, 0)),
+                                                      rgb(0, 0, 1), 
+                                                      rgb(1, 0, 0)),
                                 edge.width   = 0.5,
                                 layout       = LAYOUT_SIGNED(g.clr)))
 
@@ -279,16 +303,18 @@ p.graph.glasso <- as.grob(~plot(g.gl, vertex.label = NA,
 # -------- panel F: Venn diagram of shared edges between GLASSO and CLR --------
 # ggVennDiagram: Venn diagrams with ggplot2
 # https://cran.r-project.org/web/packages/ggVennDiagram/index.html
-p.venn <- ggVennDiagram::ggVennDiagram(
+p.ven <- ggVennDiagram::ggVennDiagram(
   x = list(
-    "GLASSO" = paste(igraph::as_edgelist(g.gl)[, 1],  "-",
-                     igraph::as_edgelist(g.gl)[, 2],  sep = ""),
+    "GLASSO" = paste(igraph::as_edgelist(g.gl) [, 1], "-",
+                     igraph::as_edgelist(g.gl) [, 2], sep = ""),
     "CLR"    = paste(igraph::as_edgelist(g.clr)[, 1], "-",
                      igraph::as_edgelist(g.clr)[, 2], sep = "")
   ), label_alpha = 0) +
   
   ggplot2::scale_fill_gradient("Shared \n Links", low = "white", high = "red") +
+  
   ggplot2::scale_color_manual(values = c("gray20", "gray20", "gray20")) +
+  
   theme(legend.position = "right")
 
 
@@ -299,8 +325,10 @@ p.venn <- ggVennDiagram::ggVennDiagram(
 png(here("outputs", "Methods_comparison.png"), width = 3600, height = 2400, res = 300)
 ggarrange(
   plotlist = list(p1, p2, p4,
-                  p.graph.CLR, p.graph.glasso,
-                  p.venn + 
+                  p.graph.CLR, 
+                  p.graph.glasso,
+                  p.ven + 
+                    
                   theme(legend.position = "bottom")),
   labels = c("A", "B", "C", "D", "E", "F"),
   ncol   = 3, 
@@ -313,47 +341,53 @@ dev.off()
 
 # These PNG files are required by cowplot::draw_image() in the next section
 # MB network
-png(filename = here("script", "tmp_files", "graph_mb.png"), width = 1200, height = 1200, res = 200)
+p.mb <- png(filename = here("script", "tmp_files", "graph_mb.png"), width = 1200, height = 1200, res = 200)
 set.seed(42)
 plot(g.mb, vertex.label = NA,
      vertex.color = colpal[taxa.filt[, "family"]],
      vertex.size  = vertex.size,
-     edge.color   = ifelse(igraph::E(g.mb)$weight > 0, rgb(0, 0, 1), rgb(1, 0, 0)),
+     edge.color   = ifelse(igraph::E(g.mb)$weight > 0, 
+                           rgb(0, 0, 1), 
+                           rgb(1, 0, 0)),
      edge.width   = 0.5,
      layout       = LAYOUT_SIGNED(g.mb))
 dev.off()
 
 # GLASSO network
-png(filename = here("script", "tmp_files", "graph_gl.png"), width = 1200, height = 1200, res = 200)
+p.gl <- png(filename = here("script", "tmp_files", "graph_gl.png"), width = 1200, height = 1200, res = 200)
 set.seed(42)
 plot(g.gl, vertex.label = NA,
      vertex.color = colpal[taxa.filt[, "family"]],
      vertex.size  = vertex.size,
-     edge.color   = ifelse(igraph::E(g.gl)$weight > 0, rgb(0, 0, 1), rgb(1, 0, 0)),
+     edge.color   = ifelse(igraph::E(g.gl)$weight > 0, 
+                           rgb(0, 0, 1), 
+                           rgb(1, 0, 0)),
      edge.width   = 0.5,
      layout       = LAYOUT_SIGNED(g.gl))
 dev.off()
 
 # CLR network
-png(filename = here("script", "tmp_files", "graph_clr.png"), width = 1200, height = 1200, res = 200)
+p.clr <- png(filename = here("script", "tmp_files", "graph_clr.png"), width = 1200, height = 1200, res = 200)
 set.seed(42)
 plot(g.clr, vertex.label = NA,
      vertex.color = colpal[taxa.filt[, "family"]],
      vertex.size  = vertex.size,
-     edge.color   = ifelse(igraph::E(g.clr)$weight > 0, rgb(0, 0, 1), rgb(1, 0, 0)),
+     edge.color   = ifelse(igraph::E(g.clr)$weight > 0, 
+                           rgb(0, 0, 1), 
+                           rgb(1, 0, 0)),
      edge.width   = 0.5,
      layout       = LAYOUT_SIGNED(g.clr))
 dev.off()
 
 # Venn diagram
 png(filename = here("script", "tmp_files", "ggvenn.png"), width = 1200, height = 1200, res = 200)
-print(p.venn)
+print(p.ven)
 dev.off()
 
 
 # -------- taxonomy color legend (family level) --------
 
-png(filename = here("script", "tmp_files", "colorLegend.png"), width = 1200, height = 1200, res = 200)
+p.clr <- png(filename = here("script", "tmp_files", "colorLegend.png"), width = 1200, height = 1200, res = 200)
 par(mar = c(2, 0, 2, 0))
 plot.new()
 legend("center", legend = names(colpal), fill = colpal, title = "Family", ncol = 2)
@@ -377,7 +411,7 @@ netw.info <- data.frame(
 rownames(netw.info) <- c("MB", "GLASSO", "CLR")
 
 # generate a .png that allows to visualize the results
-png(filename = here("script", "tmp_files", "table.png"), width = 1200, height = 1200, res = 300)
+p.inf <- png(filename = here("script", "tmp_files", "table.png"), width = 1200, height = 1200, res = 300)
 print(
   ggplot() +
   

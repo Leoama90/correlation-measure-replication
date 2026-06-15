@@ -16,7 +16,7 @@ list_csv <- list.files(pattern   = "\\.csv$",
 clean_list_csv <- basename(list_csv)                          
                                   
 # extract first three letters from the name of each file
-prefixes <- substr(sub("\\.csv$", "", clean_list_csv), 1, 4)
+prefixes <- substr(sub("\\.csv$", " ", clean_list_csv), 1, 4)
 
 # create list and turn the elements of the list into single variables
 csv_groups <- split(clean_list_csv, prefixes)

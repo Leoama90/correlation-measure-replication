@@ -68,7 +68,7 @@ tbl <- cor_long %>%
   group_by(var1, var2) %>%
   summarise(max_abs_diff = max(Correlation) - min(Correlation),
             mean_corr    = mean(Correlation), .groups = "drop") %>%
-  mutate(higher = ifelse(max_abs_diff > .1, TRUE, FALSE))
+  mutate(higher = ifelse(max_abs_diff > 0.1, TRUE, FALSE))
 
 # -------- plot --------
 

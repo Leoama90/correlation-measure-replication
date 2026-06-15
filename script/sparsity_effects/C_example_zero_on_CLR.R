@@ -19,7 +19,7 @@ otu  <- readRDS(here("data", "otu_HMP2.rds"))
 meta <- readRDS(here("data", "meta_HMP2.rds"))
 
 # Keep only OTUs present in at least 25% of samples (prevalence filter)
-otu.filt <- otu[, colSums(otu > 0)/nrow(otu) >= .25]
+otu.filt <- otu[, colSums(otu > 0)/nrow(otu) >= 0.25]
 # Further keep only OTUs whose median count (among non-zero samples) is >= 5 (abundance filter)
 otu.filt <- otu.filt[, apply(otu.filt, 2, \(x)median(x[x > 0]) >= 5)]
 
@@ -48,9 +48,9 @@ info     <- data.frame(PCLR) %>% rownames_to_column("OTU_I") %>%
 
 # Subset pairs where both OTUs are low-prevalence (<=50%) and strongly correlated (|r|>=0.4)
 info_filt <- info %>%
-  filter(prev_I   <= .5, 
-         prev_J   <= .5, 
-         abs(cor) >= .4)
+  filter(prev_I   <= 0.5, 
+         prev_J   <= 0.5, 
+         abs(cor) >= 0.4)
 
 # Define the OTU pair with the most negative (min) CLR correlation to visualize
 idx.max   <- c("OTU_269", "OTU_97")
@@ -78,7 +78,7 @@ palette_named <- c(
 )
 
 # Apply 80% opacity to all colors
-palette_named <- alpha(palette_named, .8)
+palette_named <- alpha(palette_named, 0.8)
 
 # Scatter plot of raw counts for the min-correlation pair, colored by detection pattern
 p.min <- otu.filt %>% as_tibble() %>%
@@ -95,7 +95,7 @@ p.min <- otu.filt %>% as_tibble() %>%
             conf.int = TRUE) +        
   # show confidence interval around regression
   # Annotate with Pearson r value
-  stat_cor(aes(label = after_stat(r.label)), color = rgb(.5,0,0), label.x.npc = 0) +
+  stat_cor(aes(label = after_stat(r.label)), color = rgb(0.5, 0, 0), label.x.npc = 0) +
   
   xlab(expression("Count OTU 269 ("*phi*"~73%)")) +
   
@@ -119,7 +119,7 @@ p.min.clr <- otu.filt.CLR %>% as_tibble %>%
             
             conf.int = TRUE) +
   
-  stat_cor(aes(label = after_stat(r.label)), color = rgb(.5,0,0), label.x.npc = 0) +
+  stat_cor(aes(label = after_stat(r.label)), color = rgb(0.5, 0, 0), label.x.npc = 0) +
   
   xlab(expression("CLR OTU 269 ("*phi*"~73%)")) +
   
@@ -147,7 +147,7 @@ palette_named <- c(
   "OTU_97 is 0"  = "#4575B4",
   "Both are > 0"  = "black"
 )
-palette_named <- alpha(palette_named, .8)
+palette_named <- alpha(palette_named, 0.8)
 
 # Scatter plot of raw counts for the max-correlation pair
 p.max <- otu.filt %>% as_tibble() %>%
@@ -161,7 +161,7 @@ p.max <- otu.filt %>% as_tibble() %>%
             palette  = palette_named,
             add.params = list(color = "#800080", fill = "lightgray"),
             conf.int = TRUE) +
-  stat_cor(aes(label = after_stat(r.label)), color = rgb(.5,0,0), label.x.npc = 0) +
+  stat_cor(aes(label = after_stat(r.label)), color = rgb(0.5, 0, 0), label.x.npc = 0) +
   
   xlab(expression("Count_OTU_269 ("*phi*"~73%)")) +
   
@@ -185,7 +185,7 @@ p.max.clr <- otu.filt.CLR %>% as_tibble %>%
             
             conf.int = TRUE) +
   
-  stat_cor(aes(label = after_stat(r.label)), color = rgb(.5,0,0), label.x.npc = 0) +
+  stat_cor(aes(label = after_stat(r.label)), color = rgb(0.5, 0, 0), label.x.npc = 0) +
   
   xlab(expression("CLR_OTU_269 ("*phi*"~73%)")) +
   
@@ -199,10 +199,10 @@ p.max.clr <- otu.filt.CLR %>% as_tibble %>%
 pall <- ggarrange(
   # Top row: raw counts vs CLR for the min-correlation pair
   ggarrange(p.min, p.min.clr, common.legend = T, legend = "top", ncol = 2, labels = c("B", "C"), 
-            label.x = .06, label.y = 1.07), 
+            label.x = 0.06, label.y = 1.07), 
   # Bottom row: raw counts vs CLR for the max-correlation pair
   ggarrange(p.max, p.max.clr, common.legend = T, legend = "top", ncol = 2, labels = c("D", "E"),
-            label.x = .06, label.y = 1.07),
+            label.x = 0.06, label.y = 1.07),
   nrow = 2)
 
 # Save the combined figure as an RDS object for later use

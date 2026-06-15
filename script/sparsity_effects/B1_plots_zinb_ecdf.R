@@ -39,7 +39,7 @@ p <- df %>%
   
   # Apply the custom palette with non-linear breakpoints to emphasize low-error regions
   scale_fill_gradientn("MAE", colours = myPalette(12),
-                       values = c(seq(0,.5, by = .05), 1),
+                       values = c(seq(0, 0.5, by = 0.05), 1),
                        limits = c(0, 1),
                        labels = c("0", "0.25", "0.5", "0.75", "1")) +
   
@@ -49,10 +49,10 @@ p <- df %>%
   theme(legend.text = element_text(size     = 10)) +
   
   # Set y-axis (phi) breaks every 0.1, no padding
-  scale_y_continuous(breaks = seq(0, .9, .1), expand   = c(0,0))  +
+  scale_y_continuous(breaks = seq( 0,   0.9, 0.1), expand = c(0, 0))  +
   
   # Set x-axis (r) breaks every 0.2, no padding
-  scale_x_continuous(breaks = seq(-.8, .8, .2), expand = c(0, 0)) +
+  scale_x_continuous(breaks = seq(-0.8, 0.8, 0.2), expand = c(0, 0)) +
   
   # Rotate x-axis labels 90° for readability
   theme(axis.text.x = element_text(angle = 90, 
