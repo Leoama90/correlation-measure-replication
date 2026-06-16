@@ -36,28 +36,28 @@ meta <- readRDS(here("data", "meta_HMP2.rds"))
 # -------- filter data --------
 
 # Subset samples belonging to subject 69-001 in the healthy state
-otu.69001.H <- otu[meta$SubjectID == "69-001" & meta$CL4_2 == "Healthy", ]
+otu_69001_H <- otu[meta$SubjectID == "69-001" & meta$CL4_2 == "Healthy", ]
 
 # Remove OTUs present in fewer than 33% of samples (low prevalence)
-otu.filt <- otu.69001.H[, colSums(otu.69001.H > 0)/nrow(otu.69001.H) >= 0.33]
+otu_filt <- otu_69001_H[, colSums(otu_69001_H > 0)/nrow(otu_69001_H) >= 0.33]
 # Further remove OTUs whose median non-zero count is below 5 (too rare)
-otu.filt <- otu.filt[, apply(otu.filt, 2, function(x) median(x[x > 0]) >= 5)]
+otu_filt <- otu_filt[, apply(otu_filt, 2, function(x) median(x[x > 0]) >= 5)]
 # Free memory by removing objects no longer needed
-rm(otu, otu.69001.H, meta)
+rm(otu, otu_69001_H, meta)
 
 # -------- create the fits --------
 
 # Fit Hurdle Truncated Log-Normal (htrlnorm) parameters to each filtered OTU,
 # then summarise their distribution by extracting the 10th and 90th percentiles
-HMP2.quantile.params <- apply(otu.filt, 2, function(x){
+HMP2_quantile_params <- apply(otu_filt, 2, function(x){
   ToyModel::mle.htrlnorm(x)$estimate
 }) %>% apply(1, function(x) quantile(x, probs = c(0.1, 0.9)))
 
 # Build a data frame pairing each OTU's log-mean with its log-maximum,
 # used to learn a realistic mean–max relationship from the real data
 df_mean_max <- tibble(
-  "y" = apply(log(otu.filt + 1), 2, max ),
-  "x" = apply(log(otu.filt + 1), 2, mean)
+  "y" = apply(log(otu_filt + 1), 2, max ),
+  "x" = apply(log(otu_filt + 1), 2, mean)
 )
 # Fit a simple linear model: log(max) ~ log(mean)
 model <- lm(y~x, data = df_mean_max)
@@ -109,14 +109,14 @@ for(iter in 1:nIteration){
   # uniformly within the HMP2 10th–90th percentile range
   params_random_HMP2 <- data.frame(
     "meanlog" = runif(n = 200,
-                    min = HMP2.quantile.params["10%", "meanlog"],
-                    max = HMP2.quantile.params["90%", "meanlog"]),
+                    min = HMP2_quantile_params["10%", "meanlog"],
+                    max = HMP2_quantile_params["90%", "meanlog"]),
     "sdlog"   = runif(n = 200,
-                    min = HMP2.quantile.params["10%", "sdlog"],
-                    max = HMP2.quantile.params["90%", "sdlog"]),
+                    min = HMP2_quantile_params["10%", "sdlog"],
+                    max = HMP2_quantile_params["90%", "sdlog"]),
     "phi"     = runif(n = 200,
-                    min = HMP2.quantile.params["10%", "phi"],
-                    max = HMP2.quantile.params["90%", "phi"]))
+                    min = HMP2_quantile_params["10%", "phi"],
+                    max = HMP2_quantile_params["90%", "phi"]))
   
   # Predict a realistic maximum count (b) for each background OTU from its meanlog
   params_random_HMP2$b <- predict_max(params_random_HMP2$meanlog)
@@ -129,7 +129,7 @@ for(iter in 1:nIteration){
                            qdist = ToyModel::qhtrlnorm,
                            param = params_random_HMP2)
   # Store the Pearson correlation in normal space for reference
-  random_cor0_HMP2 <- random_HMP2$cor_normal
+  random_cor_zero_HMP2 <- random_HMP2$cor_normal
   
   # Build a full factorial grid of sparsity levels (phi_1, phi_2) and
   # latent correlations (cor), then attach random HMP2-calibrated meanlog and sdlog
@@ -142,17 +142,17 @@ for(iter in 1:nIteration){
     "cor"   = seq(- 0.9, 0.9 , by = 0.1 )    
   ) %>%
     mutate("meanlog_1" = runif(n = n(),
-                             min = HMP2.quantile.params["10%", "meanlog"],
-                             max = HMP2.quantile.params["90%", "meanlog"]),
+                             min = HMP2_quantile_params["10%", "meanlog"],
+                             max = HMP2_quantile_params["90%", "meanlog"]),
            "meanlog_2" = runif(n = n(),
-                             min = HMP2.quantile.params["10%", "meanlog"],
-                             max = HMP2.quantile.params["90%", "meanlog"]),
+                             min = HMP2_quantile_params["10%", "meanlog"],
+                             max = HMP2_quantile_params["90%", "meanlog"]),
            "sdlog_1"   = runif(n = n(),
-                             min = HMP2.quantile.params["10%", "sdlog"],
-                             max = HMP2.quantile.params["90%", "sdlog"]),
+                             min = HMP2_quantile_params["10%", "sdlog"],
+                             max = HMP2_quantile_params["90%", "sdlog"]),
            "sdlog_2"   = runif(n = n(),
-                             min = HMP2.quantile.params["10%", "sdlog"],
-                             max = HMP2.quantile.params["90%", "sdlog"])) %>%
+                             min = HMP2_quantile_params["10%", "sdlog"],
+                             max = HMP2_quantile_params["90%", "sdlog"])) %>%
     as.data.frame() %>%
     # Add a predicted maximum count for each of the two OTUs in the pair
     mutate(b_1 = predict_max(meanlog_1),
@@ -190,8 +190,8 @@ for(iter in 1:nIteration){
                   # Replace exact zeros with small random pseudo-values in [0.065, 0.65]
                   # to avoid log(0) issues before CLR transformation
                   rand_pseudo <-  matrix(runif(length(random_HMP2_NorTA_i), min = 0.065, max = 0.65), 
-                  nrow = nrow(otu.filt), 
-                  ncol = ncol(otu.filt))
+                  nrow = nrow(otu_filt), 
+                  ncol = ncol(otu_filt))
                   
                   random_HMP2_NorTA_i <- random_HMP2_NorTA_i + (random_HMP2_NorTA_i == 0) * rand_pseudo
                   
