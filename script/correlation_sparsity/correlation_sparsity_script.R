@@ -113,7 +113,7 @@ results_gauss <- foreach(i = 1:100,
                          .options.snow = opts) %dopar% {
   
   # step 1: generate a random matrix with gaussian entries
-  random_matrix <- matrix(rnorm(n*n), n, n)
+  random_matrix <- matrix(rnorm(n * n), n, n)
   
   # step 2: make the matrix symmetric
   symmetric_matrix <- (random_matrix + t(random_matrix)) / 2
