@@ -157,13 +157,13 @@ test_that("info_filt respects prevalence <= 0.5 and |cor| >= 0.4 thresholds", {
   
   # Keep only low-prevalence pairs (<=50%) with strong correlation (|r|>=0.4)
   info_filt <- info %>%
-    filter(prev_I <= .5, prev_J <= .5, abs(cor) >= .4)
+    filter(prev_I <= 0.5, prev_J <= 0.5, abs(cor) >= 0.4)
   
   # All retained pairs must satisfy the prevalence upper bound for both OTUs
-  expect_true(all(info_filt$prev_I   <= .5))
-  expect_true(all(info_filt$prev_J   <= .5))
+  expect_true(all(info_filt$prev_I   <= 0.5))
+  expect_true(all(info_filt$prev_J   <= 0.5))
   # All retained pairs must have absolute correlation >= 0.4
-  expect_true(all(abs(info_filt$cor) >= .4))
+  expect_true(all(abs(info_filt$cor) >= 0.4))
 })
 
 

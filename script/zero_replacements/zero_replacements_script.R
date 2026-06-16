@@ -21,39 +21,39 @@ meta <- readRDS(here("data", "meta_HMP2.rds"))
 taxa <- readRDS(here("data", "taxonomy.rds" ))
 
 # Select samples belonging to 69-001 subject in health status
-otu.69001.H <- otu[meta$SubjectID == "69-001" & meta$CL4_2 == "Healthy", ]
+otu_69001_H <- otu[meta$SubjectID == "69-001" & meta$CL4_2 == "Healthy", ]
 
 # Remove rarest OTUs using prevalence and median of non-zero values
-otu.filt  <- otu.69001.H[, colSums(otu.69001.H > 0) / nrow(otu.69001.H) >= 0.33]
-otu.filt  <- otu.filt[, apply(otu.filt, 2, function(x) median(x[x > 0]) >= 5)]
-taxa.filt <- taxa[colnames(otu.filt), ]
+otu_filt  <- otu_69001_H[, colSums(otu_69001_H > 0) / nrow(otu_69001_H) >= 0.33]
+otu_filt  <- otu_filt[, apply(otu_filt, 2, function(x) median(x[x > 0]) >= 5)]
+taxa_filt <- taxa[colnames(otu_filt), ]
 
 # -------- different zero strategies --------
 
 # Compute CLR-based correlation matrices under four zero-replacement strategies:
 # CZM: Count Zero Multiplicative
-cor.czm <- cor(CLR(as.matrix(zCompositions::cmultRepl(otu.filt, method = "CZM", label = 0)))) 
+cor_czm <- cor(CLR(as.matrix(zCompositions::cmultRepl(otu_filt, method = "CZM", label = 0)))) 
 # GBM: Geometric Bayesian Multiplicative
-cor.gbm <- cor(CLR(as.matrix(zCompositions::cmultRepl(otu.filt, method = "GBM", label = 0))))  
+cor_gbm <- cor(CLR(as.matrix(zCompositions::cmultRepl(otu_filt, method = "GBM", label = 0))))  
 # BL: Beta-binomial Log-ratio
-cor.bl  <- cor(CLR(as.matrix(zCompositions::cmultRepl(otu.filt, method = "BL",  label = 0)))) 
+cor_bl  <- cor(CLR(as.matrix(zCompositions::cmultRepl(otu_filt, method = "BL",  label = 0)))) 
 # Simple scalar replacement: zeros set to 0.65 (65% of detection limit)
-otu.filt.65 <- otu.filt
-otu.filt.65[otu.filt.65 == 0] <- 0.65
-cor.65 <- cor(CLR(otu.filt.65))
+otu_filt_65 <- otu_filt
+otu_filt_65[otu_filt_65 == 0] <- 0.65
+cor_65 <- cor(CLR(otu_filt_65))
 
 # Extract upper-triangle indices to avoid duplicate pairs
-otu_names <- colnames(otu.filt)
-idx <- which(upper.tri(cor.czm), arr.ind = TRUE)
+otu_names <- colnames(otu_filt)
+idx <- which(upper.tri(cor_czm), arr.ind = TRUE)
 
 # Build a tidy tibble with one row per OTU pair and one column per method
 cor_df <- tibble(
   var1 = otu_names[idx[, 1]],
   var2 = otu_names[idx[, 2]],
-  CZM  = cor.czm[upper.tri(cor.czm)],
-  GBM  = cor.gbm[upper.tri(cor.gbm)],
-  BL   = cor.bl[upper.tri(cor.bl)],
-  PC65 = cor.65[upper.tri(cor.65)]
+  CZM  = cor_czm[upper.tri(cor_czm)],
+  GBM  = cor_gbm[upper.tri(cor_gbm)],
+  BL   = cor_bl[upper.tri(cor_bl)],
+  PC65 = cor_65[upper.tri(cor_65)]
 )
 
 # Reshape to long format for grouped summaries

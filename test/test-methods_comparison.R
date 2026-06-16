@@ -41,15 +41,15 @@ source(here("script", "method_comparison", "methods_comparison.R"))
 test_that("The row number is not correct", {
   # get otu row number
   otu_rown    <- nrow(otu)
-  # get otu.69001.H row number
-  otu.69_rown <- nrow(otu.69001.H)
+  # get otu_69001_H row number
+  otu_69_rown <- nrow(otu_69001_H)
   # expect less rows after filtering for subject and health status
-  expect_true(otu_rown > otu.69_rown)
+  expect_true(otu_rown > otu_69_rown)
 })
 
 test_that("The column number is not correct", {
   # expect less OTUs after prevalence and median filtering
-  expect_true(ncol(otu.filt) < ncol(otu.69001.H))
+  expect_true(ncol(otu_filt) < ncol(otu_69001_H))
 })
 
 
@@ -57,17 +57,17 @@ test_that("The column number is not correct", {
 
 test_that("Matrix has not yet been symmetrized", {
   # raw MB coefficients should not be symmetric before averaging
-  expect_false(isSymmetric.matrix(beta.mb))
+  expect_false(isSymmetric.matrix(beta_mb))
 })
 
 test_that("Matrix is not symmetric", {
   # adjacency matrix should be symmetric after averaging beta and its transpose
-  expect_true(isSymmetric.matrix(adj.mb))
+  expect_true(isSymmetric.matrix(adj_mb))
 })
 
 test_that("The selected matrixes entries are not equal 1 or -1", {
   # non-zero entries should be binarized to +1 or -1
-  expect_true(all(adj.mb[adj.mb != 0] %in% c(-1, 1)))
+  expect_true(all(adj_mb[adj_mb != 0] %in% c(-1, 1)))
 })
 
 
@@ -75,9 +75,9 @@ test_that("The selected matrixes entries are not equal 1 or -1", {
 
 test_that("The matrix is not squared", {
   # all correlation matrixes must be square
-  expect_equal(nrow(res.cc ), ncol(res.cc ))
-  expect_equal(nrow(res.rho), ncol(res.rho))
-  expect_equal(nrow(res.clr), ncol(res.clr))
+  expect_equal(nrow(res_cc ), ncol(res_cc ))
+  expect_equal(nrow(res_rho), ncol(res_rho))
+  expect_equal(nrow(res_clr), ncol(res_clr))
 })
 
 
@@ -85,9 +85,9 @@ test_that("The matrix is not squared", {
 
 test_that("SparCC row and column names match filtered OTU names", {
   # row and column names must be consistent with each other
-  expect_true(identical(colnames(res.cc), rownames(res.cc)))
+  expect_true(identical(colnames(res_cc), rownames(res_cc)))
   # names must match the filtered OTU matrix columns
-  expect_true(identical(colnames(res.cc), colnames(otu.filt)))
+  expect_true(identical(colnames(res_cc), colnames(otu_filt)))
 })
 
 
@@ -95,7 +95,7 @@ test_that("SparCC row and column names match filtered OTU names", {
 
 test_that("Diagonal does not have only zero values!", {
   # diagonal is set to zero to remove self-correlations
-  diag_values <- c(diag(res.clr))
+  diag_values <- c(diag(res_clr))
   expect_true(all(diag_values == 0))
 })
 
@@ -104,19 +104,19 @@ test_that("Diagonal does not have only zero values!", {
 
 test_that("GLASSO adjacency matrix is not symmetric", {
   # adjacency matrix must be symmetric for an undirected network
-  expect_true(isSymmetric.matrix(adj.gl))
+  expect_true(isSymmetric.matrix(adj_gl))
 })
 
 test_that("GLASSO adjacency matrix entries are not 1 or -1", {
   # non-zero entries should be binarized to +1 or -1
-  expect_true(all(adj.gl[adj.gl != 0] %in% c(-1, 1)))
+  expect_true(all(adj_gl[adj_gl != 0] %in% c(-1, 1)))
 })
 
 test_that("GLASSO row and column names do not match filtered OTU names", {
   # column names must match the filtered OTU matrix columns
-  expect_true(identical(colnames(adj.gl), colnames(otu.filt)))
+  expect_true(identical(colnames(adj_gl), colnames(otu_filt)))
   # row names must match the filtered OTU matrix columns
-  expect_true(identical(rownames(adj.gl), colnames(otu.filt)))
+  expect_true(identical(rownames(adj_gl), colnames(otu_filt)))
 })
 
 
@@ -124,11 +124,11 @@ test_that("GLASSO row and column names do not match filtered OTU names", {
 
 test_that("Rho matrix is not symmetric", {
   # proportionality is a symmetric measure
-  expect_true(isSymmetric.matrix(res.rho))
+  expect_true(isSymmetric.matrix(res_rho))
 })
 
 test_that("Rho diagonal does not have only one values!", {
   # diagonal of rho should be 1 (perfect self-proportionality)
-  diag_values <- c(diag(res.rho))
+  diag_values <- c(diag(res_rho))
   expect_true(all(diag_values == 1))
 })

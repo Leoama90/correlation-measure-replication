@@ -48,8 +48,8 @@ test_that("edge density is computed correctly and lies in [0, 1]", {
   
   # density must be a single numeric value in [0, 1]
   expect_length(edge_density, 1)
-  expect_gte(edge_density, 0)
-  expect_lte(edge_density, 1)
+  expect_gte(edge_density,    0)
+  expect_lte(edge_density,    1)
   
   # a fully connected matrix must have density 1
   full_corM <- matrix(corr_val, Dimension, Dimension)

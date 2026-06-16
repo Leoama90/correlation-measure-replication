@@ -43,16 +43,17 @@ p <- df %>%
   theme(legend.text = element_text(size = 10)) +
   
   # Set y-axis breaks every 0.1 with no padding
-  scale_y_continuous(breaks = seq(0,.9,.1),   expand = c(0,0)) +
+  scale_y_continuous(breaks = seq(0, 0.9, 0.1),   expand = c(0,0)) +
   
   # Set x-axis breaks every 0.2 with no padding
-  scale_x_continuous(breaks = seq(-.8,.8,.2), expand = c(0,0)) +
+  scale_x_continuous(breaks = seq(-0.8, 0.8, 0.2), expand = c(0,0)) +
   
   # Rotate x-axis labels 90° for readability
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
   
   # Label the axes
   xlab("Correlation") + 
+  
   ylab("Zero %") 
 
 # Save the plot object to an RDS file for later use

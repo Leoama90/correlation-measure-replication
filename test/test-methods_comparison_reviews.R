@@ -17,23 +17,23 @@ source(here("script", "method_comparison", "methods_comparison_review.R"))
 
 test_that("Row number after subject/health filter is not correct", {
   # filtering by subject and health status must reduce the number of samples
-  expect_true(nrow(otu) > nrow(otu.69001.H))
+  expect_true(nrow(otu) > nrow(otu_69001_H))
 })
 
 test_that("Column number after OTU filtering is not correct", {
   # prevalence and median filtering must reduce the number of OTUs
-  expect_true(ncol(otu.filt) < ncol(otu.69001.H))
+  expect_true(ncol(otu_filt) < ncol(otu_69001_H))
 })
 
 test_that("OTU prevalence filter was not applied correctly", {
   # every remaining OTU must be present in at least 33% of samples
-  prevalences <- colSums(otu.filt > 0) / nrow(otu.filt)
+  prevalences <- colSums(otu_filt > 0) / nrow(otu_filt)
   expect_true(all(prevalences >= 0.33))
 })
 
 test_that("OTU median filter was not applied correctly", {
   # every remaining OTU must have median non-zero abundance >= 5
-  medians <- apply(otu.filt, 2, function(x) median(x[x > 0]))
+  medians <- apply(otu_filt, 2, function(x) median(x[x > 0]))
   expect_true(all(medians >= 5))
 })
 
@@ -41,8 +41,8 @@ test_that("OTU median filter was not applied correctly", {
 # -------- checks for phylum aggregation --------
 
 test_that("Phylum matrix has wrong number of rows", {
-  # phylum matrix must have the same number of samples as otu.filt
-  expect_equal(nrow(phy), nrow(otu.filt))
+  # phylum matrix must have the same number of samples as otu_filt
+  expect_equal(nrow(phy), nrow(otu_filt))
 })
 
 test_that("Phylum matrix contains negative values", {
@@ -52,7 +52,7 @@ test_that("Phylum matrix contains negative values", {
 
 test_that("Phylum matrix column names do not match taxonomy phylum names", {
   # column names must be valid phylum names from the taxonomy table
-  expect_true(all(colnames(phy) %in% taxa.filt[, "phylum"]))
+  expect_true(all(colnames(phy) %in% taxa_filt[, "phylum"]))
 })
 
 
@@ -60,35 +60,35 @@ test_that("Phylum matrix column names do not match taxonomy phylum names", {
 
 test_that("OTU-level correlation matrices are not square", {
   # all correlation matrices must be square
-  expect_equal(nrow(res.clr), ncol(res.clr))
-  expect_equal(nrow(res.cc) , ncol(res.cc ))
-  expect_equal(nrow(res.rho), ncol(res.rho))
-  expect_equal(nrow(res.L1) , ncol(res.L1 ))
+  expect_equal(nrow(res_clr), ncol(res_clr))
+  expect_equal(nrow(res_cc) , ncol(res_cc ))
+  expect_equal(nrow(res_rho), ncol(res_rho))
+  expect_equal(nrow(res_L1) , ncol(res_L1 ))
 })
 
-test_that("OTU-level correlation matrices dimensions do not match otu.filt", {
+test_that("OTU-level correlation matrices dimensions do not match otu_filt", {
   # number of rows/cols must equal number of filtered OTUs
-  expect_equal(nrow(res.clr), ncol(otu.filt))
-  expect_equal(nrow(res.cc) , ncol(otu.filt))
-  expect_equal(nrow(res.rho), ncol(otu.filt))
-  expect_equal(nrow(res.L1) , ncol(otu.filt))
+  expect_equal(nrow(res_clr), ncol(otu_filt))
+  expect_equal(nrow(res_cc) , ncol(otu_filt))
+  expect_equal(nrow(res_rho), ncol(otu_filt))
+  expect_equal(nrow(res_L1) , ncol(otu_filt))
 })
 
 test_that("SparCC OTU-level names do not match filtered OTU names", {
   # row and column names must be consistent with each other
-  expect_true(identical(colnames(res.cc), rownames(res.cc)))
+  expect_true(identical(colnames(res_cc), rownames(res_cc)))
   # names must match the filtered OTU matrix columns
-  expect_true(identical(colnames(res.cc), colnames(otu.filt)))
+  expect_true(identical(colnames(res_cc), colnames(otu_filt)))
 })
 
 test_that("Rho OTU-level matrix is not symmetric", {
   # proportionality is a symmetric measure
-  expect_true(isSymmetric.matrix(res.rho))
+  expect_true(isSymmetric.matrix(res_rho))
 })
 
 test_that("Rho OTU-level diagonal does not have only one values", {
   # diagonal of rho must be 1 (perfect self-proportionality)
-  expect_true(all(diag(res.rho) == 1))
+  expect_true(all(diag(res_rho) == 1))
 })
 
 
@@ -96,33 +96,33 @@ test_that("Rho OTU-level diagonal does not have only one values", {
 
 test_that("Phylum-level correlation matrices are not square", {
   # all phylum-level correlation matrices must be square
-  expect_equal(nrow(res.clr.phy), ncol(res.clr.phy))
-  expect_equal(nrow(res.cc.phy ), ncol(res.cc.phy ))
-  expect_equal(nrow(res.rho.phy), ncol(res.rho.phy))
-  expect_equal(nrow(res.L1.phy ), ncol(res.L1.phy ))
+  expect_equal(nrow(res_clr.phy), ncol(res_clr.phy))
+  expect_equal(nrow(res_cc_phy ), ncol(res_cc_phy ))
+  expect_equal(nrow(res_rho_phy), ncol(res_rho_phy))
+  expect_equal(nrow(res_L1_phy ), ncol(res_L1_phy ))
 })
 
 test_that("Phylum-level correlation matrices dimensions do not match phy", {
   # number of rows/cols must equal number of phyla
-  expect_equal(nrow(res.clr.phy), ncol(phy))
-  expect_equal(nrow(res.cc.phy ), ncol(phy))
-  expect_equal(nrow(res.rho.phy), ncol(phy))
-  expect_equal(nrow(res.L1.phy ), ncol(phy))
+  expect_equal(nrow(res_clr.phy), ncol(phy))
+  expect_equal(nrow(res_cc_phy ), ncol(phy))
+  expect_equal(nrow(res_rho_phy), ncol(phy))
+  expect_equal(nrow(res_L1_phy ), ncol(phy))
 })
 
 test_that("SparCC phylum-level names do not match phylum names", {
   # row and column names must be consistent with each other
-  expect_true(identical(colnames(res.cc.phy), rownames(res.cc.phy)))
+  expect_true(identical(colnames(res_cc_phy), rownames(res_cc_phy)))
   # names must match the phylum matrix columns
-  expect_true(identical(colnames(res.cc.phy), colnames(phy)))
+  expect_true(identical(colnames(res_cc_phy), colnames(phy)))
 })
 
 test_that("Rho phylum-level matrix is not symmetric", {
   # proportionality is a symmetric measure
-  expect_true(isSymmetric.matrix(res.rho.phy))
+  expect_true(isSymmetric.matrix(res_rho_phy))
 })
 
 test_that("Rho phylum-level diagonal does not have only one values", {
   # diagonal of rho must be 1 (perfect self-proportionality)
-  expect_true(all(diag(res.rho.phy) == 1))
+  expect_true(all(diag(res_rho_phy) == 1))
 })

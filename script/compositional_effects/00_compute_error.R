@@ -10,17 +10,9 @@ library(foreach)
 # [https://cran.r-project.org/package=here](https://cran.r-project.org/package=here)
 library(here)
 
-# MASS: statistical modeling and analysis
-# [https://cran.r-project.org/package=MASS](https://cran.r-project.org/package=MASS)
-library(MASS)
-
 # tidyverse: data science toolkit (dplyr, ggplot2, tidyr, etc.)
 # [https://tidyverse.org](https://tidyverse.org)
 library(tidyverse)
-
-# VGAM: vector generalized linear models
-# [https://cran.r-project.org/package=VGAM](https://cran.r-project.org/package=VGAM)
-library(VGAM)
 
 
 # -------- set parameters --------

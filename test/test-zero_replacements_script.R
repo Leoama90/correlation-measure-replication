@@ -15,15 +15,15 @@ source(here("script", "zero_replacements", "zero_replacements_script.R"))
 # -------- Compare column and row size after filtering --------
 test_that("the column number or row is not the expected one", {
   
-  # count number of columns of otu.69001.H
-  before_filt_col_num <- ncol(otu.69001.H)
+  # count number of columns of otu_69001_H
+  before_filt_col_num <- ncol(otu_69001_H)
   # count column number after filtering
-  after_filt_col_num  <- ncol(otu.filt)    
+  after_filt_col_num  <- ncol(otu_filt)    
   # compare the two numbers
   expect_true(before_filt_col_num != after_filt_col_num)
-  # get taxa.filt number of rows
-  taxa_row <- nrow(taxa.filt)
-  # taxa.filt row number compared with otu.filt column number
+  # get taxa_filt number of rows
+  taxa_row <- nrow(taxa_filt)
+  # taxa_filt row number compared with otu_filt column number
   expect_true(after_filt_col_num == taxa_row)
   
 })
@@ -31,76 +31,76 @@ test_that("the column number or row is not the expected one", {
 # -------- Compare the names --------
 test_that("the names doesn't match!", {
   
-  # get otu.filt column names
-  otu.filt_colname  <- colnames(otu.filt)
-  # get taxa.filt row names
-  taxa.filt_rowname <- rownames(taxa.filt)
-  # compare taxa.filt row names with otu.filt column names
-  expect_identical(taxa.filt_rowname, otu.filt_colname)
+  # get otu_filt column names
+  otu_filt_colname  <- colnames(otu_filt)
+  # get taxa_filt row names
+  taxa_filt_rowname <- rownames(taxa_filt)
+  # compare taxa_filt row names with otu_filt column names
+  expect_identical(taxa_filt_rowname, otu_filt_colname)
   
 })
 
 # -------- Correlation matrixes test --------
 test_that("There is a problem with the matrixes", {
   
-  # get row and col num for cor.czm matrix
-  czm_row_num <- nrow(cor.czm)
-  czm_col_num <- ncol(cor.czm)
-  # test the ncol equal nrow of cor.czm, to check if it is a square matrix
+  # get row and col num for cor_czm matrix
+  czm_row_num <- nrow(cor_czm)
+  czm_col_num <- ncol(cor_czm)
+  # test the ncol equal nrow of cor_czm, to check if it is a square matrix
   expect_identical(czm_row_num, czm_col_num)
   
-  # get row and col num for cor.gbm matrix
-  gbm_row_num <- nrow(cor.gbm)
-  gbm_col_num <- ncol(cor.gbm)
-  # test the ncol equal nrow of cor.gbm, to check if it is a square matrix
+  # get row and col num for cor_gbm matrix
+  gbm_row_num <- nrow(cor_gbm)
+  gbm_col_num <- ncol(cor_gbm)
+  # test the ncol equal nrow of cor_gbm, to check if it is a square matrix
   expect_identical(gbm_row_num, gbm_col_num)
   
-  # get row and col num for cor.bl matrix
-  bl_row_num <- nrow(cor.bl)
-  bl_col_num <- ncol(cor.bl)
-  # test the ncol equal nrow of cor.bl, to check if it is a square matrix
+  # get row and col num for cor_bl matrix
+  bl_row_num <- nrow(cor_bl)
+  bl_col_num <- ncol(cor_bl)
+  # test the ncol equal nrow of cor_bl, to check if it is a square matrix
   expect_identical(bl_row_num, bl_col_num)
   
-  # get row and col num for cor.65 matrix
-  cor65_row_num <- nrow(cor.65)
-  cor65_col_num <- ncol(cor.65)
-  # test the ncol equal nrow of cor.bl, to check if it is a square matrix
+  # get row and col num for cor_65 matrix
+  cor65_row_num <- nrow(cor_65)
+  cor65_col_num <- ncol(cor_65)
+  # test the ncol equal nrow of cor_bl, to check if it is a square matrix
   expect_identical(cor65_row_num, cor65_col_num)
   
 })
 
-# -------- cor.65 square matrix test --------
-test_that("cor.65 is not a square matrix", {
+# -------- cor_65 square matrix test --------
+test_that("cor_65 is not a square matrix", {
   
-  # test the ncol equal nrow of cor.65, to check if it is a square matrix
-  expect_identical(nrow(cor.65), ncol(cor.65))
+  # test the ncol equal nrow of cor_65, to check if it is a square matrix
+  expect_identical(nrow(cor_65), ncol(cor_65))
   
 })
 
 # -------- Symmetry test --------
 test_that("correlation matrices are not symmetric", {
   
-  expect_true(isSymmetric(cor.czm))
-  expect_true(isSymmetric(cor.gbm))
-  expect_true(isSymmetric(cor.bl))
-  expect_true(isSymmetric(cor.65))
+  expect_true(isSymmetric(cor_czm))
+  expect_true(isSymmetric(cor_gbm))
+  expect_true(isSymmetric(cor_bl))
+  expect_true(isSymmetric(cor_65))
   
 })
 
 # -------- NA test --------
 test_that("correlation matrices contain NA values", {
   
-  expect_false(anyNA(cor.czm))
-  expect_false(anyNA(cor.gbm))
-  expect_false(anyNA(cor.bl))
-  expect_false(anyNA(cor.65))
+  expect_false(anyNA(cor_czm))
+  expect_false(anyNA(cor_gbm))
+  expect_false(anyNA(cor_bl))
+  expect_false(anyNA(cor_65))
   
 })
 
 # -------- Zero replacement test --------
-test_that("otu.filt.65 still contains zeros", {
+test_that("otu_filt_65 still contains zeros", {
   
-  expect_false(any(otu.filt.65 == 0))
+  expect_false(any(otu_filt_65 == 0))
   
 })
 
@@ -108,7 +108,7 @@ test_that("otu.filt.65 still contains zeros", {
 test_that("cor_df has unexpected number of rows", {
   
   # expected number of pairs in the upper triangle
-  expected_pairs <- ncol(otu.filt) * (ncol(otu.filt) - 1) / 2
+  expected_pairs <- ncol(otu_filt) * (ncol(otu_filt) - 1) / 2
   expect_identical(nrow(cor_df), as.integer(expected_pairs))
   
 })

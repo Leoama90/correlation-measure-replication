@@ -87,8 +87,11 @@ df_sort %>%
 # -------- heatmap: L1 bias --------
 
 p_l1 <- ggplot(df_sort, aes(x = d, y = pielou_round, fill = log_err_l1)) +
+  
   geom_tile() +
+  
   theme_bw() +
+  
   # Map fill to log-scale MAE with readable break labels
   scale_fill_gradientn(
     "MAE",
@@ -99,20 +102,32 @@ p_l1 <- ggplot(df_sort, aes(x = d, y = pielou_round, fill = log_err_l1)) +
   ) +
   # Remove tick marks from the colour bar
   guides(fill = guide_colorbar(ticks.colour = NA)) +
+  
   theme(legend.text = element_text(size = 10)) +
+  
   scale_y_continuous(breaks = seq(0.05, 0.95, 0.05), expand = c(0, 0)) +
+  
   scale_x_continuous(breaks = seq(10, 200, 10),      expand = c(0, 0)) +
+  
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  
   ylab(expression(bar(P))) +
+  
   xlab("D") +
+  
   ggtitle("L1 Bias")
+
+
 
 
 # -------- heatmap: CLR bias --------
 
 p_clr <- ggplot(df_sort, aes(x = d, y = pielou_round, fill = log_err_clr)) +
+  
   geom_tile() +
+  
   theme_bw() +
+  
   scale_fill_gradientn(
     "MAE",
     limits  = c(-2, 0),
@@ -121,12 +136,19 @@ p_clr <- ggplot(df_sort, aes(x = d, y = pielou_round, fill = log_err_clr)) +
     labels  = c(">1", "0.1", "< 0.01")
   ) +
   guides(fill = guide_colorbar(ticks.colour = NA)) +
+  
   theme(legend.text = element_text(size = 10)) +
+  
   scale_y_continuous(breaks = seq(0.05, 0.95, 0.05), expand = c(0, 0)) +
+  
   scale_x_continuous(breaks = seq(10, 200, 10),      expand = c(0, 0)) +
+  
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  
   ylab(expression(bar(P))) +
+  
   xlab("D") +
+  
   ggtitle("CLR Bias")
 
 
@@ -147,13 +169,21 @@ dev.off()
 p_clr_dim <- df_sort %>%
   # Compute mean CLR error for each value of d
   reframe(err_clr_mean_d = mean(ERR_CLR), .by = d) %>%
+  
   ggplot(aes(x = d, y = err_clr_mean_d)) +
+  
   geom_point(size = 2.5) +
+  
   geom_line(linewidth = 1) +
+  
   theme_bw() +
+  
   scale_y_continuous(breaks = c(0.01, 0.02, 0.05, 0.1, 0.15, 0.2)) +
+  
   ylab("MAE") +
+  
   xlab("D") +
+  
   theme(plot.margin = unit(c(2, 1, 1, 1), "cm"))
 
 png(filename = here("Plots", "CLR_Compositional.png"), width = 1200, height = 1200, res = 300)
@@ -168,11 +198,12 @@ p_l1_clr <- ggarrange(p_l1, p_clr, common.legend = TRUE, ncol = 1)
 
 # Combine heatmap panel and line plot side by side
 p_all <- ggarrange(
-  p_l1_clr,
-  p_clr_dim + theme(
+  p_l1_clr, p_clr_dim + 
+    
+    theme(
     axis.text  = element_text(size = 14),
     axis.title = element_text(size = 16)
-  ),
+    ),
   ncol    = 2,
   widths  = c(0.35, 0.65),
   labels  = c("A", "B"),

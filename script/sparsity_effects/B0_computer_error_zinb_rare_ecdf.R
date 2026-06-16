@@ -39,20 +39,20 @@ otu  <- readRDS(here("data", "otu_HMP2.rds" ))
 meta <- readRDS(here("data", "meta_HMP2.rds"))
 
 # select samples belonging to subject 69-001 in healthy status
-otu.69001.H <- otu[meta$SubjectID == "69-001" & meta$CL4_2 == "Healthy", ]
+otu_69001_H <- otu[meta$SubjectID == "69-001" & meta$CL4_2 == "Healthy", ]
 
 # remove rarest OTUs: keep only OTUs present in at least 33% of samples (prevalence filter)
-otu.filt <- otu.69001.H[, colSums(otu.69001.H > 0) / nrow(otu.69001.H) >= .33]
+otu_filt <- otu_69001_H[, colSums(otu_69001_H > 0) / nrow(otu_69001_H) >= .33]
 # further filter: keep only OTUs whose median non-zero abundance is >= 5 (abundance filter)
-otu.filt <- otu.filt[, apply(otu.filt, 2, function(x) median(x[x > 0]) >= 5)]
+otu_filt <- otu_filt[, apply(otu_filt, 2, function(x) median(x[x > 0]) >= 5)]
 # rarefy: rescale all samples to the same total read count (minimum library size)
-otu.filt <- round(otu.filt / rowSums(otu.filt) * min(rowSums(otu.filt)))
+otu_filt <- round(otu_filt / rowSums(otu_filt) * min(rowSums(otu_filt)))
 # remove objects no longer needed to free memory
-rm(otu, otu.69001.H, meta)
+rm(otu, otu_69001_H, meta)
 
 # fit ZINB (zero-inflated negative binomial) parameters from real data for each filtered OTU;
 # returns a matrix with one row per OTU and columns: munb, size, pstr0
-HMP2.params <- apply(otu.filt, 2, function(x) {
+HMP2_params <- apply(otu_filt, 2, function(x) {
   SpiecEasi::fitdistr(as.numeric(x), "zinegbin")$par
 }) %>%
   t() %>%
@@ -60,19 +60,19 @@ HMP2.params <- apply(otu.filt, 2, function(x) {
 
 # compute the 10th and 90th percentile of each ZINB parameter across OTUs,
 # used to trim extreme parameter values before simulation
-HMP2.quantile.params <- HMP2.params %>%
+HMP2_quantile_params <- HMP2_params %>%
   apply(2, function(x) quantile(x, probs = c(.1, .9)))
 
 # retain only OTUs whose fitted parameters fall within the [10%, 90%] range
 # for all three parameters (munb, size, pstr0), removing outlier OTUs
-HMP2.params.filt <- HMP2.params %>%
+HMP2_params_filt <- HMP2_params %>%
   filter(
-    munb  >= HMP2.quantile.params["10%", "munb" ],
-    munb  <= HMP2.quantile.params["90%", "munb" ],
-    size  >= HMP2.quantile.params["10%", "size" ],
-    size  <= HMP2.quantile.params["90%", "size" ],
-    pstr0 >= HMP2.quantile.params["10%", "pstr0"],
-    pstr0 <= HMP2.quantile.params["90%", "pstr0"]
+    munb  >= HMP2_quantile_params["10%", "munb" ],
+    munb  <= HMP2_quantile_params["90%", "munb" ],
+    size  >= HMP2_quantile_params["10%", "size" ],
+    size  <= HMP2_quantile_params["90%", "size" ],
+    pstr0 >= HMP2_quantile_params["10%", "pstr0"],
+    pstr0 <= HMP2_quantile_params["90%", "pstr0"]
   )
 
 # initialize a progress bar tracking total iterations across inner and outer loops
@@ -96,9 +96,9 @@ for (iter in 1:nIteration) {
   # using uniform random quantiles, then simulate a 10,000-sample background dataset
   # with no correlation structure (identity correlation matrix)
   params_random_HMP2 <- data.frame(
-    "munb"  = quantile(HMP2.params.filt$munb,  probs = runif(runif(200))),
-    "size"  = quantile(HMP2.params.filt$size,  probs = runif(runif(200))),
-    "pstr0" = quantile(HMP2.params.filt$pstr0, probs = runif(runif(200)))
+    "munb"  = quantile(HMP2_params_filt$munb,  probs = runif(runif(200))),
+    "size"  = quantile(HMP2_params_filt$size,  probs = runif(runif(200))),
+    "pstr0" = quantile(HMP2_params_filt$pstr0, probs = runif(runif(200)))
   )
   
   random_HMP2 <- ToyModel::toy_model(
@@ -122,10 +122,10 @@ for (iter in 1:nIteration) {
   ) %>%
     mutate(
       pstr0_2 = pstr0_1, .after = pstr0_1,        
-      munb_1  = quantile(HMP2.params.filt$munb, probs = runif(n())),
-      munb_2  = quantile(HMP2.params.filt$munb, probs = runif(n())),
-      size_1  = quantile(HMP2.params.filt$size, probs = runif(n())),
-      size_2  = quantile(HMP2.params.filt$size, probs = runif(n()))
+      munb_1  = quantile(HMP2_params_filt$munb, probs = runif(n())),
+      munb_2  = quantile(HMP2_params_filt$munb, probs = runif(n())),
+      size_1  = quantile(HMP2_params_filt$size, probs = runif(n())),
+      size_2  = quantile(HMP2_params_filt$size, probs = runif(n()))
     ) %>%
     as.data.frame()
   

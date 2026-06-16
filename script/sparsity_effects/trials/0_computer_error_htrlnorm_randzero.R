@@ -4,8 +4,11 @@ library(doSNOW)
 
 # foreach: parallel foreach loops
 # https://cran.r-project.org/package=foreach
-install.packages("foreach")
 library(foreach)
+
+# here: builds file paths relative to the project root
+# https://cran.r-project.org/web/packages/here/index.html
+library(here)
 
 # progress: displays text progress bars for long-running loops
 # https://cran.r-project.org/web/packages/progress/index.html
@@ -89,10 +92,10 @@ predict_max <- function(new_xs){
 }
 
 # Set the total number of outer iterations and initialise a progress bar
-nIteration <- 100
+n_iteration <- 100
 pb <- progress_bar$new(
   format = "[:bar] :elapsed | eta: :eta",
-  total  = nIteration * 7600,
+  total  = n_iteration * 7600,
   width  = 60)
 # Callback function used to tick the progress bar from parallel workers
 progress <- function(n){pb$tick()}
@@ -100,7 +103,7 @@ progress <- function(n){pb$tick()}
 #set sedd for reproducibility
 set.seed(42)
 result <- data.frame()
-for(iter in 1:nIteration){
+for(iter in 1:n_iteration){
   
   
   # -------- OUTER LOOP --------
