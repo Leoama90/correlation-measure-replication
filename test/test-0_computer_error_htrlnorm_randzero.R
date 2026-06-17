@@ -14,6 +14,10 @@ library(here)
 # https://cran.r-project.org/web/packages/progress/index.html
 library(progress)
 
+# testthat: unit testing framework for R
+# https://cran.r-project.org/web/packages/testthat/index.html
+library(testthat)
+
 # tidyverse: useful to manage data (dplyr) and make nice plots (ggplot2)
 # https://cran.r-project.org/web/packages/tidyverse/index.html
 library(tidyverse)
