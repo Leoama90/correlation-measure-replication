@@ -48,6 +48,7 @@ otu_filt <- otu_filt[, apply(otu_filt, 2, function(x) median(x[x > 0]) >= 5)]
 # Free memory by removing objects no longer needed
 rm(otu, otu_69001_H, meta)
 
+
 # -------- create the fits --------
 
 # Fit Hurdle Truncated Log-Normal (htrlnorm) parameters to each filtered OTU,
@@ -62,6 +63,7 @@ df_mean_max <- tibble(
   "y" = apply(log(otu_filt + 1), 2, max ),
   "x" = apply(log(otu_filt + 1), 2, mean)
 )
+
 # Fit a simple linear model: log(max) ~ log(mean)
 model <- lm(y~x, data = df_mean_max)
 
