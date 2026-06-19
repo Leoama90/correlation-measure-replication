@@ -1,9 +1,11 @@
 # SpiecEasi: package with spiec.easi and sparCC methods
 # https://github.com/zdk123/SpiecEasi
 library(SpiecEasi)
+
 # testthat: unit testing framework for R
 # https://cran.r-project.org/web/packages/testthat/index.html
 library(testthat)
+
 # tidyverse: useful to manage data (dplyr) and make nice plots (ggplot2)
 # https://cran.r-project.org/web/packages/tidyverse/index.html
 library(tidyverse)
@@ -17,7 +19,7 @@ library(ToyModel)
 library(VGAM)
 
 
-# ---- Fixture: minimal params used across multiple tests ----
+# -------- Fixture: minimal params used across multiple tests --------
 
 # Small ZINB parameter set representing a single OTU pair
 test_params <- data.frame(
@@ -81,8 +83,8 @@ test_that("clr() produces rows that sum to zero (up to floating-point tolerance)
                       M     = 1,
                       qdist = VGAM::qzinegbin,
                       param = data.frame(
-                      munb  = rep(10, 5),
-                      size  = rep(2,  5),
+                      munb  = rep(10,  5),
+                      size  = rep(2,   5),
                       pstr0 = rep(0.1, 5)
                       ))$NorTA
   
@@ -107,7 +109,7 @@ test_that("replacing columns 25 and 125 leaves all other columns unchanged", {
                     munb  = rep(10,  200),
                     size  = rep(2,   200),
                     pstr0 = rep(0.2, 200)
-                  ))
+                    ))
   
   pair <- toy_model(n     = 100,
                     cor   = 0.6,

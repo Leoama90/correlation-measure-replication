@@ -58,13 +58,13 @@ otu_filt <- otu_filt[, apply(otu_filt, 2, function(x) median(x[x > 0]) >= 5)]
 rm(otu, otu_69001_H, meta)
 
 # Fit a Zero-Inflated Negative Binomial (ZINB) distribution to each filtered OTU,
-# then summarise the fitted parameters across OTUs by computing
+# then summarize the fitted parameters across OTUs by computing
 # the 10th and 90th percentiles — these define a realistic parameter range for simulation
 HMP2_quantile_params <- apply(otu_filt,2,function(x){
   SpiecEasi::fitdistr(as.numeric(x),"zinegbin")$par
 }) %>% apply(1,function(x) quantile(x, probs = c(0.1, 0.9)))
 
-# Initialise a progress bar to track the total number of parallel iterations
+# Initialize a progress bar to track the total number of parallel iterations
 nIteration <- 100
 pb <- progress_bar$new(
   format = "[:bar] :elapsed | eta: :eta",
