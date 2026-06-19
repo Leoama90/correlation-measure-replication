@@ -113,7 +113,7 @@ params_set <- expand_grid(
                         max = HMP2_quantile_params["90%", "size"])) %>%
   as.data.frame()
 
-# create the cluster for parallel excecution
+# create the cluster for parallel execution
 cl <- makeCluster(6)
 registerDoSNOW(cl)
   
