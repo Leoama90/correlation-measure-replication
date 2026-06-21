@@ -33,10 +33,19 @@ library(VGAM)
 
 # -------- read data --------
 
-# load OTU abundance matrix (samples x OTUs)
-otu  <- readRDS(here("data", "otu_HMP2.rds" ))
-# load sample metadata
-meta <- readRDS(here("data", "meta_HMP2.rds"))
+# Read the OTU counts and subject metadata
+otu <- readRDS(list.files(
+  path       = here(),
+  pattern    = "otu_HMP2.rds",
+  full.names = TRUE,
+  recursive  = TRUE
+))
+meta <- readRDS(list.files(
+  path       = here(),
+  pattern    = "meta_HMP2.rds",
+  full.names = TRUE,
+  recursive  = TRUE
+))
 
 # select samples belonging to subject 69-001 in healthy status
 otu_69001_H <- otu[meta$SubjectID == "69-001" & meta$CL4_2 == "Healthy", ]

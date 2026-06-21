@@ -43,12 +43,27 @@ source(here("script", "method_comparison", "layout_signed.R"))
 
 # -------- READ AND FILTER DATA --------
 
-# load OTU abundance matrix (samples x OTUs)
-otu  <- readRDS(here("data", "otu_HMP2.rds"))
-# load sample metadata
-meta <- readRDS(here("data", "meta_HMP2.rds"))
-# load OTU taxonomic annotations
-taxa <- readRDS(here("data", "taxonomy.rds"))
+# Load OTU abundance matrix (samples x OTUs)
+otu <- readRDS(list.files(
+  path       = here(),
+  pattern    = "otu_HMP2.rds",
+  full.names = TRUE,
+  recursive  = TRUE
+))
+# Load sample metadata
+meta <- readRDS(list.files(
+  path       = here(),
+  pattern    = "meta_HMP2.rds",
+  full.names = TRUE,
+  recursive  = TRUE
+))
+# Load OTU taxonomic annotations
+taxa <- readRDS(list.files(
+  path       = here(),
+  pattern    = "taxonomy.rds",
+  full.names = TRUE,
+  recursive  = TRUE
+))
 
 # keep only samples from subject 69-001 in healthy status
 otu_69001_H <- otu[meta$SubjectID == "69-001" & meta$CL4_2 == "Healthy", ]
@@ -92,7 +107,6 @@ p0 <- ggscatter(data.frame("PearsonCLR" = TRIU(res_clr),
                         add = "reg.line", 
                         conf.int   = TRUE,
                         add.params = list(color = "red", fill = "lightgray")) +
-  
   # overlay Pearson R label, anchored to the top-left corner of the panel
   ggpubr::stat_cor(aes(label = after_stat(r.label)),
                    label.x = -Inf, 
@@ -100,13 +114,9 @@ p0 <- ggscatter(data.frame("PearsonCLR" = TRIU(res_clr),
                    hjust   = -0.1, 
                    vjust   =  1.5, 
                    size    =  6.0) +
-  
   theme_bw() +
-  
   xlab("Pearson+CLR") + 
-  
   ylab("Pearson+L1" ) +
-  
   theme(plot.title = element_text(hjust = 0.5))
 
 # Pearson+CLR vs SparCC
@@ -117,7 +127,6 @@ p1 <- ggscatter(data.frame("PearsonCLR" = TRIU(res_clr),
                         add = "reg.line", 
                         conf.int   = TRUE,
                         add.params = list(color = "red", fill = "lightgray")) +
-  
   # overlay Pearson R label, anchored to the top-left corner of the panel
   stat_cor(aes(label = after_stat(r.label)),
                    label.x  = -Inf, 
@@ -125,11 +134,8 @@ p1 <- ggscatter(data.frame("PearsonCLR" = TRIU(res_clr),
                    hjust    = -0.1,
                    vjust    =  1.5, 
                    size     =  6.0) +
-  
   theme_bw() +
-  
   xlab("Pearson+CLR") +
-  
   theme(plot.title = element_text(hjust = 0.5))
 
 # Pearson+CLR vs Rho
@@ -140,7 +146,6 @@ p2 <- ggscatter(data.frame("PearsonCLR" = TRIU(res_clr),
                         add = "reg.line", 
                         conf.int = TRUE,
                         add.params = list(color = "red", fill = "lightgray")) +
-  
   # overlay Pearson R label, anchored to the top-left corner of the panel
   stat_cor(aes(label = after_stat(r.label)),
              label.x = -Inf, 
@@ -148,11 +153,8 @@ p2 <- ggscatter(data.frame("PearsonCLR" = TRIU(res_clr),
              hjust   = -0.1, 
              vjust   =  1.5, 
              size    =  6.0) +
-  
   theme_bw() +
-  
   xlab("Pearson+CLR") +
-  
   theme(plot.title = element_text(hjust = 0.5))
 
 
@@ -211,7 +213,6 @@ p0_phy <- ggscatter(data.frame("PearsonCLR" = TRIU(res_clr_phy),
                             add = "reg.line", 
                             conf.int = TRUE,
                             add.params = list(color = "red", fill = "lightgray")) +
-  
   # overlay Pearson R label, anchored to the top-left corner of the panel
   stat_cor(aes(label = after_stat(r.label)),
              label.x = - Inf, 
@@ -219,11 +220,8 @@ p0_phy <- ggscatter(data.frame("PearsonCLR" = TRIU(res_clr_phy),
              hjust   = - 0.1, 
              vjust   =   1.5, 
              size    =   6.0) +
-  
   theme_bw() +
-  
   xlab("Pearson+CLR") + 
-  
   ylab("Pearson+L1")
 
 # Pearson+CLR vs SparCC
@@ -234,7 +232,6 @@ p1_phy <- ggscatter(data.frame("PearsonCLR" = TRIU(res_clr_phy),
                             add = "reg.line", 
                             conf.int = TRUE,
                             add.params = list(color = "red", fill = "lightgray")) +
-
   # overlay Pearson R label, anchored to the top-left corner of the panel
   stat_cor(aes(label = after_stat(r.label)),
                    label.x = - Inf, 
@@ -242,9 +239,7 @@ p1_phy <- ggscatter(data.frame("PearsonCLR" = TRIU(res_clr_phy),
                    hjust   = - 0.1, 
                    vjust   =   1.5, 
                    size    =   6.0) +
-  
   theme_bw() +
-  
   xlab("Pearson+CLR")
 
 # Pearson+CLR vs Rho
@@ -255,7 +250,6 @@ p2.phy <- ggscatter(data.frame("PearsonCLR" = TRIU(res_clr_phy),
                             add = "reg.line", 
                             conf.int = TRUE,
                             add.params = list(color = "red", fill = "lightgray")) +
-  
   # overlay Pearson R label, anchored to the top-left corner of the panel
   stat_cor(aes(label = after_stat(r.label)),
                    label.x = - Inf, 
@@ -263,11 +257,8 @@ p2.phy <- ggscatter(data.frame("PearsonCLR" = TRIU(res_clr_phy),
                    hjust   = - 0.1, 
                    vjust   =   1.5, 
                    size    =   6.0 ) +
-  
   theme_bw() +
-  
   xlab("Pearson+CLR") +
-  
   theme(plot.title = element_text(hjust = 0.5))
 
 
@@ -275,16 +266,12 @@ p2.phy <- ggscatter(data.frame("PearsonCLR" = TRIU(res_clr_phy),
 
 # blank plot used as row label "OTU level"
 label_otu <- ggplot() +
-  
   theme_void() +
-  
   annotate("text", x = 0.5, y = 0.5, label = "OTU level",    angle = 90, size = 6)
 
 # blank plot used as row label "Phylum level"
 label_phylum <- ggplot() +
-  
   theme_void() +
-  
   annotate("text", x = 0.5, y = 0.5, label = "Phylum level", angle = 90, size = 6)
 
 # assemble all 8 panels in a 2-row x 4-column grid

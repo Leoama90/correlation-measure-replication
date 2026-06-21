@@ -51,11 +51,26 @@ source(here("script", "method_comparison", "layout_signed.R"))
 # -------- read and filter data --------
 
 # Load OTU abundance matrix (samples x OTUs)
-otu  <- readRDS(here("data", "otu_HMP2.rds" ))
+otu <- readRDS(list.files(
+  path       = here(),
+  pattern    = "otu_HMP2.rds",
+  full.names = TRUE,
+  recursive  = TRUE
+))
 # Load sample metadata
-meta <- readRDS(here("data", "meta_HMP2.rds"))
+meta <- readRDS(list.files(
+  path       = here(),
+  pattern    = "meta_HMP2.rds",
+  full.names = TRUE,
+  recursive  = TRUE
+))
 # Load OTU taxonomic annotations
-taxa <- readRDS(here("data", "taxonomy.rds" ))
+taxa <- readRDS(list.files(
+  path       = here(),
+  pattern    = "taxonomy.rds",
+  full.names = TRUE,
+  recursive  = TRUE
+))
 
 # Select samples from subject 69-001 in healthy status
 otu_69001_H <- otu[meta$SubjectID == "69-001" & meta$CL4_2 == "Healthy", ]
@@ -167,16 +182,12 @@ p1 <- ggscatter(
   add = "reg.line", 
   conf.int   = TRUE,
   add.params = list(color = "red", fill = "lightgray")) +
-  
   stat_cor(aes(label = after_stat(r.label)),
            label.x =  0.45, 
            label.y = -0.25, 
            size    =  6.00) +
-  
   theme_bw() +
-  
   xlab("Pearson+CLR") +
-  
   theme(plot.title = element_text(hjust = 0.5))
 
 
@@ -189,16 +200,12 @@ p2 <- ggscatter(
   add = "reg.line", 
   conf.int   = TRUE,
   add.params = list(color = "red", fill = "lightgray")) +
-  
   stat_cor(aes(label = after_stat(r.label)),
            label.x =  0.45,
            label.y = -0.25, 
            size    =  6.00) +
-  
   theme_bw() + 
-  
   xlab("Pearson+CLR") +
-  
   theme(plot.title = element_text(hjust = 0.5))
 
 
@@ -206,37 +213,23 @@ p2 <- ggscatter(
 
 # Dashed line at y = 200 as visual reference threshold
 p4_all <- ggplot(df_gl, aes(x = value, fill = method, color = method)) +
-  
   geom_histogram(position = "identity", alpha = 0.5, breaks = seq(-1, 1, by = 0.1)) +
-  
   geom_hline(yintercept  = 200, linetype = "twodash", color = "black", linewidth = 1) +
-  
   xlim(c(-1, 1)) + 
-  
   theme_bw() +
-  
   scale_color_manual(values = c("steelblue1", "forestgreen")) +
-  
   scale_fill_manual(values  = c("steelblue1", "forestgreen")) +
-  
   theme(plot.title = element_text(hjust = 0.5),
         legend.position = "right", legend.direction = "vertical")
 
 # zoomed inset of the histogram tail (y <= 200)
 p4_zoom <- ggplot(df_gl, aes(x = value, fill = method, color = method)) +
-  
   geom_histogram(position   = "identity", alpha = 0.5, breaks = seq(-1, 1, by = 0.1)) +
-  
   coord_cartesian(ylim      = c(0, 200)) +
-  
   scale_color_manual(values = c("steelblue1", "forestgreen")) +
-  
   scale_fill_manual(values  = c("steelblue1", "forestgreen")) +
-  
   theme_void() + 
-  
   theme(legend.position = "none") +
-  
   geom_rect(aes(xmin  = - Inf, 
                 xmax  =   Inf, 
                 ymin  = - Inf, 
@@ -252,7 +245,6 @@ y_max <- max(ggplot_build(p4_all)$data[[1]]$count)
 # Composition: main histogram + inset in the upper left
 # ymin/ymax are set proportionally to the actual Y range for robust positioning
 p4 <- p4_all +
-  
   annotation_custom(ggplotGrob(p4_zoom),
                     xmin = -1.1,
                     xmax = -0.3,
@@ -338,7 +330,6 @@ print(ggarrange(
                   p_graph_CLR, 
                   p_graph_glasso,
                   p_ven + 
-                    
                   theme(legend.position = "bottom")),
   labels = c("A", "B", "C", "D", "E", "F"),
   ncol   = 3, 

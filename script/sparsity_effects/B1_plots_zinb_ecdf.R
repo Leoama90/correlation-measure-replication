@@ -13,7 +13,11 @@ library(tidyverse)
 
 # Load the dataset, drop the second zero-inflation parameter column,
 # rename the first one, and compute the absolute correlation error for CLR
-df <- readRDS(here("script", "sparsity_effects", "Sparsity_Effects_zinbin_rare_ecdf_2.rds")) %>%
+df <- readRDS(list.files(path = here(),
+                         pattern = "Sparsity_Effects_zinbin_rare_ecdf_2.rds",
+                         full.names = TRUE,
+                         recursive  = TRUE
+                         )) %>% 
   dplyr::select(-pstr0_2) %>% rename(pstr0 = pstr0_1) %>%
   mutate("ERR_CLR" = abs(cor_normal - cor_NorTA_PCLR))
 

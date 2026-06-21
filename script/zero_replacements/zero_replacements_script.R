@@ -15,11 +15,23 @@ source(here("script", "method_comparison", "CLR.R"))
 
 # -------- read and filter data --------
 
-# Read HMP2
-otu  <- readRDS(here("data", "otu_HMP2.rds" ))
-meta <- readRDS(here("data", "meta_HMP2.rds"))
-taxa <- readRDS(here("data", "taxonomy.rds" ))
-
+# Read the OTU counts and subject metadata
+otu <- readRDS(list.files(
+  path       = here(),
+  pattern    = "otu_HMP2.rds",
+  full.names = TRUE,
+  recursive  = TRUE
+))
+meta <- readRDS(list.files(
+  path       = here(),
+  pattern    = "meta_HMP2.rds",
+  full.names = TRUE,
+  recursive  = TRUE
+))
+taxa <- readRDS(list.files(path       = here(),
+                           pattern    = "taxonomy.rds",
+                           full.names = TRUE,
+                           recursive  = TRUE))
 # Select samples belonging to 69-001 subject in health status
 otu_69001_H <- otu[meta$SubjectID == "69-001" & meta$CL4_2 == "Healthy", ]
 
