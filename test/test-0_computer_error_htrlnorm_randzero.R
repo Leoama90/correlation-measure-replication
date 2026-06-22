@@ -27,10 +27,12 @@ library(tidyverse)
 library(ToyModel)
 
 
-# -------- Important Consideration! --------
+# -------- READ FIRST --------
 
 # for this test, I will load some chunk of code taken from the original one,
 # because loading the whole script would a too long execution time
+# the different chunks will have a number. The test will have in the comments
+# which chunk is being tested
 
 
 # -------- 1. data filtering code --------
@@ -39,9 +41,16 @@ library(ToyModel)
 # that will allow the creation of the test
 
 # Load OTU abundance matrix (samples x OTUs)
-otu  <- readRDS(here("data", "otu_HMP2.rds" ))
+otu <- readRDS(list.files(path       = here(), 
+                          pattern    = "otu_HMP2.rds",  
+                          full.names = TRUE, 
+                          recursive  = TRUE))
 # Load sample metadata
-meta <- readRDS(here("data", "meta_HMP2.rds"))
+meta <- readRDS(list.files(path      = here(), 
+                           pattern    = "meta_HMP2.rds",  
+                           full.names = TRUE, 
+                           recursive  = TRUE))
+
 
 # Subset samples belonging to subject 69-001 in the healthy state
 otu_69001_H <- otu[meta$SubjectID == "69-001" & meta$CL4_2 == "Healthy", ]
@@ -84,13 +93,15 @@ model <- lm(y~x, data = df_mean_max)
 
 # -------- test the 2. chunk --------
 
-# create a dummy matrix to use it to test the linear model
-
+# helper that builds a reproducible Poisson-count OTU matrix for unit tests
 make_otu <- function(nrow = 10, ncol = 5, seed = 42) {
+  # fix the random seed for reproducibility
   set.seed(seed)
+  # draw Poisson counts with lambda = 10 and arrange them into a matrix
   m <- matrix(rpois(nrow * ncol, lambda = 10), 
               nrow = nrow, 
               ncol = ncol)
+  # assign sequential OTU names to columns
   colnames(m) <- paste0("OTU", seq_len(ncol))
   m
 }
@@ -102,6 +113,7 @@ test_that("df_mean_max has as many rows as columns in otu_filt", {
     y = apply(log(otu_filt + 1), 2, max),
     x = apply(log(otu_filt + 1), 2, mean)
   )
+  # one summary row is produced per OTU column
   expect_equal(nrow(df_mean_max), ncol(otu_filt))
 })
 
@@ -112,6 +124,7 @@ test_that("y (log-max) is always >= x (log-mean) for every OTU", {
     y = apply(log(otu_filt + 1), 2, max),
     x = apply(log(otu_filt + 1), 2, mean)
   )
+  # log-max must be at least as large as log-mean for every OTU
   expect_true(all(df_mean_max$y >= df_mean_max$x))
 })
 
@@ -122,6 +135,7 @@ test_that("x and y are all >= 0 due to the log(count + 1) shift", {
     y = apply(log(otu_filt + 1), 2, max),
     x = apply(log(otu_filt + 1), 2, mean)
   )
+  # log(0 + 1) = 0, so the minimum possible value is exactly 0
   expect_true(all(df_mean_max$x >= 0))
   expect_true(all(df_mean_max$y >= 0))
 })
@@ -134,6 +148,7 @@ test_that("the model formula is y ~ x", {
     x = apply(log(otu_filt + 1), 2, mean)
   )
   model <- lm(y ~ x, data = df_mean_max)
+  # deparse the formula object and compare it to the expected string
   expect_equal(deparse(formula(model)), "y ~ x")
 })
 
@@ -146,13 +161,14 @@ test_that("predict() returns as many values as rows in df_mean_max", {
   )
   model <- lm(y ~ x, data = df_mean_max)
   preds <- predict(model, newdata = df_mean_max)
+  # one prediction must be produced for each OTU in the input
   expect_length(preds, nrow(df_mean_max))
 })
 
 
 # -------- test for both inner and outer loop --------
 
-# Fixed HMP2 quantile parameter boundaries used throughout the tests
+# generate a dummy matrix that will be used in the tests
 HMP2_quantile_params <- matrix(
   c(1.0, 0.3, 0.1,
     3.0, 1.2, 0.8),
@@ -160,6 +176,7 @@ HMP2_quantile_params <- matrix(
   dimnames = list(c("10%", "90%"), c("meanlog", "sdlog", "phi"))
 )
 
+# set parameters for the test
 n_background_otus <- 20
 n_samples         <- 100
 
@@ -167,7 +184,7 @@ n_samples         <- 100
 # -------- test for the outer loop --------
 
 # params_random_HMP2 must have one row per OTU and values within HMP2 bounds
-test_that("params_random_HMP2 has correct shape and values within HMP2 bounds", {
+test_that("params_random_HMP2 does not have correct shape and values within HMP2 bounds", {
   set.seed(1)
   params_random_HMP2 <- data.frame(
     meanlog = runif(n_background_otus,
@@ -180,10 +197,14 @@ test_that("params_random_HMP2 has correct shape and values within HMP2 bounds", 
                     HMP2_quantile_params["10%", "phi"],
                     HMP2_quantile_params["90%", "phi"])
   )
+  # one row must be generated per background OTU
   expect_equal(nrow(params_random_HMP2), n_background_otus)
+  # column names must match the three lognormal-hurdle parameter names
   expect_named(params_random_HMP2, c("meanlog", "sdlog", "phi"))
+  # sampled meanlog values must stay within the 10th–90th percentile range
   expect_true(all(params_random_HMP2$meanlog >= HMP2_quantile_params["10%", "meanlog"]))
   expect_true(all(params_random_HMP2$meanlog <= HMP2_quantile_params["90%", "meanlog"]))
+  # sampled phi values must stay within the 10th–90th percentile range
   expect_true(all(params_random_HMP2$phi     >= HMP2_quantile_params["10%", "phi"]))
   expect_true(all(params_random_HMP2$phi     <= HMP2_quantile_params["90%", "phi"]))
 })
@@ -204,6 +225,7 @@ test_that("params_set is a full factorial grid with all required columns", {
            sdlog_2   = runif(n(), 0.3, 1.2))
   # Row count must equal 20 × 20 × 19 = 7,600
   expect_equal(nrow(params_set), length(phi_seq)^2 * length(cor_seq))
+  # all seven parameter columns must be present
   expect_true(all(c("phi_1", "phi_2", "cor",
                     "meanlog_1", "meanlog_2",
                     "sdlog_1",   "sdlog_2") %in% names(params_set)))
@@ -221,8 +243,11 @@ test_that("replacing target columns leaves all other columns unchanged", {
   new_col_a  <- rpois(n_samples, lambda = 8)
   new_col_b  <- rpois(n_samples, lambda = 3)
   modified        <- background
+  # overwrite column 5 with the first synthetic OTU
   modified[, 5]  <- new_col_a
+  # overwrite column 15 with the second synthetic OTU
   modified[, 15] <- new_col_b
+  # target columns must reflect the new values exactly
   expect_equal(modified[, 5],  new_col_a)
   expect_equal(modified[, 15], new_col_b)
   # Every column other than 5 and 15 must be untouched
@@ -234,10 +259,14 @@ test_that("replacing target columns leaves all other columns unchanged", {
 test_that("pseudo-value imputation removes all zeros without altering non-zero entries", {
   set.seed(42)
   mat <- matrix(c(0, 1, 2, 0, 5, 0), nrow = 2)
+  # generate a uniform random pseudo-count for every cell
   rand_pseudo <- matrix(runif(length(mat), min = 0.065, max = 0.65),
                         nrow = nrow(mat), ncol = ncol(mat))
+  # add pseudo-count only where the original matrix is zero
   mat_imputed <- mat + (mat == 0) * rand_pseudo
+  # all cells must now be strictly positive
   expect_true(all(mat_imputed > 0))
+  # non-zero entries must remain unchanged
   expect_equal(mat_imputed[mat != 0], mat[mat != 0])
 })
 
@@ -248,12 +277,19 @@ test_that("CLR correlation matrix is valid (symmetric, diagonal = 1, values in [
   # Build a positive matrix (no zeros) so log is always defined
   mat     <- matrix(rpois(n_samples * n_background_otus, 10) + 1,
                     nrow = n_samples, ncol = n_background_otus)
+  # apply log transformation
   log_mat <- log(mat)
+  # center log counts by subtracting the row geometric mean (CLR transform)
   clr_mat <- log_mat - rowMeans(log_mat)
+  # compute the Pearson correlation matrix on CLR-transformed data
   cor_mat <- cor(clr_mat)
+  # matrix must be square with one row/column per OTU
   expect_equal(dim(cor_mat), c(n_background_otus, n_background_otus))
+  # a variable is perfectly correlated with itself
   expect_equal(diag(cor_mat), rep(1, n_background_otus))
+  # Pearson correlation is always symmetric
   expect_true(isSymmetric(cor_mat))
+  # correlation values are bounded within [-1, 1]
   expect_true(all(cor_mat >= -1 & cor_mat <= 1))
 })
 
@@ -267,6 +303,7 @@ test_that("inner loop result row has all required columns and a valid correlatio
   log_mat  <- log(mat)
   clr_mat  <- log_mat - rowMeans(log_mat)
   cor_pclr <- cor(clr_mat)
+  # build a one-row data frame mirroring the inner loop output schema
   row_result <- data.frame(
     iteration      = 1L,
     cor_input      = 0.5,
@@ -279,14 +316,19 @@ test_that("inner loop result row has all required columns and a valid correlatio
     b_2            = 3.8,
     phi_1          = 0.2,
     phi_2          = 0.3,
+    # extract the pairwise CLR correlation between the two grafted OTU positions
     cor_NorTA_PCLR = cor_pclr[5, 15]
   )
   expected_cols <- c("iteration", "cor_input", "cor_normal",
                      "meanlog_1", "meanlog_2", "sdlog_1", "sdlog_2",
                      "b_1", "b_2", "phi_1", "phi_2", "cor_NorTA_PCLR")
+  # all 12 output columns must be present with the correct names
   expect_named(row_result, expected_cols)
+  # cor_NorTA_PCLR must be a single scalar, not a vector
   expect_length(row_result$cor_NorTA_PCLR, 1)
+  # the correlation must be a real number, not Inf or NaN
   expect_true(is.finite(row_result$cor_NorTA_PCLR))
+  # Pearson correlation is bounded within [-1, 1]
   expect_true(abs(row_result$cor_NorTA_PCLR) <= 1)
 })
 
@@ -295,8 +337,10 @@ test_that("accumulated result has correct row count and no NAs after all iterati
   set.seed(42)
   n_iter   <- 3
   n_params <- 5
+  # start with an empty data frame that will grow with each iteration
   result   <- data.frame()
   for (iter in seq_len(n_iter)) {
+    # build a dummy result block for the current iteration
     dummy_df <- data.frame(
       iteration      = iter,
       cor_input      = runif(n_params, -0.9,  0.9 ),
@@ -311,10 +355,11 @@ test_that("accumulated result has correct row count and no NAs after all iterati
       phi_2          = runif(n_params,  0  ,  0.95),
       cor_NorTA_PCLR = runif(n_params, -1  ,  1   )
     )
+    # append this iteration's rows to the growing result data frame
     result <- bind_rows(result, dummy_df)
   }
+  # total rows must equal iterations × parameter sets
   expect_equal(nrow(result), n_iter * n_params)
+  # no simulation run should have produced missing values
   expect_false(anyNA(result))
 })
-
-

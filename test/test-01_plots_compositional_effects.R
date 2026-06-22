@@ -7,84 +7,19 @@ library(here)
 library(testthat)
 
 
-# -------- test the that the preprocessed file is in the correct position --------
+# -------- Setup: load data once, shared across all tests --------
 
-test_that("The file is not in the folder", {
-  
-  expected_data_frame <- here("script", "compositional_effects", "compositional_effects_02.rds")
-  
-  found_data_frame <- list.files(
-    path       = here(),
-    pattern    = "^compositional_effects_02\\.rds$",
-    recursive  = TRUE,
-    full.names = TRUE
-  )
-  
-  expect_setequal(found_data_frame, expected_data_frame)
-})
+rds_path <- list.files(
+  path       = here(),
+  pattern    = "^compositional_effects_02\\.rds$",
+  recursive  = TRUE,
+  full.names = TRUE
+)
 
-# -------- test correct column name and size --------
+stopifnot("compositional_effects_02.rds not found or duplicated" = length(rds_path) == 1)
 
-test_that("there is a problem with the file columns: either one is empty or doesn't exist!", {
-  df <- readRDS(here("script", "compositional_effects", "compositional_effects_02.rds"))
-  
-  expect_true(all(c("d", "pielou", "ERR_L1", "ERR_CLR") %in% names(df)))
-  expect_gt(nrow(df), 0)
-})
+df       <- readRDS(rds_path)
 
-
-# -------- check the data frame after the pipelines --------
-
-test_that("there is a problem with the pipelined dataframe!", {
-  df <- readRDS(here("script", "compositional_effects", "compositional_effects_02.rds"))
-  expect_true(nrow(df) > 0)
-})
-
-
-# -------- test pielou values are in [0, 1] --------
-
-test_that("pielou values are outside [0, 1]", {
-  df <- readRDS(here("script", "compositional_effects", "compositional_effects_02.rds"))
-  
-  expect_true(all(df$pielou >= 0 & df$pielou <= 1))
-})
-
-
-# -------- test d values are positive integers --------
-
-test_that("d values are not positive integers", {
-  df <- readRDS(here("script", "compositional_effects", "compositional_effects_02.rds"))
-  
-  expect_true(all(df$d > 0))
-  expect_true(all(df$d == floor(df$d)))
-})
-
-
-# -------- test no NA in critical columns --------
-
-test_that("there are NA values in critical columns", {
-  df <- readRDS(here("script", "compositional_effects", "compositional_effects_02.rds"))
-  
-  expect_false(anyNA(df$d))
-  expect_false(anyNA(df$pielou))
-  expect_false(anyNA(df$ERR_L1))
-  expect_false(anyNA(df$ERR_CLR))
-})
-
-
-# -------- test ERR_L1 and ERR_CLR are non-negative --------
-
-test_that("ERR_L1 or ERR_CLR contain negative values", {
-  df <- readRDS(here("script", "compositional_effects", "compositional_effects_02.rds"))
-  
-  expect_true(all(df$ERR_L1  >= 0))
-  expect_true(all(df$ERR_CLR >= 0))
-})
-
-
-# -------- build df_sort (needed for downstream tests) --------
-
-df      <- readRDS(here("script", "compositional_effects", "compositional_effects_02.rds"))
 df_sort <- tibble::tibble()
 
 for (di in seq(5, 200, by = 5)) {
@@ -115,45 +50,111 @@ df_percentiles <- df_sort %>%
 df_control <- df_sort %>% dplyr::filter(pielou_error_logical == FALSE)
 
 
+# -------- test that the preprocessed file is in the expected location --------
+
+test_that("compositional_effects_02.rds must be at the expected project path", {
+
+  found_data_frame <- list.files(
+    path       = here(),
+    pattern    = "^compositional_effects_02\\.rds$",
+    recursive  = TRUE,
+    full.names = TRUE
+  )
+
+  expect_equal(found_data_frame, rds_path)
+})
+
+
+# -------- test correct column names and non-empty rows --------
+
+test_that("df must contain columns d, pielou, ERR_L1, ERR_CLR and at least one row", {
+
+  expect_true(all(c("d", "pielou", "ERR_L1", "ERR_CLR") %in% names(df)))
+  expect_gt(nrow(df), 0)
+})
+
+
+# -------- test pielou values are in [0, 1] --------
+
+test_that("pielou values must lie within [0, 1]", {
+
+  expect_true(all(df$pielou >= 0 & df$pielou <= 1))
+})
+
+
+# -------- test d values are positive integers --------
+
+test_that("d must contain only positive integers", {
+
+  expect_true(all(df$d > 0))
+  expect_true(all(df$d == floor(df$d)))
+})
+
+
+# -------- test no NA in critical columns --------
+
+test_that("critical columns (d, pielou, ERR_L1, ERR_CLR) must contain no NA values", {
+
+  expect_false(anyNA(df$d))
+  expect_false(anyNA(df$pielou))
+  expect_false(anyNA(df$ERR_L1))
+  expect_false(anyNA(df$ERR_CLR))
+})
+
+
+# -------- test ERR_L1 and ERR_CLR are non-negative --------
+
+test_that("ERR_L1 and ERR_CLR must be non-negative", {
+
+  expect_true(all(df$ERR_L1  >= 0))
+  expect_true(all(df$ERR_CLR >= 0))
+})
+
+
 # -------- test df_sort dimensions --------
 
-test_that("df_sort does not have the expected grid dimensions", {
+test_that("df_sort must have one row per (d, pielou_round) grid combination", {
+
   expected_rows <- length(seq(5, 200, by = 5)) * length(seq(0.025, 0.975, by = 0.025))
-  
+
   expect_equal(nrow(df_sort), expected_rows)
 })
 
 
 # -------- test uniqueness of (d, pielou_round) combinations --------
 
-test_that("df_sort contains duplicate (d, pielou_round) combinations", {
+test_that("each (d, pielou_round) pair in df_sort must be unique", {
+
   n_distinct_pairs <- df_sort %>%
     dplyr::distinct(d, pielou_round) %>%
     nrow()
-  
+
   expect_equal(n_distinct_pairs, nrow(df_sort))
 })
 
 
 # -------- test pielou_round contains exactly the expected grid values --------
 
-test_that("pielou_round does not match the expected grid values", {
+test_that("pielou_round must contain exactly the values of the expected grid seq(0.025, 0.975, by=0.025)", {
+
   expected_grid <- seq(0.025, 0.975, by = 0.025)
-  
+
   expect_setequal(unique(df_sort$pielou_round), expected_grid)
 })
 
 
 # -------- test pielou_error is non-negative --------
 
-test_that("pielou_error contains negative values", {
+test_that("pielou_error must be non-negative (it is an absolute difference)", {
+
   expect_true(all(df_sort$pielou_error >= 0))
 })
 
 
 # -------- test pielou_error_logical is logical with no NA --------
 
-test_that("pielou_error_logical is not logical or contains NA", {
+test_that("pielou_error_logical must be of type logical and contain no NA values", {
+
   expect_type(df_sort$pielou_error_logical, "logical")
   expect_false(anyNA(df_sort$pielou_error_logical))
 })
@@ -161,15 +162,17 @@ test_that("pielou_error_logical is not logical or contains NA", {
 
 # -------- test df_percentiles has one row per unique d --------
 
-test_that("df_percentiles does not have one row per unique value of d", {
+test_that("df_percentiles must have exactly one summary row per unique value of d", {
+
   expect_equal(nrow(df_percentiles), length(unique(df_sort$d)))
 })
 
 
 # -------- test df_control proportion is acceptable --------
 
-test_that("too many rows failed the pielou quality control threshold", {
+test_that("rows failing the pielou quality-control threshold must be fewer than 10%", {
+
   prop_failed <- nrow(df_control) / nrow(df_sort)
-  
+
   expect_lt(prop_failed, 0.10)
 })
