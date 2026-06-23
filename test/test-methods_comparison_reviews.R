@@ -96,7 +96,7 @@ test_that("Rho OTU-level diagonal does not have only one values", {
 
 test_that("Phylum-level correlation matrices are not square", {
   # all phylum-level correlation matrices must be square
-  expect_equal(nrow(res_clr.phy), ncol(res_clr.phy))
+  expect_equal(nrow(res_clr_phy), ncol(res_clr_phy))
   expect_equal(nrow(res_cc_phy ), ncol(res_cc_phy ))
   expect_equal(nrow(res_rho_phy), ncol(res_rho_phy))
   expect_equal(nrow(res_L1_phy ), ncol(res_L1_phy ))
@@ -104,7 +104,7 @@ test_that("Phylum-level correlation matrices are not square", {
 
 test_that("Phylum-level correlation matrices dimensions do not match phy", {
   # number of rows/cols must equal number of phyla
-  expect_equal(nrow(res_clr.phy), ncol(phy))
+  expect_equal(nrow(res_clr_phy), ncol(phy))
   expect_equal(nrow(res_cc_phy ), ncol(phy))
   expect_equal(nrow(res_rho_phy), ncol(phy))
   expect_equal(nrow(res_L1_phy ), ncol(phy))

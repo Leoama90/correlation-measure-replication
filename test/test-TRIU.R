@@ -1,13 +1,14 @@
 # testthat: unit testing framework for R
 # https://cran.r-project.org/web/packages/testthat/index.html
 library(testthat)
-
 # here: builds file paths relative to the project root
 # https://cran.r-project.org/web/packages/here/index.html
 library(here)
 
-# -------- test TRIU function for errors --------
-test_that("there is an error here", {
+
+# ---- test TRIU function for errors ------------------------------------------
+
+test_that("TRIU does not raise an error on invalid input", {
   
   # load function from script
   source(here("script", "method_comparison", "TRIU.R"))
@@ -27,12 +28,14 @@ test_that("there is an error here", {
   expect_error(TRIU(z_nonsym))
 })
 
-# -------- test TRIU function output --------
-test_that("there is a problem with the output of the script", {
+
+# ---- test TRIU function output ----------------------------------------------
+
+test_that("TRIU does not return the expected upper triangular vector", {
   
   # load function from script
   source(here("script", "method_comparison", "TRIU.R"))
-  
+
   # generate symmetric dummy matrix
   z <- matrix(c(1, 2, 3,
                 2, 4, 5,

@@ -9,7 +9,8 @@ library(testthat)
 
 # -------- test Parameters --------
 
-Dimension <- 10  # small dimension for fast testing
+# small dimension for fast testing
+Dimension <- 10  
 n_taxa_connected <- 5
 corr_val <- 0.7
 total_possible_edges <- Dimension * (Dimension - 1) / 2
@@ -21,7 +22,8 @@ test_that("block correlation matrix is built correctly", {
   
   corM <- diag(1, Dimension, Dimension)
   corM[1:n_taxa_connected, 1:n_taxa_connected] <- corr_val
-  diag(corM) <- 1  # restore diagonal after block assignment
+  # restore diagonal after block assignment
+  diag(corM) <- 1  
   
   # diagonal must be all ones
   expect_true(all(diag(corM) == 1))
