@@ -14,7 +14,7 @@ library(vegan)
 # defines a function that computes the Pielou mean across all samples
 mean_Pielou <- function(x){
   # divides Shannon diversity by log of number of species, then averages across samples
-  P <- mean(apply(x, 1, diversity) / log(ncol(x)))
+  P <- mean(apply(x, 1, vegan::diversity) / log(ncol(x)))
   # returns the result rounded to 2 decimal places
   return(round(P, 2))
 }
@@ -120,7 +120,7 @@ plot(toy_D30_P50, "L1",     vertex.label = NA)
 plot(toy_D30_P50, "CLR",    vertex.label = NA)
 
 # allows drawing outside the plot area
-par(xpd = NA)
+par(xpd  = NA)
 
 # draws horizontal lines to visually separate the rows
 abline

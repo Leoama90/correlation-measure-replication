@@ -6,18 +6,19 @@ library(here)
 # https://cran.r-project.org/web/packages/testthat/index.html
 library(testthat)
 
+# vegan: community ecology analysis
+# https://cran.r-project.org/package=vegan
+library(vegan)
+
 # loads the main script to make its variables available in the test environment
 source(here("script", "biases_parameters_examples", "biases_parameters_examples.R"))
 
-
-# -------- test Mean Pielou -------- 
-
-test_that("Pielou mean is not correct",{
+# -------- generate a dummy matrix for testing purposes --------
 
 # generates a 3x3 matrix with random numbers to test the function
 set.seed(42)
 test_matrix <- matrix(runif(9), nrow = 3, ncol = 3) 
-})
+
 
 
 # -------- testing that the function gives a result lower than 1 and greater than 0 --------
@@ -42,9 +43,22 @@ expect_equal(mean_Pielou(unitary_matrix), 1)
 
 test_that("Shape of the correlation matrixes is not correct",{
 
-expect_shape(cor_D5,   dim = c(5, 5))
-expect_shape(cor_D30,  dim = c(30, 30))
-expect_shape(cor_D100, dim = c(100, 100))
+d5_row <- nrow(cor_D5)  
+d5_col <- ncol(cor_D5)
+
+d30_row <- nrow(cor_D30)  
+d30_col <- ncol(cor_D30)
+
+d100_row <- nrow(cor_D100)  
+d100_col <- ncol(cor_D100)
+
+expect_equal(d5_row,     5)
+expect_equal(d5_col,     5)
+expect_equal(d30_row,   30)
+expect_equal(d30_col,   30)
+expect_equal(d100_row, 100)
+expect_equal(d100_col, 100)
+
 })
 
 

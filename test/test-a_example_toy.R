@@ -17,18 +17,18 @@ source(here("script", "sparsity_effects", "a_example_toy.R"))
 # -------- testing adjancency matrix --------
 
 # check that the adjacency matrix has exactly 40 rows and 40 columns
-test_that("The adjacency matrix is not 40x40", {
+test_that("The adjacency matrix should be 40x40", {
   expect_equal(nrow(adj), 40)
   expect_equal(ncol(adj), 40)
 })
 
 # check that adj is a matrix
-test_that("This is not a matrix", {
+test_that("The adj object should be a matrix", {
   expect_true(is.matrix(adj))
 })
 
 # check that the adjacency matrix is squared
-test_that("The adj matrix is not squared", {
+test_that("The adj matrix must be squared", {
   expect_true(ncol(adj) == nrow(adj))
 })
 
@@ -36,17 +36,17 @@ test_that("The adj matrix is not squared", {
 # -------- test for the graph --------
 
 # check that the graph has exactly 40 nodes
-test_that("The graph does not have 40 nodes", {
+test_that("The graph should have 40 nodes", {
   expect_equal(vcount(g), 40)
 })
 
 # check that the graph has exactly 1 edge
-test_that("The graph does not have exactly 1 edge", {
+test_that("The graph should have exactly 1 edge", {
   expect_equal(ecount(g), 1)
 })
 
 # check that the graph is undirected
-test_that("The graph is not undirected", {
+test_that("The graph should be undirected", {
   expect_false(is_directed(g))
 })
 

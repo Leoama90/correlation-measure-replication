@@ -29,8 +29,15 @@ library(testthat)
 # -------- test data loading --------
 
 # load OTU abundance matrix (samples x OTUs) and sample metadata
-otu  <- readRDS(here("data", "otu_HMP2.rds" ))
-meta <- readRDS(here("data", "meta_HMP2.rds"))
+otu  <- readRDS(list.files(path       = here(),
+                           pattern    = "otu_HMP2.rds",
+                           full.names = TRUE,
+                           recursive  = TRUE))
+
+meta <- readRDS(list.files(path       = here(),
+                           pattern    = "meta_HMP2.rds",
+                           full.names = TRUE,
+                           recursive  = TRUE))
 
 # verify that otu is a numeric matrix and meta is a list,
 # as required by all downstream operations
