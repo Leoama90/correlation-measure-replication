@@ -8,11 +8,15 @@
 library(igraph)
 
 LAYOUT_SIGNED <- function(g){
-  g.sub <- subgraph.edges(graph = g,
-                                  eids = which(E(g)$weight>0),
-                                  delete.vertices = FALSE)
   
+  # Extract a subgraph containing only edges with a positive weight
+  g.sub <- subgraph.edges(graph = g,
+                          eids = which(E(g)$weight > 0),
+                          delete.vertices = FALSE)
+  
+  # Compute vertex coordinates using the Fruchterman-Reingold force-directed algorithm
   layout <- layout.fruchterman.reingold(g.sub)
   
+  # Return the matrix of (x, y) coordinates for each vertex
   return(layout)
 }

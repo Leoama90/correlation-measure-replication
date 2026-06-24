@@ -34,9 +34,19 @@ library(SpiecEasi)
 # -------- read data --------
 
 # Load OTU abundance matrix (samples x OTUs)
-otu  <- readRDS(here("data", "otu_HMP2.rds" ))
+otu <- readRDS(list.files(
+  path       = here(),
+  pattern    = "otu_HMP2.rds",
+  full.names = TRUE,
+  recursive  = TRUE
+))
 # Load sample metadata
-meta <- readRDS(here("data", "meta_HMP2.rds"))
+meta <- readRDS(list.files(
+  path       = here(),
+  pattern    = "meta_HMP2.rds",
+  full.names = TRUE,
+  recursive  = TRUE
+))
 
 
 # -------- filter data --------

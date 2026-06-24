@@ -52,8 +52,8 @@ info     <- data.frame(PCLR) %>% rownames_to_column("OTU_I") %>%
   mutate(prev_I = otu_prev[OTU_I],
          prev_J = otu_prev[OTU_J]) %>%
   # Convert prevalences to zero-rates (% of samples where the OTU is absent)
-  mutate(zero_I = 100 * round(1-prev_I, 2),
-         zero_J = 100 * round(1-prev_J, 2))
+  mutate(zero_I = 100 * round(1 - prev_I, 2),
+         zero_J = 100 * round(1 - prev_J, 2))
 
 # Subset pairs where both OTUs are low-prevalence (<=50%) and strongly correlated (|r|>=0.4)
 info_filt <- info %>%

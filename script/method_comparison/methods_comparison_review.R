@@ -99,7 +99,7 @@ res_clr <- cor(CLR(otu_filt), method = "pearson")
 
 # -------- SCATTER PLOTS (OTU LEVEL) --------
 
-# Pearson+CLR vs Pearson+L1
+# Pearson + CLR vs Pearson+L1
 p0 <- ggscatter(data.frame("PearsonCLR" = TRIU(res_clr),
                            "PearsonL1"  = TRIU(res_L1)),
                         x   = "PearsonCLR", 
@@ -115,11 +115,11 @@ p0 <- ggscatter(data.frame("PearsonCLR" = TRIU(res_clr),
                    vjust   =  1.5, 
                    size    =  6.0) +
   theme_bw() +
-  xlab("Pearson+CLR") + 
+  xlab("Pearson + CLR") + 
   ylab("Pearson+L1" ) +
   theme(plot.title = element_text(hjust = 0.5))
 
-# Pearson+CLR vs SparCC
+# Pearson + CLR vs SparCC
 p1 <- ggscatter(data.frame("PearsonCLR" = TRIU(res_clr),
                            "SparCC"     = TRIU(res_cc)),
                         x   = "PearsonCLR", 
@@ -135,10 +135,10 @@ p1 <- ggscatter(data.frame("PearsonCLR" = TRIU(res_clr),
                    vjust    =  1.5, 
                    size     =  6.0) +
   theme_bw() +
-  xlab("Pearson+CLR") +
+  xlab("Pearson + CLR") +
   theme(plot.title = element_text(hjust = 0.5))
 
-# Pearson+CLR vs Rho
+# Pearson + CLR vs Rho
 p2 <- ggscatter(data.frame("PearsonCLR" = TRIU(res_clr),
                            "Rho"        = TRIU(res_rho)),
                         x   = "PearsonCLR", 
@@ -154,7 +154,7 @@ p2 <- ggscatter(data.frame("PearsonCLR" = TRIU(res_clr),
              vjust   =  1.5, 
              size    =  6.0) +
   theme_bw() +
-  xlab("Pearson+CLR") +
+  xlab("Pearson + CLR") +
   theme(plot.title = element_text(hjust = 0.5))
 
 
@@ -199,13 +199,13 @@ colnames(res_cc_phy) <- rownames(res_cc_phy) <- colnames(phy)
 # Rho proportionality on phylum abundances
 res_rho_phy <- propr(counts = phy, metric = "rho")@matrix
 
-# Pearson+CLR on phylum abundances (reference method)
+# Pearson + CLR on phylum abundances (reference method)
 res_clr_phy <- cor(CLR(phy), method = "pearson")
 
 
 # -------- SCATTER PLOTS (PHYLUM LEVEL) --------
 
-# Pearson+CLR vs Pearson+L1
+# Pearson + CLR vs Pearson+L1
 p0_phy <- ggscatter(data.frame("PearsonCLR" = TRIU(res_clr_phy),
                                "PearsonL1"  = TRIU(res_L1_phy)),
                             x   = "PearsonCLR", 
@@ -221,10 +221,10 @@ p0_phy <- ggscatter(data.frame("PearsonCLR" = TRIU(res_clr_phy),
              vjust   =   1.5, 
              size    =   6.0) +
   theme_bw() +
-  xlab("Pearson+CLR") + 
+  xlab("Pearson + CLR") + 
   ylab("Pearson+L1")
 
-# Pearson+CLR vs SparCC
+# Pearson + CLR vs SparCC
 p1_phy <- ggscatter(data.frame("PearsonCLR" = TRIU(res_clr_phy),
                                "SparCC"     = TRIU(res_cc_phy)),
                             x   = "PearsonCLR", 
@@ -240,9 +240,9 @@ p1_phy <- ggscatter(data.frame("PearsonCLR" = TRIU(res_clr_phy),
                    vjust   =   1.5, 
                    size    =   6.0) +
   theme_bw() +
-  xlab("Pearson+CLR")
+  xlab("Pearson + CLR")
 
-# Pearson+CLR vs Rho
+# Pearson + CLR vs Rho
 p2.phy <- ggscatter(data.frame("PearsonCLR" = TRIU(res_clr_phy),
                                "Rho"        = TRIU(res_rho_phy)),
                             x   = "PearsonCLR", 
@@ -258,7 +258,7 @@ p2.phy <- ggscatter(data.frame("PearsonCLR" = TRIU(res_clr_phy),
                    vjust   =   1.5, 
                    size    =   6.0 ) +
   theme_bw() +
-  xlab("Pearson+CLR") +
+  xlab("Pearson + CLR") +
   theme(plot.title = element_text(hjust = 0.5))
 
 

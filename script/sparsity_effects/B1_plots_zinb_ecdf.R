@@ -13,8 +13,8 @@ library(tidyverse)
 
 # Load the dataset, drop the second zero-inflation parameter column,
 # rename the first one, and compute the absolute correlation error for CLR
-df <- readRDS(list.files(path = here(),
-                         pattern = "Sparsity_Effects_zinbin_rare_ecdf_2.rds",
+df <- readRDS(list.files(path       = here(),
+                         pattern    = "Sparsity_Effects_zinbin_rare_ecdf_2.rds",
                          full.names = TRUE,
                          recursive  = TRUE
                          )) %>% 
@@ -34,11 +34,8 @@ myPalette <-
 # then build a heatmap tile plot with a custom gradient fill
 p <- df %>%
   reframe(MEAN_ERR_CLR = mean(ERR_CLR), .by = c(cor_input, pstr0)) %>%
-  
   ggplot(aes(x = cor_input, y = pstr0, fill = MEAN_ERR_CLR)) +
-  
   geom_tile() + 
-  
   theme_bw() +
   
   # Apply the custom palette with non-linear breakpoints to emphasize low-error regions
@@ -46,18 +43,13 @@ p <- df %>%
                        values = c(seq(0, 0.5, by = 0.05), 1),
                        limits = c(0, 1),
                        labels = c("0", "0.25", "0.5", "0.75", "1")) +
-  
   # Remove colourbar tick marks for a cleaner legend appearance
   guides(fill = guide_colorbar(ticks.colour = NA)) +
-  
   theme(legend.text = element_text(size     = 10)) +
-  
   # Set y-axis (phi) breaks every 0.1, no padding
   scale_y_continuous(breaks = seq( 0,   0.9, 0.1), expand = c(0, 0))  +
-  
   # Set x-axis (r) breaks every 0.2, no padding
   scale_x_continuous(breaks = seq(-0.8, 0.8, 0.2), expand = c(0, 0)) +
-  
   # Rotate x-axis labels 90° for readability
   theme(axis.text.x = element_text(angle = 90, 
                                    vjust = 0.5, 
@@ -65,11 +57,8 @@ p <- df %>%
   
   # Label axes: r for correlation input, phi (Greek letter) for zero-inflation
   xlab("r") +
-  
   ylab(expression(phi))  +
-  
   theme(axis.title  = element_text(size  = 12)) +
-  
   # Place the colorbar legend at the top of the plot
   theme(legend.position = "top")
 

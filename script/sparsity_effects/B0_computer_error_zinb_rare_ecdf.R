@@ -109,7 +109,7 @@ for (iter in 1:nIteration) {
     "size"  = quantile(HMP2_params_filt$size,  probs = runif(runif(200))),
     "pstr0" = quantile(HMP2_params_filt$pstr0, probs = runif(runif(200)))
   )
-  
+  # generate a dummy dataset that will serve as noise 
   random_HMP2 <- ToyModel::toy_model(
     n     = 10^4,   
     cor   = diag(200),  
@@ -126,8 +126,8 @@ for (iter in 1:nIteration) {
   # build a grid of all combinations of input correlation and zero-inflation (pstr0),
   # then randomly draw munb and size parameters from the filtered HMP2 empirical distribution
   params_set <- expand_grid(
-    "cor"     = seq(-.9, .9, by = .1),   
-    "pstr0_1" = seq(0, .95, by = .05)    
+    "cor"     = seq(-0.9, 0.9 , by = 0.1 ),   
+    "pstr0_1" = seq( 0  , 0.95, by = 0.05)    
   ) %>%
     mutate(
       pstr0_2 = pstr0_1, .after = pstr0_1,        

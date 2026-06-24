@@ -29,7 +29,8 @@ p <- df %>%
   # Map cor_input to x-axis, phi to y-axis, and mean error to fill color
   ggplot(aes(x = cor_input, y = phi, fill = MEAN_ERR_CLR)) +
   # Draw a heatmap tile for each (cor_input, phi) combination
-  geom_tile() + theme_bw() +
+  geom_tile() + 
+  theme_bw() +
   # Apply the custom palette with non-linear breakpoints and fixed [0,1] range
   scale_fill_gradientn("MAE", colours = myPalette(12),
                        values = c(seq(0,.5,by = .05),1),

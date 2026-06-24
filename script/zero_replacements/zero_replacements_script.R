@@ -1,15 +1,12 @@
 # Collection of packages for data wrangling and visualization
 # https://cran.r-project.org/web/packages/tidyverse/index.html
 library(tidyverse)
-
 # ggplot2 extensions for publication-ready graphics (scatter, stat_cor)
 # https://cran.r-project.org/web/packages/ggpubr/index.html
 library(ggpubr)
-
 # Imputation of zeros, left-censored and missing values in compositional data
 # https://cran.r-project.org/web/packages/zCompositions/index.html
 library(zCompositions)
-
 # Load custom function
 source(here("script", "method_comparison", "CLR.R"))
 
@@ -28,16 +25,19 @@ meta <- readRDS(list.files(
   full.names = TRUE,
   recursive  = TRUE
 ))
+# Read the taxonomy table
 taxa <- readRDS(list.files(path       = here(),
                            pattern    = "taxonomy.rds",
                            full.names = TRUE,
                            recursive  = TRUE))
+
 # Select samples belonging to 69-001 subject in health status
 otu_69001_H <- otu[meta$SubjectID == "69-001" & meta$CL4_2 == "Healthy", ]
 
 # Remove rarest OTUs using prevalence and median of non-zero values
 otu_filt  <- otu_69001_H[, colSums(otu_69001_H > 0) / nrow(otu_69001_H) >= 0.33]
 otu_filt  <- otu_filt[, apply(otu_filt, 2, function(x) median(x[x > 0]) >= 5)]
+# Subset taxonomy to retain only the filtered OTUs
 taxa_filt <- taxa[colnames(otu_filt), ]
 
 # -------- different zero strategies --------
@@ -90,12 +90,13 @@ png(width = 1600, height = 1200, res = 300,
 
 # create histogram plot
 p <- tbl %>%
-    ggplot(aes(x = max_abs_diff)) +
-  
-    geom_histogram(bins = 50, fill = "lightgreen", color = "darkgreen") +
-  
-    theme_bw() +
-  
-    xlab("Maximum Absolute Difference in Correlation\nbetween Zero-Replacement Strategies\n(CZM, GBM, BL, 65% detection threshold)")
+  ggplot(aes(x = max_abs_diff)) +
+  # Draw histogram with 50 bins and green fill
+  geom_histogram(bins = 50, fill = "lightgreen", color = "darkgreen") +
+  # Apply a clean black-and-white theme
+  theme_bw() +
+  xlab("Maximum Absolute Difference in Correlation\nbetween Zero-Replacement Strategies\n(CZM, GBM, BL, 65% detection threshold)")
+
 print(p)
+# Close the PNG graphics device and write the file to disk
 dev.off()

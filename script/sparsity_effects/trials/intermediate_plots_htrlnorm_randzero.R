@@ -83,10 +83,10 @@ p_htrlnorm_min <- df %>%
   summarise(err_clr_mean = mean(err_clr), .by = c(cor_input, phi_min)) %>%
   ggplot(aes(x = cor_input, y = phi_min, fill = err_clr_mean)) +
   geom_tile() +
-  theme_bw() +
+  theme_bw()  +
   tile_scales +
   # Set axis breaks and remove padding around the tiles
-  scale_y_continuous(breaks = seq(0.1, 0.9, 0.1),  expand = c(0, 0)) +
+  scale_y_continuous(breaks = seq( 0.1, 0.9, 0.1), expand = c(0, 0)) +
   scale_x_continuous(breaks = seq(-0.8, 0.8, 0.2), expand = c(0, 0))
 
 # -------- Mean sparsity across the pair --------
@@ -99,7 +99,7 @@ p_htrlnorm_mean <- df %>%
   theme_bw() +
   tile_scales +
   # Use discrete y-axis because phi_mean was coerced to factor
-  scale_y_discrete(breaks = seq(0.1, 0.9, 0.1), expand = c(0, 0)) +
+  scale_y_discrete(breaks   = seq( 0.1, 0.9, 0.1), expand = c(0, 0)) +
   scale_x_continuous(breaks = seq(-0.8, 0.8, 0.2), expand = c(0, 0))
 
 # -------- Maximum sparsity across the pair --------
@@ -110,7 +110,7 @@ p_htrlnorm_max <- df %>%
   geom_tile() +
   theme_bw() +
   tile_scales +
-  scale_y_continuous(breaks = seq(0.1, 0.9, 0.1),  expand = c(0, 0)) +
+  scale_y_continuous(breaks = seq( 0.1, 0.9, 0.1), expand = c(0, 0)) +
   scale_x_continuous(breaks = seq(-0.8, 0.8, 0.2), expand = c(0, 0))
 
 # Save the three-panel heatmap figure

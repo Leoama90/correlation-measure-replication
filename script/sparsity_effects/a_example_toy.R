@@ -22,10 +22,10 @@ loadfonts(device = "postscript")
 adj <- matrix(0, nrow = 40, ncol = 40)
 
 # add a single undirected edge between node 5 and node 25
-adj[5,25] <- adj[25,5] <- 1
+adj[5, 25] <- adj[25, 5] <- 1
 
 # create an undirected graph from the adjacency matrix
-g <- graph_from_adjacency_matrix(adj, mode="undirected")
+g <- graph_from_adjacency_matrix(adj, mode = "undirected")
 
 # style the edge: dark gray, width 2, dashed line
 E(g)$color <- "darkgray"
