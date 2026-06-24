@@ -187,7 +187,7 @@ p1 <- ggscatter(
            label.y = -0.25, 
            size    =  6.00) +
   theme_bw() +
-  xlab("Pearson+CLR") +
+  xlab("Pearson + CLR") +
   theme(plot.title = element_text(hjust = 0.5))
 
 
@@ -205,7 +205,7 @@ p2 <- ggscatter(
            label.y = -0.25, 
            size    =  6.00) +
   theme_bw() + 
-  xlab("Pearson+CLR") +
+  xlab("Pearson + CLR") +
   theme(plot.title = element_text(hjust = 0.5))
 
 
