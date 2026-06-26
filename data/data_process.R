@@ -1,3 +1,30 @@
+# data_process.R
+#
+# Purpose:
+#   Import the raw HMP2 CSV files, perform basic integrity checks, and
+#   save cleaned RDS versions for downstream analysis.
+#
+# Inputs:
+#   - data/raw/otu_HMP2_16S.csv
+#   - data/raw/meta_HMP2.csv
+#   - data/raw/taxonomy_HMP2_16S.csv
+#
+# Checks performed:
+#   - sample names match between OTU and metadata tables
+#   - OTU column names match taxonomy row names
+#   - OTU values are numeric
+#   - OTU counts are non-negative
+#
+# Outputs:
+#   - data/otu_HMP2.rds
+#   - data/meta_HMP2.rds
+#   - data/taxonomy.rds
+#
+# Notes:
+#   - This script is the data-ingestion entry point for the project.
+#   - Downstream scripts should load the RDS files produced here.
+
+#
 # here: builds file paths relative to the project root
 # https://cran.r-project.org/web/packages/here/index.html
 library(here)
