@@ -1,3 +1,31 @@
+# zero_replacements_script.R
+#
+# Purpose:
+#   Assess how sensitive CLR correlation estimates are to the choice of
+#   zero-replacement strategy, using four different imputation methods on
+#   the same real HMP2 data.
+#
+# Input:
+#   - HMP2 OTU abundance table
+#   - HMP2 sample metadata
+#   - HMP2 taxonomy table
+#   - The script subsets subject 69-001 in healthy status
+#   - OTUs are filtered by prevalence and abundance thresholds
+#
+#   Zero-replacement strategies compared:
+#   - CZM: Count Zero Multiplicative
+#   - GBM: Geometric Bayesian Multiplicative
+#   - BL: Beta-binomial Log-ratio
+#   - PC65: simple scalar replacement at 65% of the detection limit
+#
+# Output:
+#   - A histogram of the maximum absolute correlation spread across OTU pairs
+#     saved as a PNG:
+#     here("Plots", "correlation_differences_between_zeroRepl.png")
+#
+#   The plot summarizes how much pairwise CLR correlations change depending
+#   on the zero-replacement method.
+#
 # Collection of packages for data wrangling and visualization
 # https://cran.r-project.org/web/packages/tidyverse/index.html
 library(tidyverse)
