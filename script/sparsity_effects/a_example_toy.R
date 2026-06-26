@@ -1,3 +1,16 @@
+# a_example_toy.R
+# 
+# Purpose: 
+#   This script generates a minimal network illustration to visually 
+#   explain the concept of a single edge between two labeled nodes in a larger graph.
+#
+# Inputs:
+#   - No external files required. All inputs are defined inline:
+#     * adj <- matrix(0, nrow = 40, ncol = 40)
+#     * adj[5, 25] <- adj[25, 5] <- 1
+# Outputs:
+#   - a single .png image showing a graph with the connection of two nodes
+#
 # extrafont: used to use fonts other than the standard PostScript fonts
 # https://cran.r-project.org/web/packages/extrafont/index.html
 library(extrafont)
