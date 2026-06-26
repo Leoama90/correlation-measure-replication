@@ -1,3 +1,25 @@
+# correlation_sparsity.R
+#
+# Purpose:
+#   Investigate how the structure of the true correlation matrix affects
+#   CLR compositional bias, comparing two scenarios: block-structured
+#   correlations and random Gaussian correlations.
+#
+# Input:
+#   - No external data files.
+#   - The script generates all required inputs internally by:
+#     * constructing block correlation matrices over a grid of parameters
+#     * generating dense random Gaussian correlation matrices
+#     * simulating compositional data with ToyModel
+#
+#   In the block experiment, the input parameter grid is:
+#   - Dimension = 500
+#   - taxa_connected = 200 down to 0
+#   - correlation_value = 0.5 to 0.9 by 0.1
+#
+#   In the Gaussian experiment, the script generates 100 random dense
+#   correlation matrices from symmetric Gaussian random matrices.
+#
 # doSNOW: parallel backend for foreach, supports progress bars via snow clusters
 # https://cran.r-project.org/web/packages/doSNOW/index.html
 library(doSNOW)
