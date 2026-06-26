@@ -1,3 +1,20 @@
+# 00_compute_error.R
+#
+# Purpose:
+#   Quantify how compositional bias changes as dataset dimensionality and
+#   evenness increase, comparing L1 and CLR normalization methods.
+#
+#   The script simulates datasets with no true correlation structure
+#   (cor = identity matrix) and measures how much spurious correlation is
+#   introduced after normalization.
+#
+# Parameters:
+#   - dimensions: grid of dimensionalities from 5 to 200
+#   - magnification: two evenness settings, 1 and 2
+#
+# Outputs:
+#   - RDS file containing simulation results for downstream analysis
+#
 # doParallel: parallel backend for foreach
 # [https://cran.r-project.org/package=doParallel](https://cran.r-project.org/package=doParallel)
 library(doParallel)
