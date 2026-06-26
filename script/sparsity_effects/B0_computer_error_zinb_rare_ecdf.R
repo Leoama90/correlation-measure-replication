@@ -1,3 +1,29 @@
+# B0_computer_error_zinb_rare_ecdf.R
+#
+# Purpose:
+#   Study how zero-inflation affects CLR correlation estimation under ZINB
+#   margins, using rarefied counts and empirical quantile sampling to keep
+#   parameter ranges realistic.
+#
+# Input:
+#   - HMP2 OTU abundance table
+#   - HMP2 sample metadata
+#   - The script subsets subject 69-001 in healthy status
+#   - OTU counts are filtered by prevalence and abundance, then rarefied to
+#     a common library size before fitting ZINB parameters
+#
+#   Parameter estimation step:
+#   - ZINB parameters (munb, size, pstr0) are fitted to each OTU
+#   - Only OTUs whose fitted parameters fall within the 10th–90th percentile
+#     range are retained for empirical sampling
+#
+# Outputs:
+#   - Sparsity_Effects_zinbin_rare_ecdf.rds
+#
+#   The script simulates OTU pairs across a grid of input correlation and
+#   zero-inflation values, embeds them into a compositional background,
+#   applies CLR, and records the resulting Pearson correlation.
+#
 # doSNOW: parallel backend for foreach, supports progress bars via snow clusters
 # https://cran.r-project.org/web/packages/doSNOW/index.html
 library(doSNOW)
