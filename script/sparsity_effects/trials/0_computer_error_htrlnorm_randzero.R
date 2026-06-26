@@ -1,3 +1,26 @@
+# 0_computer_error_htrlnorm_randzero.R
+#
+# Purpose:
+#   Variant of the htrlnorm sparsity simulation that introduces random
+#   pseudo-count imputation before CLR transformation, to test whether the
+#   zero-handling strategy changes the results.
+#
+# Input:
+#   - HMP2 OTU abundance table
+#   - HMP2 sample metadata
+#   - The script subsets subject 69-001 in healthy status
+#   - OTUs are filtered by prevalence and abundance
+#   - htrlnorm parameters are fitted to each filtered OTU
+#   - A mean–max relationship is learned via linear regression
+#
+#   Compared with the earlier htrlnorm script:
+#   - phi_1 and phi_2 vary independently
+#   - zeros are replaced with random pseudo-counts before CLR
+#
+# Output:
+#   - A simulation results file saved in:
+#     here("script", "sparsity_effects", "trials", "Sparsity_Effects_htrlnorm_rand_pseudo.rds")
+#
 # doSNOW: parallel backend for foreach, supports progress bars via snow clusters
 # https://cran.r-project.org/web/packages/doSNOW/index.html
 library(doSNOW)
