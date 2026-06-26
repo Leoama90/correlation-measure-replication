@@ -1,3 +1,27 @@
+# 0_computer_error_zinb.R
+#
+# Purpose:
+#   ZINB variant of the asymmetric sparsity simulation, where pstr0_1 and
+#   pstr0_2 vary independently, mirroring the structure of the htrlnorm
+#   random pseudo-count trial from the previous script.
+#
+# Input:
+#   - HMP2 OTU abundance table
+#   - HMP2 sample metadata
+#   - The script subsets subject 69-001 in healthy status
+#   - OTUs are filtered by prevalence and abundance
+#   - ZINB parameters are fitted to each filtered OTU
+#   - The 10th–90th percentile range of fitted parameters is used to define
+#     a realistic simulation space
+#
+#   Compared with earlier ZINB scripts:
+#   - pstr0_1 and pstr0_2 vary independently
+#   - background OTUs are sampled with uniform draws within the empirical range
+#
+# Output:
+#   - A results file saved in:
+#     here("script", "sparsity_effects", "trials", "Sparsity_Effects_zinbin_rare.rds")
+#
 # doSNOW: parallel backend for foreach, supports progress bars via snow clusters
 # https://cran.r-project.org/web/packages/doSNOW/index.html
 library(doSNOW)

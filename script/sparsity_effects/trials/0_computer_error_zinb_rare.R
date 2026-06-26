@@ -1,3 +1,28 @@
+# 0_computer_error_zinb_rare.R
+#
+# Purpose:
+#   Non-rarefied ZINB counterpart to the previous trials, studying how
+#   asymmetric sparsity distorts CLR correlation estimates without the
+#   rarefaction step applied in earlier versions.
+#
+# Input:
+#   - HMP2 OTU abundance table
+#   - HMP2 sample metadata
+#   - The script subsets subject 69-001 in healthy status
+#   - OTUs are filtered by prevalence and abundance
+#   - ZINB parameters are fitted to each filtered OTU
+#   - The 10th–90th percentile range of fitted parameters is used to define
+#     a realistic simulation space
+#
+#   Compared with the zinbin_rare variant:
+#   - rarefaction is skipped
+#   - pstr0_1 and pstr0_2 vary independently
+#   - background OTUs are sampled with uniform draws within the empirical range
+#
+# Output:
+#   - A results file saved in:
+#     here("script", "sparsity_effects", "trials", "Sparsity_Effects_zinbin.rds")
+#
 # doSNOW: parallel backend for foreach, supports progress bars via snow clusters
 # https://cran.r-project.org/web/packages/doSNOW/index.html
 library(doSNOW)
