@@ -1,3 +1,22 @@
+# 01_plots_compositional_effects.R
+#
+# Purpose:
+#   Visualize how compositional bias from L1 and CLR normalization varies
+#   across dimensionality and evenness, producing publication-ready figures.
+#   The script maps the simulation results onto a regular grid of
+#   dimensionality (D) and Pielou evenness, then generates heatmaps and
+#   line plots to summarize the pattern of spurious correlation introduced
+#   by the two normalization methods.
+#
+# Input:
+#   - A precomputed RDS file containing the simulation results:
+#     here("script", "compositional_effects", "compositional_effects_02.rds")
+#
+# Outputs:
+#   - Side-by-side heatmaps for L1 and CLR bias
+#   - Line plot of CLR MAE vs dimensionality
+#   - Combined multi-panel figure
+#   - Line plot of CLR MAE with percentile error bars
 # ggpubr: ggplot2 publication-ready plots
 # [https://cran.r-project.org/package=ggpubr](https://cran.r-project.org/package=ggpubr)
 library(ggpubr)
