@@ -1,3 +1,24 @@
+# Z_final_plot.R
+#
+# Purpose:
+#   Assemble the final sparsity figure by combining two previously saved
+#   plot objects into a single publication-ready panel.
+#
+# Input:
+#   - A saved heatmap plot object:
+#     here("script", "sparsity_effects", "error_zinb.rds")
+#   - A saved real-data example plot object:
+#     here("script", "sparsity_effects", "example_couple.rds")
+#
+#   The heatmap legend is moved to the top before composition.
+#
+# Output:
+#   - A high-resolution PNG figure:
+#     here("Plots", "sparsity.png")
+#
+#   The final figure places the simulation-based heatmap and the real-data
+#   example side by side as panels A and B.
+#
 # ggpubr: nice plots based on ggplot2
 # https://cran.r-project.org/web/packages/ggpubr/index.html
 library(ggpubr)
