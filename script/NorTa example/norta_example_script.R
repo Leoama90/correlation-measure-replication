@@ -1,3 +1,26 @@
+# NorTA_example_script.R
+#
+# Purpose:
+#   Demonstrate the NorTA (Normal To Anything) procedure by manually
+#   walking through each step to simulate correlated count data with a
+#   known correlation structure.
+#   This is a minimal, self-contained implementation of NorTA showing how
+#   to simulate realistic count data (sparse, overdispersed, zero-inflated)
+#   with a fully controlled correlation structure.
+#
+# Input:
+#   - No external files required. All inputs are defined inline:
+#     * n = 1000 (sample size)
+#     * D = 5    (number of variables)
+#     * R        (5x5 correlation matrix with R[2,4] = R[4,2] = -0.9)
+#     * ZINB parameters: munb = 20, size = 30, pstr0 = 0.25 (identical
+#       across all five variables)
+#
+# Output:
+#   - No files are written to disk. The only output is a single line
+#     printed to the console reporting the empirical Pearson correlation
+#     between variables 2 and 4 of the simulated NorTA matrix.
+#
 # Collection of packages for data wrangling and visualization
 # https://cran.r-project.org/web/packages/tidyverse/index.html
 library(tidyverse)
