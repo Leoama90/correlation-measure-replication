@@ -1,3 +1,27 @@
+# B1_plots_htrlnorm.R
+#
+# Purpose:
+#   Visualize how CLR correlation error varies across input correlation
+#   values and sparsity levels, producing a heatmap for the htrlnorm-based
+#   simulation results.
+#
+# Input:
+#   - Htrlnorm simulation results stored in:
+#     here("script", "sparsity_effects", "Sparsity_Effects_htrlnorm_2.rds")
+#   - The input data must contain, at minimum, the columns:
+#     cor_input, phi_1, phi_2, cor_normal, cor_NorTA_PCLR
+#
+#   The script removes the redundant phi_2 column, renames phi_1 to phi,
+#   and computes the absolute CLR correlation error as:
+#   |cor_normal - cor_NorTA_PCLR|
+#
+# Output:
+#   - A ggplot heatmap object saved as an RDS file:
+#     here("script", "sparsity_effects", "error_htlrlnorm.rds")
+#
+#   The plot summarizes mean absolute error across iterations for each
+#   combination of input correlation and sparsity.
+#
 # ggpubr: nice plots based on ggplot2
 # https://cran.r-project.org/web/packages/ggpubr/index.html
 library(ggpubr)
