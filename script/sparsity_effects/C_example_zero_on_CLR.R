@@ -1,3 +1,24 @@
+# C_example_zero_on_CLR.R
+#
+# Purpose:
+#   Illustrate how sparsity distorts CLR correlation estimates on real data
+#   by visualizing two hand-picked OTU pairs with high zero rates and
+#   extreme correlations.
+#
+# Input:
+#   - HMP2 OTU abundance table
+#   - HMP2 sample metadata
+#   - The script keeps OTUs present in at least 25% of samples
+#   - CLR transformation is applied to the filtered OTU table
+#   - Pairwise Pearson correlations are computed on CLR-transformed data
+#
+#   The script then builds a long-format table of OTU-pair correlations and
+#   zero rates, and selects two focal OTU pairs for visualization.
+#
+# Output:
+#   - A 2x2 panel figure saved as an RDS object:
+#     here("script", "sparsity_effects", "example_couple.rds")
+#
 # here: builds file paths relative to the project root
 # https://cran.r-project.org/web/packages/here/index.html
 library(here)
