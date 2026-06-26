@@ -1,3 +1,32 @@
+# methods_comparison.R
+#
+# Purpose:
+#   Compare four methods for estimating microbial co-occurrence networks
+#   on real HMP2 data, producing side-by-side network visualizations and
+#   correlation diagnostics.
+#
+# Input:
+#   - Preprocessed HMP2 objects stored as RDS files:
+#     * otu_HMP2.rds
+#     * meta_HMP2.rds
+#     * taxonomy.rds
+#   - The script subsets samples from subject 69-001 in healthy status.
+#   - OTUs are filtered by prevalence and abundance to retain only
+#     well-represented taxa before network estimation.
+#
+# Methods compared:
+#   - SPIEC-EASI GLASSO: sparse partial correlations via graphical LASSO
+#   - SPIEC-EASI MB: sparse neighborhood selection via Meinshausen-Bühlmann regression
+#   - SparCC: log-ratio correlations robust to compositionality
+#   - Pearson + CLR: Pearson correlation after CLR transformation, with
+#     Bonferroni-corrected significance filtering
+#
+# Outputs:
+#   - Main 6-panel comparison figure
+#   - Individual PNG files for MB, GLASSO, and CLR networks
+#   - Taxonomy color legend
+#   - Summary table of edge counts and positive/negative edge proportions
+#
 # Converts base R plots and grobs into ggplot2 objects (as.grob)
 # https://cran.r-project.org/web/packages/ggplotify/index.html
 library(ggplotify)
