@@ -1,3 +1,24 @@
+# biases_parameters_example.R
+#
+# Purpose:
+#   Visually demonstrate how compositional bias affects correlation
+#   estimation under different normalization methods.
+#
+#   All synthetic datasets are generated with no true correlation
+#   (cor = identity matrix), so any correlation pattern visible in the
+#   plots is an artifact introduced by the normalization procedure.
+#
+#   The figure compares three settings:
+#   - 5 dimensions with high evenness (~100% Pielou)
+#   - 5 dimensions with medium evenness (~50% Pielou)
+#   - 30 dimensions with medium evenness (~50% Pielou)
+#
+#   Each dataset is shown under three representations:
+#   Normal, L1, and CLR.
+#
+# Outputs:
+#   - High-resolution PNG figure saved to outputs/.
+#
 # here: easy locate files using top-level file directories
 # https://cran.r-project.org/web/packages/here/vignettes/here.html
 library(here)
