@@ -1,3 +1,27 @@
+# B1_plots_zinb_ecdf.R
+#
+# Purpose:
+#   Provide the direct ZINB counterpart to the previous htrlnorm heatmap,
+#   using the same visualization structure for the rarefied ZINB-based
+#   simulation results.
+#
+# Input:
+#   - ZINB simulation results stored in:
+#     here("script", "sparsity_effects", "Sparsity_Effects_zinbin_rare_ecdf_2.rds")
+#   - The input data must contain, at minimum, the columns:
+#     cor_input, pstr0_1, pstr0_2, cor_normal, cor_NorTA_PCLR
+#
+#   The script removes the redundant pstr0_2 column, renames pstr0_1 to
+#   pstr0, and computes the absolute CLR correlation error as:
+#   |cor_normal - cor_NorTA_PCLR|
+#
+# Output:
+#   - A ggplot heatmap object saved as an RDS file:
+#     here("script", "sparsity_effects", "error_zinb.rds")
+#
+#   The plot is intended to be assembled side by side with the htrlnorm
+#   heatmap for direct visual comparison.
+#
 # ggpubr: nice plots based on ggplot2
 # https://cran.r-project.org/web/packages/ggpubr/index.html
 library(ggpubr)
