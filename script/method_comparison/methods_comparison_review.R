@@ -1,3 +1,40 @@
+# methods_comparison_review.R
+#
+# Purpose:
+#   Compare four correlation methods for microbial compositional data
+#   (Pearson + CLR, Pearson + L1, SparCC, and Rho proportionality) at
+#   two taxonomic resolutions — OTU level and phylum level — using real
+#   HMP2 data, producing a publication-ready 6-panel scatter plot figure.
+#
+# Input:
+#   - Preprocessed HMP2 objects stored as RDS files:
+#     * otu_HMP2.rds
+#     * meta_HMP2.rds
+#     * taxonomy.rds
+#   - The script subsets samples from subject 69-001 in healthy status.
+#   - OTUs are filtered by prevalence and abundance to retain only
+#     well-represented taxa before correlation estimation.
+#   - Phylum-level abundances are derived by aggregating filtered OTU
+#     counts within each phylum per sample.
+#
+# Methods compared:
+#   - Pearson + CLR: Pearson correlation after Centered Log-Ratio
+#     transformation (reference method)
+#   - Pearson + L1:  Pearson correlation on L1-normalized (relative)
+#     abundances
+#   - SparCC:        log-ratio correlations robust to compositionality
+#   - Rho:           symmetric proportionality measure (propr package)
+#
+# Outputs:
+#   - A single PNG figure (Methods_comparison_review.png) with 6 scatter
+#     plots arranged in a 2-row x 3-column grid:
+#     * Row 1 (OTU level):    panels A (CLR vs L1), B (CLR vs Rho),
+#                             C (CLR vs SparCC)
+#     * Row 2 (Phylum level): panels D (CLR vs L1), E (CLR vs Rho),
+#                             F (CLR vs SparCC)
+#   - Each panel includes a regression line with confidence interval
+#     and a Pearson R label anchored to the top-left corner.
+#
 # Converts base R plots and grobs into ggplot2 objects (as.grob)
 # https://cran.r-project.org/web/packages/ggplotify/index.html
 library(ggplotify)
