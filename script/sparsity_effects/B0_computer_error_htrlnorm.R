@@ -1,3 +1,29 @@
+# B0_computer_error_htrlnorm.R
+#
+# Purpose:
+#   Study how sparsity affects CLR correlation estimation, using a hurdle
+#   truncated log-normal distribution as the marginal model for OTU counts.
+#
+# Input:
+#   - HMP2 OTU abundance table
+#   - HMP2 sample metadata
+#   - The script subsets subject 69-001 in healthy status
+#   - OTU-level hurdle truncated log-normal parameters are fitted from the
+#     filtered HMP2 data, and the 10th–90th percentile range is used to
+#     avoid outlier parameter values
+#
+#   Additional model inputs are generated internally:
+#   - a regression model relating mean and maximum log-abundance across OTUs
+#   - random parameter sets sampled within the observed HMP2 range
+#   - a background compositional dataset of 200 uncorrelated OTUs
+#
+# Outputs:
+#   - Sparsity_Effects_htrlnorm.rds
+#
+#   The script simulates OTU pairs across a grid of sparsity and input
+#   correlation values, inserts them into a background compositional
+#   context, applies CLR transformation, and records the resulting
+#   Pearson correlation.
 # doSNOW: parallel backend for foreach, supports progress bars via snow clusters
 # https://cran.r-project.org/web/packages/doSNOW/index.html
 library(doSNOW)
