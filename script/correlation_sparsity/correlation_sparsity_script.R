@@ -274,5 +274,8 @@ png(filename = here("Plots", "correlation_density_biases.png"),
     res      = 300)  
 print(pall)
 
+# UI reminder where to search the generated plot
+cat("the plot has been saved in the 'Plots' folder with the name 'correlation_density_biases.png' ")
+
 
 dev.off()

@@ -147,7 +147,7 @@ par(xpd  = NA)
 abline
 
 # UI reminder where to search the generated plot
-cat("the plot have been saved in the 'Plots' folder")
+cat("the plot has been saved in the 'Plots' folder with the name 'biases_examples.png' ")
 
 # closes the graphics device and saves the PNG file to disk
 dev.off()
