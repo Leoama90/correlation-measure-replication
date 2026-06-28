@@ -329,6 +329,11 @@ combined_plots <- ggarrange(
 out_path <- here("Plots", "Methods_comparison_review.png")
 png(filename = out_path, width = 13.8 * 600, height = 9 * 600, res = 600)
 print(combined_plots)
+
+# UI reminder where to search the generated plot
+cat("the plot has been saved in the 'Plots' folder with the name 'Methods_comparison_review.png' ")
+
+# closes the graphics device and saves the PNG file to disk
 dev.off()
 
 message("Plot saved to: ", out_path)

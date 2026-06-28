@@ -364,6 +364,7 @@ print(ggarrange(
   ncol   = 3, 
   nrow   = 2
 ))
+# closes the graphics device and saves the PNG file to disk
 dev.off()
 
 
@@ -381,6 +382,7 @@ plot(g_mb, vertex.label = NA,
                            rgb(1, 0, 0)),
      edge.width   = 0.5,
      layout       = LAYOUT_SIGNED(g_mb))
+# closes the graphics device and saves the PNG file to disk
 dev.off()
 
 # GLASSO network
@@ -394,6 +396,7 @@ plot(g_gl, vertex.label = NA,
                            rgb(1, 0, 0)),
      edge.width   = 0.5,
      layout       = LAYOUT_SIGNED(g_gl))
+# closes the graphics device and saves the PNG file to disk
 dev.off()
 
 # CLR network
@@ -407,11 +410,13 @@ plot(g_clr, vertex.label = NA,
                            rgb(1, 0, 0)),
      edge.width   = 0.5,
      layout       = LAYOUT_SIGNED(g_clr))
+# closes the graphics device and saves the PNG file to disk
 dev.off()
 
 # Venn diagram
 png(filename = here("outputs", "methods_comparison_outputs", "tmp_files", "ggvenn.png"), width = 1200, height = 1200, res = 200)
 print(p_ven)
+# closes the graphics device and saves the PNG file to disk
 dev.off()
 
 
@@ -421,6 +426,7 @@ png_legend <- png(filename = here("outputs", "methods_comparison_outputs", "tmp_
 par(mar = c(2, 0, 2, 0))
 plot.new()
 legend("center", legend = names(colpal), fill = colpal, title = "Family", ncol = 2)
+# closes the graphics device and saves the PNG file to disk
 dev.off()
 
 
@@ -458,6 +464,8 @@ print(
                       ymin = -Inf, 
                       ymax =  Inf)
 )
+
+# closes the graphics device and saves the PNG file to disk
 dev.off()
 
 
@@ -476,4 +484,9 @@ p_inf <- cowplot::ggdraw() + cowplot::draw_image(here("outputs", "methods_compar
 # Arrange all panels into a 3-column grid and export as a single PNG
 png(filename = here("outputs", "methods_comparison_outputs", "Graph_Comparison.png"), width = 1600, height = 1000, res = 300)
 grid.arrange(p_mb, p_gl, p_clr, p_ven, p_leg, p_inf, ncol = 3)
+
+# UI reminder where to search the generated plot
+cat("the plot has been saved in the 'outputs' folder with the name 'Graph_Comparison.png' ")
+
+# closes the graphics device and saves the PNG file to disk
 dev.off()

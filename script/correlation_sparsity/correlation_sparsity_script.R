@@ -277,5 +277,5 @@ print(pall)
 # UI reminder where to search the generated plot
 cat("the plot has been saved in the 'Plots' folder with the name 'correlation_density_biases.png' ")
 
-
+# closes the graphics device and saves the PNG file to disk
 dev.off()
