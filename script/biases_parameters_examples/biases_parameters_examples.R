@@ -84,7 +84,7 @@ png(filename = here("Plots", "biases_example.png"),
 # arranges the plot area into a 4x3 grid, with the first row used as a header
 layout(matrix(c(1:12), 
               nrow    = 4, 
-              byrow   = T), 
+              byrow   = TRUE), 
               heights = c(0.1, 0.3, 0.3, 0.3))
 # sets plot margins
 par(mar = c(0, 4, 1, 4))
@@ -145,6 +145,9 @@ par(xpd  = NA)
 
 # draws horizontal lines to visually separate the rows
 abline
+
+# UI reminder where to search the generated plot
+cat("the plot have been saved in the 'Plots' folder")
 
 # closes the graphics device and saves the PNG file to disk
 dev.off()
