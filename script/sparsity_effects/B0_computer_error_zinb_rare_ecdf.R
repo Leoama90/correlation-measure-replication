@@ -240,3 +240,6 @@ for (iter in 1:nIteration) {
 
 # save the full simulation results to disk for downstream analysis
 saveRDS(result, here("script", "sparsity_effects", "Sparsity_Effects_zinbin_rare_ecdf.rds"))
+
+# UI reminder where to search the generated plot
+cat("the .rds file has been saved in the 'sparsity_effects' folder with the name 'Sparsity_Effects_zinbin_rare_ecdf.rds' ")

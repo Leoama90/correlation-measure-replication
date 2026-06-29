@@ -76,3 +76,6 @@ p <- df %>%
 
 # Save the plot object to an RDS file for later use
 saveRDS(p, here("script", "sparsity_effects", "error_htlrlnorm.rds"))
+
+# UI reminder where to search the generated plot
+cat("the .rds file has been saved in the 'sparsity_effects' folder with the name 'error_htlrlnorm.rds' ")

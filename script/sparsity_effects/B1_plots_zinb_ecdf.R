@@ -88,3 +88,6 @@ p <- df %>%
 
 # Save the ggplot object to an RDS file for later reuse
 saveRDS(p, here("script", "sparsity_effects", "error_zinb.rds"))
+
+# UI reminder where to search the generated plot
+cat("the .rds file has been saved in the 'sparsity_effects' folder with the name 'error_zinb.rds' ")
