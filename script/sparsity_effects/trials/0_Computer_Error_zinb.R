@@ -230,3 +230,6 @@ for(iter in 1:nIteration){
 
 # Save the final results to disk
 saveRDS(result, here("script", "sparsity_effects", "trials", "Sparsity_Effects_zinbin_rare.rds"))
+
+# UI reminder where to search the generated plot
+cat("the .png file has been saved in the 'trials' folder with the name 'Sparsity_Effects_zinbin_rare.rds'")

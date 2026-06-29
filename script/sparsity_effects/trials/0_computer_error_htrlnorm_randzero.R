@@ -270,3 +270,6 @@ for(iter in 1:n_iteration){
 
 # Save the complete results table to disk as an R serialised object
 saveRDS(result, here("script", "sparsity_effects", "trials", "Sparsity_Effects_htrlnorm_rand_pseudo.rds"))
+
+# UI reminder where to search the generated plot
+cat("the .png file has been saved in the 'Plots' folder with the name 'sparsity.png'")

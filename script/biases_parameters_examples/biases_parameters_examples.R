@@ -144,10 +144,20 @@ plot(toy_D30_P50, "CLR",    vertex.label = NA)
 par(xpd  = NA)
 
 # draws horizontal lines to visually separate the rows
-abline
+abline(h = 6.5 , col = "darkgreen", lty = 3)
+abline(h = 3.75, col = "darkgreen", lty = 3)
+abline(h = 1.25, col = "darkgreen", lty = 3)
 
 # UI reminder where to search the generated plot
-cat("the plot has been saved in the 'Plots' folder with the name 'biases_examples.png' ")
+cat("the plot has been saved in the 'Plots' folder with the name 'biases_example.png' ")
 
 # closes the graphics device and saves the PNG file to disk
 dev.off()
+
+# opens the output PNG in the default image viewer once the script completes
+browseURL(list.files(
+          path       = here(),
+          pattern    = "biases_example.png",
+          full.names = TRUE,
+          recursive  = TRUE
+          ))
