@@ -53,6 +53,9 @@ pall <- ggarrange(p_err_zinb, p_couple, common.legend = T, legend = "top", label
 # Open a PNG graphics device with high resolution (400 dpi, 4800x2400 px)
 png(filename = here("Plots", "sparsity.png"), width = 4800, height = 2400, res = 400)
 
+# UI reminder where to search the generated plot
+cat("the .png file has been saved in the 'Plots' folder with the name 'sparsity.png' ")
+
 # Render the combined plot to the PNG file
 print(pall)
 # Close the graphics device and save the file

@@ -335,5 +335,3 @@ cat("the plot has been saved in the 'Plots' folder with the name 'Methods_compar
 
 # closes the graphics device and saves the PNG file to disk
 dev.off()
-
-message("Plot saved to: ", out_path)
