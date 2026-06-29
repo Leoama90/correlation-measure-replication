@@ -60,3 +60,11 @@ cat("the .png file has been saved in the 'Plots' folder with the name 'sparsity.
 print(pall)
 # Close the graphics device and save the file
 dev.off()
+
+# opens the output PNG in the default image viewer once the script completes
+browseURL(list.files(
+  path       = here(),
+  pattern    = "sparsity.png",
+  full.names = TRUE,
+  recursive  = TRUE
+))
