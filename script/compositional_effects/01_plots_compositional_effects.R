@@ -238,3 +238,11 @@ cat("the plot has been saved in the 'Plots' folder with the name 'CLR_Compositio
 
 # closes the graphics device and saves the PNG file to disk
 dev.off()
+
+# opens the output PNG in the default image viewer once the script completes
+browseURL(list.files(
+  path       = here(),
+  pattern    = "CLR_Compositional_percentiles.png",
+  full.names = TRUE,
+  recursive  = TRUE
+))

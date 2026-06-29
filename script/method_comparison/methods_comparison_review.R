@@ -335,3 +335,11 @@ cat("the plot has been saved in the 'Plots' folder with the name 'Methods_compar
 
 # closes the graphics device and saves the PNG file to disk
 dev.off()
+
+# opens the output PNG in the default image viewer once the script completes
+browseURL(list.files(
+  path       = here(),
+  pattern    = "Methods_comparison_review.png",
+  full.names = TRUE,
+  recursive  = TRUE
+))

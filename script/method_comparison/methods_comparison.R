@@ -490,3 +490,11 @@ cat("the plot has been saved in the 'outputs' folder with the name 'Graph_Compar
 
 # closes the graphics device and saves the PNG file to disk
 dev.off()
+
+# opens the output PNG in the default image viewer once the script completes
+browseURL(list.files(
+  path       = here(),
+  pattern    = "Graph_Comparison.png",
+  full.names = TRUE,
+  recursive  = TRUE
+))
