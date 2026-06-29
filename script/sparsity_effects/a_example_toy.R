@@ -64,5 +64,8 @@ plot(g, layout = layout_in_circle(g), vertex.label = NA)
 text( 0.925,  0.7, "I", family = "Times New Roman", cex = 2)
 text(-0.925, -0.7, "J", family = "Times New Roman", cex = 2)
 
+# UI reminder where to search the generated plot
+cat("the plot has been saved in the 'Plots' folder with the name 'example_netw.png' ")
+
 # close the PNG device and save the file
 dev.off()
