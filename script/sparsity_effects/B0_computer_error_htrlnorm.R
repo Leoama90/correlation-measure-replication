@@ -241,3 +241,6 @@ for(iter in 1:nIteration){
 }
 # save the final results to disk
 saveRDS(result, here("script", "sparsity_effects", "Sparsity_Effects_htrlnorm.rds"))
+
+# UI reminder where to search the generated plot
+cat("the .rds file has been saved in the 'sparsity_effects' folder with the name 'Sparsity_Effects_htrlnorm.rds' ")
