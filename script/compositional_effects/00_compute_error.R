@@ -75,7 +75,7 @@ stopCluster(cl)
 # -------- save results --------
 
 # create output folder
-dir.create(here("compositional_effects"), showWarnings = FALSE)
+#dir.create(here("script", "compositional_effects"), showWarnings = FALSE)
 
 # save the results in output folder
-saveRDS(simulation_results, here("compositional_effects", "compositional_effects_01.rds"))
+saveRDS(simulation_results, here("script", "compositional_effects", "compositional_effects_01.rds"))

@@ -28,6 +28,7 @@
 #   The final figure combines:
 #   - Panel A: CLR MAE distribution across Gaussian correlation matrices
 #   - Panel B: CLR MAE vs edge density for block-structured correlations
+#
 # doSNOW: parallel backend for foreach, supports progress bars via snow clusters
 # https://cran.r-project.org/web/packages/doSNOW/index.html
 library(doSNOW)
