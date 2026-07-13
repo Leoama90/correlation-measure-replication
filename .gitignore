@@ -2,6 +2,7 @@
 .Rhistory
 .RData
 .RDataTmp
+*.RDataTmp
 .RDataTmp1
 .RDataTmp2
 .RDataTmp3
