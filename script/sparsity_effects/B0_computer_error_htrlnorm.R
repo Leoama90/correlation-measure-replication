@@ -24,6 +24,7 @@
 #   correlation values, inserts them into a background compositional
 #   context, applies CLR transformation, and records the resulting
 #   Pearson correlation.
+#
 # doSNOW: parallel backend for foreach, supports progress bars via snow clusters
 # https://cran.r-project.org/web/packages/doSNOW/index.html
 library(doSNOW)
@@ -150,9 +151,12 @@ for(iter in 1:nIteration){
   params_random_HMP2$b <- predict_max(params_random_HMP2$meanlog)
   
   # simulate a background dataset of 200 uncorrelated OTUs (identity correlation matrix)
-  random_HMP2 <- ToyModel::toy_model(n = 10^4, cor = diag(200), M = 1,
+  random_HMP2 <- ToyModel::toy_model(n = 10^4, 
+                                     cor = diag(200), 
+                                     M = 1,
                                      qdist = ToyModel::qhtrlnorm,
                                      param = params_random_HMP2)
+  
   # store the underlying normal correlation matrix of the background dataset
   # random_cor0_HMP2 <- random_HMP2$cor_normal
   
@@ -194,16 +198,15 @@ for(iter in 1:nIteration){
                 .options.snow = list(progress = progress)) %dopar% {
                   
                   # simulate a pair of OTUs with the given sparsity and correlation
-                  couple <-
-                    ToyModel::toy_model(n = 10^4, 
-                                        cor = params_set[i, "cor"], 
-                                        M = 1,
-                                        qdist = ToyModel::qhtrlnorm,
-                                        param = data.frame(
-                                        "meanlog" = c(params_set[i, "meanlog_1"], params_set[i, "meanlog_2"]),
-                                        "sdlog"   = c(params_set[i, "sdlog_1"],   params_set[i, "sdlog_2"]),
-                                        "phi"     = c(params_set[i, "phi_1"],     params_set[i, "phi_2"])
-                                        ))
+                  couple <- ToyModel::toy_model(n = 10^4, 
+                                      cor = params_set[i, "cor"], 
+                                      M = 1,
+                                      qdist = ToyModel::qhtrlnorm,
+                                      param = data.frame(
+                                      "meanlog" = c(params_set[i, "meanlog_1"], params_set[i, "meanlog_2"]),
+                                      "sdlog"   = c(params_set[i, "sdlog_1"],   params_set[i, "sdlog_2"]),
+                                      "phi"     = c(params_set[i, "phi_1"],     params_set[i, "phi_2"])
+                                      ))
                   
                   # inject the simulated OTU pair into the background dataset
                   # at positions 25 and 125

@@ -57,15 +57,15 @@ p <- df %>%
   theme_bw() +
   # Apply the custom palette with non-linear breakpoints and fixed [0,1] range
   scale_fill_gradientn("MAE", colours = myPalette(12),
-                       values = c(seq(0,.5,by = .05),1),
-                       limits = c(0,1),
-                       labels = c("0","0.25","0.5","0.75","1")) +
+                       values = c(seq(0, 0.5, by = 0.05), 1),
+                       limits = c(0, 1),
+                       labels = c("0", "0.25", "0.5", "0.75", "1")) +
   # Remove tick marks from the colourbar
   guides(fill = guide_colorbar(ticks.colour = NA)) +
   # Set legend text size
   theme(legend.text = element_text(size = 10)) +
   # Set y-axis breaks every 0.1 with no padding
-  scale_y_continuous(breaks = seq(0, 0.9, 0.1),   expand = c(0,0)) +
+  scale_y_continuous(breaks = seq( 0  , 0.9, 0.1), expand = c(0,0)) +
   # Set x-axis breaks every 0.2 with no padding
   scale_x_continuous(breaks = seq(-0.8, 0.8, 0.2), expand = c(0,0)) +
   # Rotate x-axis labels 90° for readability

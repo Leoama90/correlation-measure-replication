@@ -18,14 +18,36 @@ library(here)
 # tidyverse: data science toolkit (dplyr, ggplot2, tidyr, etc.)
 # [https://tidyverse.org](https://tidyverse.org)
 library(tidyverse)
+#
+#' Summarize a dataset's dimensions and zero content
+#'
+#' @param x a data.frame, tibble, or matrix with numeric columns.
+#'
+#' @return An invisible list containing: n_col (number of columns),
+#'   n_row (number of rows), total_zeros (count of zero values), min_val 
+#'   (minimum value of the matrix), max_val (maximum value of the matrix),
+#'   det_val (determinant value of the matrix)
+#'   and zero_rate (percentage of zero values in the dataset).
+#'
+#' @examples
+#' datasum(matrix(runif(16), nrow = 4, ncol = 4))
 
 
 # -------- body of the function --------
-
 datasum <- function(x) {
   
   # give the dataset the first four letters of its original name
   dataset_name <- substr(deparse(substitute(x)), 1, 4)
+  
+  # check, before any conversion, whether x is a square numeric matrix
+  is_square_matrix <- is.matrix(x) && is.numeric(x) && nrow(x) == ncol(x)
+  
+  # if x qualifies, compute matrix-specific properties while it is still a matrix
+  if (is_square_matrix) {
+    min_val <- min(x)
+    max_val <- max(x)
+    det_val <- det(x)
+  }
   
   # transform the input in a tibble
   if (!is_tibble(x)) {
@@ -36,11 +58,18 @@ datasum <- function(x) {
     cat("\n")
   }
   
-  # gather the number of column, number of rows and the zeroes percentage
-  cat("\n")
-  cat("the column number of", dataset_name, "is", ncol(x), "\n")
-  cat("the row number of", dataset_name, "is", nrow(x), "\n")
-  cat("\n")
+  # print a header line with the given dataset_name
+  cat("\n---", dataset_name, "---\n")
+  # print the number of columns
+  cat("number of columns:", ncol(x), "\n")
+  # print the number of rows
+  cat("number of rows:   ", nrow(x), "\n")
+  # print the maximum value in the matrix
+  cat("maximum value:    ", max_val, "\n")
+  # print the minimum value in the matrix
+  cat("minimum value:    ", min_val, "\n")
+  # print the determinant of the matrix
+  cat("determinant value ", det_val, "\n")
   
   
   # -------- zero counts --------
@@ -58,6 +87,9 @@ datasum <- function(x) {
   invisible(list(
     n_col = ncol(x),
     n_row = nrow(x),
+    min_val = min_val,
+    max_val = max_val,
+    det_val = det_val,
     total_zeros = total_zeros,
     zero_rate = zero_rate
   ))

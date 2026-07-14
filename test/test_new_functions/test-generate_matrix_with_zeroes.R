@@ -10,7 +10,7 @@
 #
 # Outputs:
 #   - test results printed to the console (pass/fail for each check)
-
+#
 # testthat: unit testing framework for R
 # https://cran.r-project.org/web/packages/testthat/index.html
 library(testthat)
