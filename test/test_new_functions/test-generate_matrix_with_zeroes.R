@@ -19,7 +19,12 @@ library(testthat)
 library(here)
 
 # load the functions defined in the main script
-source(here("generate_matrix.R"))
+source(list.files(
+       path       = here(),
+       pattern    = "^generate_matrix_with_zeroes\\.R$",
+       full.names = TRUE,
+       recursive  = TRUE
+       ))
 
 # -------- test 1: check that the output matrix has the requested dimensions --------
 test_that("matrix has correct dimensions", {
