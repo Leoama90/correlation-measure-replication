@@ -1,12 +1,14 @@
-# data_analysis_and_statics
+# zero_summary.R
 #
-# This function takes as input a data set (tibble, data.frame, or matrix)
+# This function takes as input a data set (tibble, data.frame, list, or matrix)
 # and prints out the number of columns, number of rows, and the count
 # and percentage of zero values it contains
 # it is intended to gather some data useful to build further code
 #
 # Input:
-#   - a tibble, data.frame, or matrix with numeric columns
+#   - a tibble, data.frame, list, or matrix with numeric columns
+#     (does not need to be square; determinant is only computed
+#     when the input is a square numeric matrix)
 #
 # Output:
 #   - printed column count, row count, number of zeroes and their
@@ -21,16 +23,19 @@ library(tidyverse)
 #
 #' Summarize a dataset's dimensions and zero content
 #'
-#' @param x a data.frame, tibble, or matrix with numeric columns.
+#' @param x a data.frame, tibble, list, or matrix with numeric columns.
+#'   Does not need to be square.
 #'
 #' @return An invisible list containing: n_col (number of columns),
 #'   n_row (number of rows), total_zeros (count of zero values), min_val 
-#'   (minimum value of the matrix), max_val (maximum value of the matrix),
-#'   det_val (determinant value of the matrix)
+#'   (minimum value of the dataset), max_val (maximum value of the dataset),
+#'   det_val (determinant value, only if x is a square numeric matrix)
 #'   and zero_rate (percentage of zero values in the dataset).
 #'
 #' @examples
 #' datasum(matrix(runif(16), nrow = 4, ncol = 4))
+#' datasum(matrix(runif(12), nrow = 3, ncol = 4))
+#' datasum(list(a = 1:5, b = 6:10))
 
 
 # -------- body of the function --------
@@ -40,13 +45,21 @@ datasum <- function(x) {
   dataset_name <- substr(deparse(substitute(x)), 1, 4)
   
   # check, before any conversion, whether x is a square numeric matrix
+  # (needed for the determinant, which is only defined for square matrices)
   is_square_matrix <- is.matrix(x) && is.numeric(x) && nrow(x) == ncol(x)
   
-  # if x qualifies, compute matrix-specific properties while it is still a matrix
+  # default value for the determinant: only defined for square matrices
+  det_val <- NA
+  
+  # if x qualifies, compute the determinant while it is still a matrix
   if (is_square_matrix) {
-    min_val <- min(x)
-    max_val <- max(x)
     det_val <- det(x)
+  } else {cat("\n the dataset does not have the same number of columns and rows \n")}
+  
+  # if x is a list (but not already a data.frame/tibble), try to coerce it
+  # into a data.frame so the rest of the function can work on it
+  if (is.list(x) && !is.data.frame(x)) {
+    x <- as.data.frame(x)
   }
   
   # transform the input in a tibble
@@ -58,17 +71,22 @@ datasum <- function(x) {
     cat("\n")
   }
   
+  # min and max can be computed on any numeric dataset, square or not,
+  # so they are calculated here on the tibble version of x
+  min_val <- min(x, na.rm = TRUE)
+  max_val <- max(x, na.rm = TRUE)
+  
   # print a header line with the given dataset_name
   cat("\n---", dataset_name, "---\n")
   # print the number of columns
   cat("number of columns:", ncol(x), "\n")
   # print the number of rows
   cat("number of rows:   ", nrow(x), "\n")
-  # print the maximum value in the matrix
+  # print the maximum value in the dataset
   cat("maximum value:    ", max_val, "\n")
-  # print the minimum value in the matrix
+  # print the minimum value in the dataset
   cat("minimum value:    ", min_val, "\n")
-  # print the determinant of the matrix
+  # print the determinant of the matrix (NA if x is not a square matrix)
   cat("determinant value ", det_val, "\n")
   
   

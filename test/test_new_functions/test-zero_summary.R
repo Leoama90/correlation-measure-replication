@@ -10,12 +10,15 @@ library(tidyverse)
 
 # bring datasum() into scope by sourcing the file where it is defined
 # (adjust the path below if datasum() lives somewhere else in your project)
-source(list.files(path       = here(), 
-                  pattern    = "^zero_summary\\.R$", 
-                  all.files  = FALSE,
-                  full.names = TRUE,
-                  recursive  = TRUE
-))
+source(
+  list.files(
+    path = here(),
+    pattern = "^zero_summary\\.R$",
+    all.files = FALSE,
+    full.names = TRUE,
+    recursive = TRUE
+  )
+)
 
 # -------- square matrix tests --------
 
@@ -36,7 +39,7 @@ test_that("datasum returns correct stats for a simple square matrix", {
   expect_equal(res$min_val, 0)
   # check the maximum value found (the matrix contains 0, 1, 3, 4)
   expect_equal(res$max_val, 4)
-  # check the determinant: det(matrix(c(1,0,3,4), 2, 2)) = 1*4 - 3*0 = 4
+  # check the determinant: det(matrix(c(1, 0, 3, 4), 2, 2)) = 1*4 - 3*0 = 4
   expect_equal(res$det_val, 4)
   # check the total number of zero entries (only one zero in the matrix)
   expect_equal(res$total_zeros, 1)
@@ -93,6 +96,9 @@ test_that("datasum ignores NA values when counting zeros but keeps them in the d
   expect_equal(res$total_zeros, 1)
   # the denominator still uses the full cell count (nrow * ncol = 4)
   expect_equal(res$zero_rate, 25)
+  # min and max should also ignore the NA thanks to na.rm = TRUE
+  expect_equal(res$min_val, 0)
+  expect_equal(res$max_val, 3)
 })
 
 test_that("datasum works on the documentation example without error", {
@@ -114,50 +120,109 @@ test_that("datasum works on the documentation example without error", {
 
 # -------- non-square matrix tests --------
 #
-# min_val, max_val and det_val are only assigned inside the
-# is_square_matrix branch, so datasum() is expected to error out later
-# when it tries to cat() them for anything that is not a square matrix.
-# these tests document that current behaviour of the function.
+# min_val and max_val are now computed regardless of shape, so datasum()
+# no longer errors on a non-square matrix; only det_val stays NA, since
+# the determinant is undefined for a non-square matrix.
 
-test_that("datasum errors on a non-square matrix because max_val is undefined", {
+test_that("datasum returns min/max but NA determinant for a non-square matrix", {
   
   # build a 2x3 matrix, which fails the is_square_matrix check
   m <- matrix(1:6, nrow = 2, ncol = 3)
   
-  # the function should stop with an "object not found" style error
-  expect_error(capture.output(datasum(m)), regexp = "max_val")
+  # the call should complete without raising an error
+  out <- capture.output(res <- datasum(m))
+  
+  # dimensions should be reported as-is
+  expect_equal(res$n_col, 3)
+  expect_equal(res$n_row, 2)
+  # min and max are still computable on a non-square matrix
+  expect_equal(res$min_val, 1)
+  expect_equal(res$max_val, 6)
+  # the determinant is undefined here, so it should stay NA
+  expect_true(is.na(res$det_val))
+  # a 2x3 matrix of 1:6 contains no zeros
+  expect_equal(res$total_zeros, 0)
+  expect_equal(res$zero_rate, 0)
 })
 
 # -------- data.frame and tibble tests --------
 #
-# is.matrix() is FALSE for data.frames and tibbles, so the matrix-only
-# branch never runs and min_val, max_val, det_val stay undefined for them.
+# is.matrix() is FALSE for data.frames and tibbles, so det_val stays NA
+# for them, but min_val/max_val are now computed on the tibble version
+# of x regardless.
 
-test_that("datasum errors on a plain data.frame input", {
+test_that("datasum returns min/max but NA determinant for a plain data.frame", {
   
   # build a simple square (2x2) data.frame, still not a "matrix" for is.matrix()
   df <- data.frame(a = 1:2, b = 3:4)
   
-  # expect an error since is_square_matrix is FALSE for data.frames
-  expect_error(capture.output(datasum(df)), regexp = "max_val")
+  # the call should complete without raising an error
+  out <- capture.output(res <- datasum(df))
+  
+  expect_equal(res$n_col, 2)
+  expect_equal(res$n_row, 2)
+  expect_equal(res$min_val, 1)
+  expect_equal(res$max_val, 4)
+  expect_true(is.na(res$det_val))
+  expect_equal(res$total_zeros, 0)
+  expect_equal(res$zero_rate, 0)
 })
 
-test_that("datasum prints the tibble notice and then errors on a tibble input", {
+test_that("datasum prints the tibble notice and returns min/max for a tibble input", {
   
   # build a tibble input, which should trigger the "already a tibble" message
   tib <- tibble::tibble(a = 1:2, b = 3:4)
   
-  # wrap the call in tryCatch so the error message can be inspected below
-  error_message <- character(0)
-  tryCatch({
-    capture.output(datasum(tib))
-  }, error = function(e) {
-    # store the error message for the assertion outside tryCatch
-    error_message <<- conditionMessage(e)
-  })
+  # capture the printed output and keep the invisible return value
+  printed <- capture.output(res <- datasum(tib))
   
-  # the error message should reference the missing max_val object
-  expect_true(grepl("max_val", error_message))
+  # the "already a tibble" notice should have been printed
+  expect_true(any(grepl("already a tibble", printed)))
+  # min and max should still be correctly computed
+  expect_equal(res$min_val, 1)
+  expect_equal(res$max_val, 4)
+  # the determinant is not defined for a tibble, so it stays NA
+  expect_true(is.na(res$det_val))
+})
+
+# -------- list tests --------
+#
+# a plain list is coerced with as.data.frame() before being turned into
+# a tibble, so datasum() should work on it as long as its elements are
+# equal-length numeric vectors.
+
+test_that("datasum works on a list of equal-length numeric vectors", {
+  
+  # build a list with two numeric vectors of the same length
+  lst <- list(a = 1:5, b = 6:10)
+  
+  # the call should complete without raising an error
+  out <- capture.output(res <- datasum(lst))
+  
+  # the list should be coerced into a 5-row, 2-column tibble
+  expect_equal(res$n_col, 2)
+  expect_equal(res$n_row, 5)
+  # min and max across both vectors (1:5 and 6:10)
+  expect_equal(res$min_val, 1)
+  expect_equal(res$max_val, 10)
+  # a list is never square in the is.matrix() sense, so det_val stays NA
+  expect_true(is.na(res$det_val))
+  # 1:5 and 6:10 contain no zeros
+  expect_equal(res$total_zeros, 0)
+  expect_equal(res$zero_rate, 0)
+})
+
+test_that("datasum counts zeros correctly on a list containing zero values", {
+  
+  # build a list where one vector contains a zero
+  lst <- list(a = c(0, 1, 2), b = c(3, 4, 5))
+  
+  out <- capture.output(res <- datasum(lst))
+  
+  # only one zero across the whole coerced dataset
+  expect_equal(res$total_zeros, 1)
+  # 1 zero out of 6 cells is ~16.67%
+  expect_equal(res$zero_rate, round(1 / 6 * 100, 2))
 })
 
 # -------- edge case: an all-zero square matrix --------
