@@ -23,7 +23,7 @@ library(tidyverse)
 source(
   list.files(
     path = here(),
-    pattern = "^zero_summary\\.R$",
+    pattern = "^datasummary\\.R$",
     full.names = TRUE,
     recursive = TRUE
   )
@@ -36,6 +36,7 @@ source(
 #' @return an invisible list with samp_filt (the filtered OTU table)
 #'   and, if a taxa table is found in the environment, taxa_filt
 #'   (the taxonomy table restricted to the surviving OTUs).
+#
 filt_data <- function(y){
   cat("#-----------------------------------------------------------------------# \n")
   # show the "before" summary; datasum() prints its own stats and
