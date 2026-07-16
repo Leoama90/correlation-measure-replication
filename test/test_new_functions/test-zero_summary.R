@@ -42,7 +42,7 @@ test_that("datasum returns correct stats for a simple square matrix", {
   # check the determinant: det(matrix(c(1, 0, 3, 4), 2, 2)) = 1*4 - 3*0 = 4
   expect_equal(res$det_val, 4)
   # check the total number of zero entries (only one zero in the matrix)
-  expect_equal(res$total_zeros, 1)
+  expect_equal(res$total_zeroes, 1)
   # check the zero percentage: 1 zero out of 4 cells is 25%
   expect_equal(res$zero_rate, 25)
 })
@@ -93,7 +93,7 @@ test_that("datasum ignores NA values when counting zeros but keeps them in the d
   out <- capture.output(res <- datasum(m))
   
   # only the real zero should be counted, na.rm = TRUE excludes the NA
-  expect_equal(res$total_zeros, 1)
+  expect_equal(res$total_zeroes, 1)
   # the denominator still uses the full cell count (nrow * ncol = 4)
   expect_equal(res$zero_rate, 25)
   # min and max should also ignore the NA thanks to na.rm = TRUE
@@ -114,7 +114,7 @@ test_that("datasum works on the documentation example without error", {
   # the returned list should always contain these seven named elements
   expect_named(
     res,
-    c("n_col", "n_row", "min_val", "max_val", "det_val", "total_zeros", "zero_rate")
+    c("n_col", "n_row", "min_val", "max_val", "det_val", "total_zeroes", "zero_rate")
   )
 })
 
@@ -141,7 +141,7 @@ test_that("datasum returns min/max but NA determinant for a non-square matrix", 
   # the determinant is undefined here, so it should stay NA
   expect_true(is.na(res$det_val))
   # a 2x3 matrix of 1:6 contains no zeros
-  expect_equal(res$total_zeros, 0)
+  expect_equal(res$total_zeroes, 0)
   expect_equal(res$zero_rate, 0)
 })
 
@@ -164,7 +164,7 @@ test_that("datasum returns min/max but NA determinant for a plain data.frame", {
   expect_equal(res$min_val, 1)
   expect_equal(res$max_val, 4)
   expect_true(is.na(res$det_val))
-  expect_equal(res$total_zeros, 0)
+  expect_equal(res$total_zeroes, 0)
   expect_equal(res$zero_rate, 0)
 })
 
@@ -208,7 +208,7 @@ test_that("datasum works on a list of equal-length numeric vectors", {
   # a list is never square in the is.matrix() sense, so det_val stays NA
   expect_true(is.na(res$det_val))
   # 1:5 and 6:10 contain no zeros
-  expect_equal(res$total_zeros, 0)
+  expect_equal(res$total_zeroes, 0)
   expect_equal(res$zero_rate, 0)
 })
 
@@ -220,7 +220,7 @@ test_that("datasum counts zeros correctly on a list containing zero values", {
   out <- capture.output(res <- datasum(lst))
   
   # only one zero across the whole coerced dataset
-  expect_equal(res$total_zeros, 1)
+  expect_equal(res$total_zeroes, 1)
   # 1 zero out of 6 cells is ~16.67%
   expect_equal(res$zero_rate, round(1 / 6 * 100, 2))
 })
@@ -236,7 +236,7 @@ test_that("datasum reports 100% zero rate for an all-zero square matrix", {
   out <- capture.output(res <- datasum(m))
   
   # every one of the 9 cells is zero
-  expect_equal(res$total_zeros, 9)
+  expect_equal(res$total_zeroes, 9)
   # the zero rate should therefore be exactly 100%
   expect_equal(res$zero_rate, 100)
   # the minimum and maximum of an all-zero matrix are both zero

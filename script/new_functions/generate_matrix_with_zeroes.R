@@ -1,4 +1,4 @@
-# generate_matrix.R
+# generate_matrix_with_zeroes.R
 #
 # Purpose:
 #   This script generates a symmetric matrix that mimics a correlation

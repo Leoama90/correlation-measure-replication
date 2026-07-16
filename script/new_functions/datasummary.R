@@ -1,4 +1,4 @@
-# zero_summary.R
+# datasummary.R
 #
 # This function takes as input a data set (tibble, data.frame, list, or matrix)
 # and prints out the number of columns, number of rows, and the count
@@ -27,7 +27,7 @@ library(tidyverse)
 #'   Does not need to be square.
 #'
 #' @return An invisible list containing: n_col (number of columns),
-#'   n_row (number of rows), total_zeros (count of zero values), min_val 
+#'   n_row (number of rows), total_zeroes (count of zero values), min_val 
 #'   (minimum value of the dataset), max_val (maximum value of the dataset),
 #'   det_val (determinant value, only if x is a square numeric matrix)
 #'   and zero_rate (percentage of zero values in the dataset).
@@ -54,7 +54,11 @@ datasum <- function(x) {
   # if x qualifies, compute the determinant while it is still a matrix
   if (is_square_matrix) {
     det_val <- det(x)
-  } else {cat("\n the dataset does not have the same number of columns and rows \n")}
+  } else {cat("the dataset does not have the same number of columns and rows. 
+The determinant can't be computed\n")}
+  
+  # print on screen the dataset type before converting it in a tibble
+  cat("the type of dataset before becoming a tibble was", typeof(x))
   
   # if x is a list (but not already a data.frame/tibble), try to coerce it
   # into a data.frame so the rest of the function can work on it
@@ -93,10 +97,10 @@ datasum <- function(x) {
   # -------- zero counts --------
   
   # total count of zeros across the whole dataset
-  total_zeros <- sum(x == 0, na.rm = TRUE)
-  cat("the total number of zeroes in", dataset_name, "is", total_zeros, "\n")
+  total_zeroes <- sum(x == 0, na.rm = TRUE)
+  cat("the total number of zeroes in", dataset_name, "is", total_zeroes, "\n")
   
-  zero_rate <- round(total_zeros / (ncol(x) * nrow(x)) * 100, 2)
+  zero_rate <- round(total_zeroes / (ncol(x) * nrow(x)) * 100, 2)
   cat("the percentage of zeroes in", dataset_name, "is:", zero_rate, "%\n")
   
   
@@ -108,7 +112,7 @@ datasum <- function(x) {
     min_val = min_val,
     max_val = max_val,
     det_val = det_val,
-    total_zeros = total_zeros,
+    total_zeroes = total_zeroes,
     zero_rate = zero_rate
   ))
 }
