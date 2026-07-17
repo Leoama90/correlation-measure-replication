@@ -36,6 +36,7 @@ library(tidyverse)
 #' datasum(matrix(runif(16), nrow = 4, ncol = 4))
 #' datasum(matrix(runif(12), nrow = 3, ncol = 4))
 #' datasum(list(a = 1:5, b = 6:10))
+#' @export
 
 
 # -------- body of the function --------

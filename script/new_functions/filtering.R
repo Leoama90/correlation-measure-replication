@@ -1,9 +1,10 @@
-# filt_data.R
+# filtering.R
 #
 # This script defines an interactive function that filters a
 # metagenomic OTU count table (samples x OTUs) by prevalence, based
 # on a threshold chosen by the user at runtime, and shows a
-# before/after summary using datasum().
+# before/after summary using datasum() (function defined in the "datasummary.R"
+# script).
 #
 # Input:
 #   - y: a data.frame, tibble, or matrix with samples on rows and
@@ -36,8 +37,10 @@ source(
 #' @return an invisible list with samp_filt (the filtered OTU table)
 #'   and, if a taxa table is found in the environment, taxa_filt
 #'   (the taxonomy table restricted to the surviving OTUs).
+#' @export   
 #
 filt_data <- function(y){
+  
   cat("#-----------------------------------------------------------------------# \n")
   # show the "before" summary; datasum() prints its own stats and
   # invisibly returns them, so no extra cat() is needed around it
@@ -54,7 +57,7 @@ filt_data <- function(y){
     }
     
     # otherwise, scold the user and loop back to ask again
-    cat("A appreciate the enthusiasm, but we only need a number between 0 and 1!\n")
+    cat("I appreciate the enthusiasm, but we only need a number between 0 and 1!\n")
   }
   
   # filter the OTU table by the prevalence threshold chosen by the user
@@ -73,8 +76,10 @@ filt_data <- function(y){
   # the OTUs that survived filtering; otherwise skip this step
   result <- list(samp_filt = samp_filt)
   
+  if (exists("taxa")) {
+    taxa_filt <- taxa[colnames(samp_filt), ]
+    result$taxa_filt <- taxa_filt
+  }
+  
   invisible(result)
 }
-# -------- example call --------
-# result <- filt_data(otu_69001_H)
-# samp_filt <- result$samp_filt
