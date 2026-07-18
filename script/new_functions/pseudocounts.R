@@ -46,45 +46,45 @@ library(tidyverse)
 pseudocount <- function(y) {
   # Convert the input to a tibble.
   y <- as_tibble(y)
-  
+
   # Compute the total counts for each row.
   lib_size <- rowSums(y)
-  
+
   # Stop early if any sample has a library size of 0, since the detection
   # limit (1 / lib_size) would be undefined (Inf) for that row.
   if (any(lib_size == 0)) {
     stop("At least one row has a library size of 0; remove empty samples before computing pseudocounts.")
   }
-  
+
   # Ask the user for a threshold between 0 and 1.
   repeat {
     threshold_input <- readline("Give me the percentage threshold (number between 0 and 1): ")
     threshold_pct <- suppressWarnings(as.numeric(threshold_input))
-    
+
     # Stop only if the input is valid.
     if (!is.na(threshold_pct) && threshold_pct >= 0 && threshold_pct <= 1) {
       break
     }
-    
+
     # Warn the user if the input is invalid.
     cat("Please provide a number between 0 and 1.\n")
   }
-  
+
   # Compute the detection limit for each row.
   detection_limit <- 1 / lib_size
-  
+
   # Compute the row-specific pseudocount values.
   pseudo <- threshold_pct * detection_limit
-  
+
   # Convert raw counts to row-wise proportions.
   y_prop <- sweep(as.matrix(y), 1, lib_size, "/")
-  
+
   # Replace zeroes with the corresponding row-specific pseudocount.
   # This is done on a plain matrix, not a tibble: tibbles do not support
   # indexing/assignment via a logical matrix, only base matrices do.
   zero_mask <- y_prop == 0
   y_prop[zero_mask] <- rep(pseudo, times = ncol(y_prop))[zero_mask]
-  
+
   # Return the transformed data as a tibble.
   as_tibble(y_prop)
 }
