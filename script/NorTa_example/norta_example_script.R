@@ -52,11 +52,11 @@ set.seed(42)
 # generate a multivariate Normal distribution with the desired correlation structure
 norm_dist <- mvtnorm::rmvnorm(n = n, sigma = R)
 
-# choose margins to Uniform [0,1] via the Normal CDF 
-unif  <- stats::pnorm(norm_dist)
+# choose margins to Uniform [0,1] via the Normal CDF
+unif <- stats::pnorm(norm_dist)
 
 # apply inverse CDF of a zero-inflated negative binomial to each margin (NorTA step)
-NorTA      <- matrix(0, nrow = n, ncol = D)
+NorTA <- matrix(0, nrow = n, ncol = D)
 NorTA[, 1] <- qzinegbin(p = unif[, 1], munb = 20, size = 30, pstr0 = 0.25)
 NorTA[, 2] <- qzinegbin(p = unif[, 2], munb = 20, size = 30, pstr0 = 0.25)
 NorTA[, 3] <- qzinegbin(p = unif[, 3], munb = 20, size = 30, pstr0 = 0.25)

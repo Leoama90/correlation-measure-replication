@@ -33,19 +33,21 @@ library(tidyverse)
 
 
 # Load a saved ggplot object for error visualization and move legend to top
-p_err_zinb <- readRDS(list.files(path       = here(),
-                                 pattern    = "error_zinb.rds",
-                                 full.names = TRUE,
-                                 recursive  = TRUE
-                                 )) +  
+p_err_zinb <- readRDS(list.files(
+  path = here(),
+  pattern = "error_zinb.rds",
+  full.names = TRUE,
+  recursive = TRUE
+)) +
   theme(legend.position = "top")
 
 # Load a saved ggplot object showing an example couple (pair of elements)
-p_couple   <- readRDS(list.files(path       = here(),
-                                 pattern    = "example_couple.rds",
-                                 full.names = TRUE,
-                                 recursive  = TRUE
-                                 ))
+p_couple <- readRDS(list.files(
+  path = here(),
+  pattern = "example_couple.rds",
+  full.names = TRUE,
+  recursive = TRUE
+))
 
 # Combine the two plots side by side, sharing a single legend placed at the top
 pall <- ggarrange(p_err_zinb, p_couple, common.legend = T, legend = "top", labels = c("A", ""))

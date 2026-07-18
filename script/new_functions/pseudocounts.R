@@ -58,7 +58,7 @@ pseudocount <- function(y) {
 
   # Ask the user for a threshold between 0 and 1.
   repeat {
-    threshold_input <- readline("Give me the percentage threshold (number between 0 and 1): ")
+    threshold_input <- readline("Give me the percentage threshold for the pseudocounts (number between 0 and 1): ")
     threshold_pct <- suppressWarnings(as.numeric(threshold_input))
 
     # Stop only if the input is valid.

@@ -48,16 +48,15 @@ df_sort <- tibble()
 
 for (di in seq(5, 200, by = 5)) {
   for (ei in seq(0.025, 0.975, by = 0.025)) {
-    
     # Subset rows for current value of d
     sub_df <- df %>% filter(d == di)
-    
+
     # Select the row whose Pielou index is closest to the target ei
     row_i <- sub_df[which.min(abs(sub_df$pielou - ei)), ]
-    
+
     # Append the rounded target Pielou value as a new column
     row_i <- c(row_i, "pielou_round" = ei)
-    
+
     df_sort <- bind_rows(df_sort, row_i)
   }
 }
@@ -74,11 +73,11 @@ df_sort <- df_sort %>%
   # Flag rows where the deviation is small enough to be considered valid
   mutate(pielou_error_logical = pielou_error < 0.005, .after = pielou_error) %>%
   # Log-transform L1 error and floor at -2 (i.e., MAE < 0.01 treated as equal)
-  mutate(log_err_l1   = log10(ERR_L1)) %>%
-  mutate(log_err_l1   = if_else(log_err_l1  < -2, -2, log_err_l1)) %>%
+  mutate(log_err_l1 = log10(ERR_L1)) %>%
+  mutate(log_err_l1 = if_else(log_err_l1 < -2, -2, log_err_l1)) %>%
   # Log-transform CLR error and apply the same floor
-  mutate(log_err_clr  = log10(ERR_CLR)) %>%
-  mutate(log_err_clr  = if_else(log_err_clr < -2, -2, log_err_clr))
+  mutate(log_err_clr = log10(ERR_CLR)) %>%
+  mutate(log_err_clr = if_else(log_err_clr < -2, -2, log_err_clr))
 
 # Subset rows that did not match closely to any target Pielou value (quality control)
 df_control <- df_sort %>%
@@ -108,7 +107,7 @@ df_sort %>%
 p_l1 <- ggplot(df_sort, aes(x = d, y = pielou_round, fill = log_err_l1)) +
   geom_tile() +
   theme_bw() +
-  
+
   # Map fill to log-scale MAE with readable break labels
   scale_fill_gradientn(
     "MAE",
@@ -121,7 +120,7 @@ p_l1 <- ggplot(df_sort, aes(x = d, y = pielou_round, fill = log_err_l1)) +
   guides(fill = guide_colorbar(ticks.colour = NA)) +
   theme(legend.text = element_text(size = 10)) +
   scale_y_continuous(breaks = seq(0.05, 0.95, 0.05), expand = c(0, 0)) +
-  scale_x_continuous(breaks = seq(10, 200, 10),      expand = c(0, 0)) +
+  scale_x_continuous(breaks = seq(10, 200, 10), expand = c(0, 0)) +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
   ylab(expression(bar(P))) +
   xlab("D") +
@@ -143,7 +142,7 @@ p_clr <- ggplot(df_sort, aes(x = d, y = pielou_round, fill = log_err_clr)) +
   guides(fill = guide_colorbar(ticks.colour = NA)) +
   theme(legend.text = element_text(size = 10)) +
   scale_y_continuous(breaks = seq(0.05, 0.95, 0.05), expand = c(0, 0)) +
-  scale_x_continuous(breaks = seq(10, 200, 10),      expand = c(0, 0)) +
+  scale_x_continuous(breaks = seq(10, 200, 10), expand = c(0, 0)) +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
   ylab(expression(bar(P))) +
   xlab("D") +
@@ -153,12 +152,12 @@ p_clr <- ggplot(df_sort, aes(x = d, y = pielou_round, fill = log_err_clr)) +
 # -------- export: side-by-side heatmaps --------
 
 png(filename = here("Plots", "Normalization_Bias.png"), width = 6000, height = 3000, res = 600)
-print(ggarrange(                                         
+print(ggarrange(
   p_l1, p_clr,
-  labels        = c("L1", "CLR"),
+  labels = c("L1", "CLR"),
   common.legend = TRUE,
-  label.y       = 0.125,
-  label.x       = c(0.03, -0.02)
+  label.y = 0.125,
+  label.x = c(0.03, -0.02)
 ))
 dev.off()
 
@@ -177,7 +176,7 @@ p_clr_dim <- df_sort %>%
   theme(plot.margin = unit(c(2, 1, 1, 1), "cm"))
 
 png(filename = here("Plots", "CLR_Compositional.png"), width = 1200, height = 1200, res = 300)
-print(p_clr_dim)                                         
+print(p_clr_dim)
 dev.off()
 
 
@@ -188,19 +187,19 @@ p_l1_clr <- ggarrange(p_l1, p_clr, common.legend = TRUE, ncol = 1)
 
 # Combine heatmap panel and line plot side by side
 p_all <- ggarrange(
-  p_l1_clr, p_clr_dim + 
+  p_l1_clr, p_clr_dim +
     theme(
-    axis.text  = element_text(size = 14),
-    axis.title = element_text(size = 16)
+      axis.text  = element_text(size = 14),
+      axis.title = element_text(size = 16)
     ),
-  ncol    = 2,
-  widths  = c(0.35, 0.65),
-  labels  = c("A", "B"),
+  ncol = 2,
+  widths = c(0.35, 0.65),
+  labels = c("A", "B"),
   label.x = c(0.05, 0.90)
 )
 
 png(filename = here("Plots", "Normalization_Bias_all.png"), width = 6000, height = 4500, res = 600)
-print(p_all)                                             
+print(p_all)
 dev.off()
 
 
@@ -231,7 +230,7 @@ p_clr_dim <- ggplot(df_percentiles, aes(x = d, y = err_clr_mean)) +
 
 # saves the plot in the Plots folder
 png(filename = here("Plots", "CLR_Compositional_percentiles.png"), width = 1200, height = 1200, res = 300)
-print(p_clr_dim)            
+print(p_clr_dim)
 
 # UI reminder where to search the generated plot
 cat("the plot has been saved in the 'Plots' folder with the name 'CLR_Compositional_percentiles.png' ")

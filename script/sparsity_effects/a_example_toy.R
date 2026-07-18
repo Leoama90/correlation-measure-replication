@@ -1,7 +1,7 @@
 # a_example_toy.R
-# 
-# Purpose: 
-#   This script generates a minimal network illustration to visually 
+#
+# Purpose:
+#   This script generates a minimal network illustration to visually
 #   explain the concept of a single edge between two labeled nodes in a larger graph.
 #
 # Inputs:
@@ -43,7 +43,7 @@ g <- graph_from_adjacency_matrix(adj, mode = "undirected")
 # style the edge: dark gray, width 2, dashed line
 E(g)$color <- "darkgray"
 E(g)$width <- 2
-E(g)$lty   <- 2
+E(g)$lty <- 2
 
 # set seed for reproducibility of random node sizes
 set.seed(4)
@@ -55,13 +55,13 @@ V(g)$size <- runif(n = 40, min = 3, max = 12.5)
 png(filename = here("Plots", "example_netw.png"), width = 1200, height = 1200, res = 300)
 
 # remove margins
-par(mar = c(0,0,0,0))
+par(mar = c(0, 0, 0, 0))
 
 # plot the graph in a circular layout, without node labels
 plot(g, layout = layout_in_circle(g), vertex.label = NA)
 
 # label node 5 as "I" and node 25 as "J" using Times New Roman
-text( 0.925,  0.7, "I", family = "Times New Roman", cex = 2)
+text(0.925, 0.7, "I", family = "Times New Roman", cex = 2)
 text(-0.925, -0.7, "J", family = "Times New Roman", cex = 2)
 
 # UI reminder where to search the generated plot

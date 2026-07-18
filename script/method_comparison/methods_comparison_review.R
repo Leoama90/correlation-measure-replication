@@ -106,9 +106,9 @@ taxa <- readRDS(list.files(
 otu_69001_H <- otu[meta$SubjectID == "69-001" & meta$CL4_2 == "Healthy", ]
 
 # remove OTUs present in fewer than 33% of samples
-otu_filt  <- otu_69001_H[, colSums(otu_69001_H > 0) / nrow(otu_69001_H) >= .33]
+otu_filt <- otu_69001_H[, colSums(otu_69001_H > 0) / nrow(otu_69001_H) >= .33]
 # further remove OTUs with median non-zero abundance < 5
-otu_filt  <- otu_filt[, apply(otu_filt, 2, function(x) median(x[x > 0]) >= 5)]
+otu_filt <- otu_filt[, apply(otu_filt, 2, function(x) median(x[x > 0]) >= 5)]
 # subset taxonomy to keep only filtered OTUs
 taxa_filt <- taxa[colnames(otu_filt), ]
 
@@ -137,59 +137,74 @@ res_clr <- cor(CLR(otu_filt), method = "pearson")
 # -------- SCATTER PLOTS (OTU LEVEL) --------
 
 # Pearson + CLR vs Pearson+L1
-p0 <- ggscatter(data.frame("PearsonCLR" = TRIU(res_clr),
-                           "PearsonL1"  = TRIU(res_L1)),
-                        x   = "PearsonCLR", 
-                        y   = "PearsonL1",
-                        add = "reg.line", 
-                        conf.int   = TRUE,
-                        add.params = list(color = "red", fill = "lightgray")) +
+p0 <- ggscatter(
+  data.frame(
+    "PearsonCLR" = TRIU(res_clr),
+    "PearsonL1" = TRIU(res_L1)
+  ),
+  x = "PearsonCLR",
+  y = "PearsonL1",
+  add = "reg.line",
+  conf.int = TRUE,
+  add.params = list(color = "red", fill = "lightgray")
+) +
   # overlay Pearson R label, anchored to the top-left corner of the panel
   ggpubr::stat_cor(aes(label = after_stat(r.label)),
-                   label.x = -Inf, 
-                   label.y =  Inf,
-                   hjust   = -0.1, 
-                   vjust   =  1.5, 
-                   size    =  6.0) +
+    label.x = -Inf,
+    label.y =  Inf,
+    hjust   = -0.1,
+    vjust   =  1.5,
+    size    =  6.0
+  ) +
   theme_bw() +
-  xlab("Pearson + CLR") + 
-  ylab("Pearson+L1" ) +
+  xlab("Pearson + CLR") +
+  ylab("Pearson+L1") +
   theme(plot.title = element_text(hjust = 0.5))
 
 # Pearson + CLR vs SparCC
-p1 <- ggscatter(data.frame("PearsonCLR" = TRIU(res_clr),
-                           "SparCC"     = TRIU(res_cc)),
-                        x   = "PearsonCLR", 
-                        y   = "SparCC",
-                        add = "reg.line", 
-                        conf.int   = TRUE,
-                        add.params = list(color = "red", fill = "lightgray")) +
+p1 <- ggscatter(
+  data.frame(
+    "PearsonCLR" = TRIU(res_clr),
+    "SparCC" = TRIU(res_cc)
+  ),
+  x = "PearsonCLR",
+  y = "SparCC",
+  add = "reg.line",
+  conf.int = TRUE,
+  add.params = list(color = "red", fill = "lightgray")
+) +
   # overlay Pearson R label, anchored to the top-left corner of the panel
   stat_cor(aes(label = after_stat(r.label)),
-                   label.x  = -Inf, 
-                   label.y  =  Inf,
-                   hjust    = -0.1,
-                   vjust    =  1.5, 
-                   size     =  6.0) +
+    label.x  = -Inf,
+    label.y  =  Inf,
+    hjust    = -0.1,
+    vjust    =  1.5,
+    size     =  6.0
+  ) +
   theme_bw() +
   xlab("Pearson + CLR") +
   theme(plot.title = element_text(hjust = 0.5))
 
 # Pearson + CLR vs Rho
-p2 <- ggscatter(data.frame("PearsonCLR" = TRIU(res_clr),
-                           "Rho"        = TRIU(res_rho)),
-                        x   = "PearsonCLR", 
-                        y   = "Rho",
-                        add = "reg.line", 
-                        conf.int = TRUE,
-                        add.params = list(color = "red", fill = "lightgray")) +
+p2 <- ggscatter(
+  data.frame(
+    "PearsonCLR" = TRIU(res_clr),
+    "Rho" = TRIU(res_rho)
+  ),
+  x = "PearsonCLR",
+  y = "Rho",
+  add = "reg.line",
+  conf.int = TRUE,
+  add.params = list(color = "red", fill = "lightgray")
+) +
   # overlay Pearson R label, anchored to the top-left corner of the panel
   stat_cor(aes(label = after_stat(r.label)),
-             label.x = -Inf, 
-             label.y =  Inf,
-             hjust   = -0.1, 
-             vjust   =  1.5, 
-             size    =  6.0) +
+    label.x = -Inf,
+    label.y =  Inf,
+    hjust   = -0.1,
+    vjust   =  1.5,
+    size    =  6.0
+  ) +
   theme_bw() +
   xlab("Pearson + CLR") +
   theme(plot.title = element_text(hjust = 0.5))
@@ -229,7 +244,7 @@ res_L1_phy <- cor(phy / rowSums(phy), method = "pearson")
 set.seed(42)
 # SparCC on phylum abundances
 sparcc_phy_res <- sparcc(phy)
-res_cc_phy     <- sparcc_phy_res$Cor
+res_cc_phy <- sparcc_phy_res$Cor
 # restore phylum names to matrix
 colnames(res_cc_phy) <- rownames(res_cc_phy) <- colnames(phy)
 
@@ -243,57 +258,72 @@ res_clr_phy <- cor(CLR(phy), method = "pearson")
 # -------- SCATTER PLOTS (PHYLUM LEVEL) --------
 
 # Pearson + CLR vs Pearson+L1
-p0_phy <- ggscatter(data.frame("PearsonCLR" = TRIU(res_clr_phy),
-                               "PearsonL1"  = TRIU(res_L1_phy)),
-                            x   = "PearsonCLR", 
-                            y   = "PearsonL1",
-                            add = "reg.line", 
-                            conf.int = TRUE,
-                            add.params = list(color = "red", fill = "lightgray")) +
+p0_phy <- ggscatter(
+  data.frame(
+    "PearsonCLR" = TRIU(res_clr_phy),
+    "PearsonL1" = TRIU(res_L1_phy)
+  ),
+  x = "PearsonCLR",
+  y = "PearsonL1",
+  add = "reg.line",
+  conf.int = TRUE,
+  add.params = list(color = "red", fill = "lightgray")
+) +
   # overlay Pearson R label, anchored to the top-left corner of the panel
   stat_cor(aes(label = after_stat(r.label)),
-             label.x = - Inf, 
-             label.y =   Inf,
-             hjust   = - 0.1, 
-             vjust   =   1.5, 
-             size    =   6.0) +
+    label.x = -Inf,
+    label.y =   Inf,
+    hjust   = -0.1,
+    vjust   =   1.5,
+    size    =   6.0
+  ) +
   theme_bw() +
-  xlab("Pearson + CLR") + 
+  xlab("Pearson + CLR") +
   ylab("Pearson+L1")
 
 # Pearson + CLR vs SparCC
-p1_phy <- ggscatter(data.frame("PearsonCLR" = TRIU(res_clr_phy),
-                               "SparCC"     = TRIU(res_cc_phy)),
-                            x   = "PearsonCLR", 
-                            y   = "SparCC",
-                            add = "reg.line", 
-                            conf.int = TRUE,
-                            add.params = list(color = "red", fill = "lightgray")) +
+p1_phy <- ggscatter(
+  data.frame(
+    "PearsonCLR" = TRIU(res_clr_phy),
+    "SparCC" = TRIU(res_cc_phy)
+  ),
+  x = "PearsonCLR",
+  y = "SparCC",
+  add = "reg.line",
+  conf.int = TRUE,
+  add.params = list(color = "red", fill = "lightgray")
+) +
   # overlay Pearson R label, anchored to the top-left corner of the panel
   stat_cor(aes(label = after_stat(r.label)),
-                   label.x = - Inf, 
-                   label.y =   Inf,
-                   hjust   = - 0.1, 
-                   vjust   =   1.5, 
-                   size    =   6.0) +
+    label.x = -Inf,
+    label.y =   Inf,
+    hjust   = -0.1,
+    vjust   =   1.5,
+    size    =   6.0
+  ) +
   theme_bw() +
   xlab("Pearson + CLR")
 
 # Pearson + CLR vs Rho
-p2.phy <- ggscatter(data.frame("PearsonCLR" = TRIU(res_clr_phy),
-                               "Rho"        = TRIU(res_rho_phy)),
-                            x   = "PearsonCLR", 
-                            y   = "Rho",
-                            add = "reg.line", 
-                            conf.int = TRUE,
-                            add.params = list(color = "red", fill = "lightgray")) +
+p2.phy <- ggscatter(
+  data.frame(
+    "PearsonCLR" = TRIU(res_clr_phy),
+    "Rho" = TRIU(res_rho_phy)
+  ),
+  x = "PearsonCLR",
+  y = "Rho",
+  add = "reg.line",
+  conf.int = TRUE,
+  add.params = list(color = "red", fill = "lightgray")
+) +
   # overlay Pearson R label, anchored to the top-left corner of the panel
   stat_cor(aes(label = after_stat(r.label)),
-                   label.x = - Inf, 
-                   label.y =   Inf,
-                   hjust   = - 0.1, 
-                   vjust   =   1.5, 
-                   size    =   6.0 ) +
+    label.x = -Inf,
+    label.y =   Inf,
+    hjust   = -0.1,
+    vjust   =   1.5,
+    size    =   6.0
+  ) +
   theme_bw() +
   xlab("Pearson + CLR") +
   theme(plot.title = element_text(hjust = 0.5))
@@ -304,7 +334,7 @@ p2.phy <- ggscatter(data.frame("PearsonCLR" = TRIU(res_clr_phy),
 # blank plot used as row label "OTU level"
 label_otu <- ggplot() +
   theme_void() +
-  annotate("text", x = 0.5, y = 0.5, label = "OTU level",    angle = 90, size = 6)
+  annotate("text", x = 0.5, y = 0.5, label = "OTU level", angle = 90, size = 6)
 
 # blank plot used as row label "Phylum level"
 label_phylum <- ggplot() +
