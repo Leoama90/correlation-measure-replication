@@ -1,11 +1,11 @@
-# pseudocounts.R
+# pseudocount.R
 #
 # Purpose:
 #   Convert count data to row-wise proportions and replace zeroes with
 #   row-specific pseudocounts computed from a user-defined threshold.
 #
 # Input:
-#   - y: a numeric matrix or data frame of non-negative counts.
+#   - x: a numeric matrix or data frame of non-negative counts.
 #   - threshold_pct: a numeric value between 0 and 1 (requested interactively).
 #
 # Output:
@@ -17,13 +17,20 @@
 #   calculates row-specific pseudocounts, and substitutes zeroes in the
 #   proportional table with those values.
 
+# here: builds file paths relative to the project root
+# https://cran.r-project.org/web/packages/here/index.html
+library(here)
+# tidyverse: data science toolkit (dplyr, ggplot2, tidyr, etc.)
+# https://tidyverse.org
+library(tidyverse)
+
 #' Replace zeroes with row-wise pseudocounts
 #'
 #' This function computes row-wise library sizes, asks the user for a threshold
 #' between 0 and 1, converts counts to proportions, and replaces zeroes with
 #' row-specific pseudocount values.
 #'
-#' @param y A numeric matrix or data frame of non-negative counts. Rows
+#' @param x A numeric matrix or data frame of non-negative counts. Rows
 #'   (samples) must have a library size greater than 0.
 #'
 #' @return A tibble with counts converted to proportions and zeroes replaced by
@@ -37,18 +44,14 @@
 #'
 #' @export
 
-# here: builds file paths relative to the project root
-# https://cran.r-project.org/web/packages/here/index.html
-library(here)
-# tidyverse: data science toolkit (dplyr, ggplot2, tidyr, etc.)
-# [https://tidyverse.org](https://tidyverse.org)
-library(tidyverse)
-pseudocount <- function(y) {
+# -------- body of the function --------
+
+pseudocount <- function(x) {
   # Convert the input to a tibble.
-  y <- as_tibble(y)
+  x <- as_tibble(x)
 
   # Compute the total counts for each row.
-  lib_size <- rowSums(y)
+  lib_size <- rowSums(x)
 
   # Stop early if any sample has a library size of 0, since the detection
   # limit (1 / lib_size) would be undefined (Inf) for that row.
@@ -77,7 +80,7 @@ pseudocount <- function(y) {
   pseudo <- threshold_pct * detection_limit
 
   # Convert raw counts to row-wise proportions.
-  y_prop <- sweep(as.matrix(y), 1, lib_size, "/")
+  y_prop <- sweep(as.matrix(x), 1, lib_size, "/")
 
   # Replace zeroes with the corresponding row-specific pseudocount.
   # This is done on a plain matrix, not a tibble: tibbles do not support

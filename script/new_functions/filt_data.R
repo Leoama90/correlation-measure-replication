@@ -1,4 +1,4 @@
-# fil_data.R
+# filt_data.R
 #
 # This script defines an interactive function that filters a
 # metagenomic OTU count table (samples x OTUs) by prevalence, based
@@ -14,12 +14,16 @@
 #   - printed before/after summary (via datasum())
 #   - a list with the filtered OTU table (samp_filt) and, if a taxa
 #     table was found, the matching filtered taxonomy (taxa_filt)
+#
+# Used functions:
+#   - datasum from the script "datasummary.R"
 # here: builds file paths relative to the project root
 # https://cran.r-project.org/web/packages/here/index.html
 library(here)
 # tidyverse: data science toolkit (dplyr, ggplot2, tidyr, etc.)
 # [https://tidyverse.org](https://tidyverse.org)
 library(tidyverse)
+# -------- recall datasum function from the datasummary.R script --------
 # bring datasum() into scope by sourcing the file where it is defined
 source(
   list.files(
@@ -39,13 +43,16 @@ source(
 #'   (the taxonomy table restricted to the surviving OTUs).
 #' @export
 #
+# -------- body of the function --------
 filt_data <- function(x) {
   cat("#-----------------------------------------------------------------------# \n")
   # show the "before" summary; datasum() prints its own stats and
   # invisibly returns them, so no extra cat() is needed around it
+  cat("-----", "Summary of data BEFORE filtering the zeroes", "-----")
   datasum(x)
   # keep asking until the user provides a valid number between 0 and 1
   repeat {
+    cat("The next question is used to set how many zeroes are needed to be filtered", "\n")
     question <- readline("How much filter would you like to apply? (type a number between 0 and 1) ")
     question_num <- as.numeric(question)
     # if the input is valid, exit the loop
@@ -58,9 +65,12 @@ filt_data <- function(x) {
   # filter the OTU table by the prevalence threshold chosen by the user
   samp_filt <- x[, colSums(x > 0) / nrow(x) >= question_num]
   # median of non-zero values >= 5 reads
-  samp_filt <- samp_filt[, apply(samp_filt, 2, function(x) median(x[x > 0]) >= 5)]
+  # (the anonymous function's argument is named "col", not "x", to avoid
+  # shadowing the outer function's x parameter)
+  samp_filt <- samp_filt[, apply(samp_filt, 2, function(col) median(col[col > 0]) >= 5)]
   cat("#-----------------------------------------------------------------------# \n")
   # show the "after" summary
+  cat("-----", "Summary of data AFTER filtering the zeroes", "-----")
   datasum(samp_filt)
   cat("Used prevalence threshold was", question_num, "\n")
   # if a taxa table exists in the calling environment, align it to
@@ -70,5 +80,6 @@ filt_data <- function(x) {
     taxa_filt <- taxa[colnames(samp_filt), ]
     result$taxa_filt <- taxa_filt
   }
+  # return result as an invisible value
   invisible(result)
 }
