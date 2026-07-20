@@ -40,6 +40,7 @@ library(tidyverse)
 
 
 # -------- body of the function --------
+
 datasum <- function(x) {
   # give the dataset the first four letters of its original name
   dataset_name <- substr(deparse(substitute(x)), 1, 4)

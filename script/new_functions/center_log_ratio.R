@@ -36,7 +36,7 @@ source(
 source(
   list.files(
     path = here(),
-    pattern = "^filtering\\.R$",
+    pattern = "^filt_data\\.R$",
     full.names = TRUE,
     recursive = TRUE
   )

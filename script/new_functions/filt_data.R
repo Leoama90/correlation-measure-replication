@@ -1,4 +1,4 @@
-# filtering.R
+# fil_data.R
 #
 # This script defines an interactive function that filters a
 # metagenomic OTU count table (samples x OTUs) by prevalence, based
