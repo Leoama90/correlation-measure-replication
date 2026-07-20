@@ -12,6 +12,11 @@
 # Output:
 #   - the CLR-transformed OTU table
 #   - the OTU x OTU Pearson correlation matrix
+# 
+# Used scripts:
+#   - datasummary.R
+#   - filt_data.R
+#   - pseudocount.R
 
 # here: builds file paths relative to the project root
 # https://cran.r-project.org/web/packages/here/index.html
@@ -20,7 +25,8 @@ library(here)
 # [https://tidyverse.org](https://tidyverse.org)
 library(tidyverse)
 
-# -------- recall scripts for filtering, pseudocount add and summarizing --------
+
+# -------- recall scripts for filtering, pseudocount adding and summarizing --------
 
 # bring datasum() into scope
 source(
