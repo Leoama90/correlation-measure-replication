@@ -79,11 +79,13 @@ clr_on_data <- function(x) {
   # prevalence threshold interactively
   filt_result <- filt_data(x)
   samp_filt <- filt_result$samp_filt
+
   # -------- step 2: replace zeroes with row-specific pseudocounts --------
   # pseudocount() converts counts to row-wise proportions and asks the
   # user for a percentage threshold of the detection limit interactively;
   # the returned tibble no longer contains any zeroes
   y_prop <- as.matrix(pseudocount(samp_filt))
+
   # -------- step 3: CLR transformation --------
   # log of every value (safe: y_prop has no zeroes left, thanks to
   # pseudocount()), then subtract the row-wise mean of the logs, which
@@ -91,10 +93,12 @@ clr_on_data <- function(x) {
   log_data <- log(y_prop)
   log_geo_mean <- rowMeans(log_data)
   y_clr <- log_data - log_geo_mean
+
   # -------- step 4: Pearson correlation on CLR-transformed data --------
   # cor() computes correlations between columns (OTUs) by default,
   # yielding the OTU x OTU correlation matrix
   cor_matrix <- cor(y_clr, method = "pearson")
+
   # -------- return the invisible values --------
   invisible(list(
     samp_filt = samp_filt,

@@ -48,7 +48,7 @@ filt_data <- function(x) {
   cat("#-----------------------------------------------------------------------# \n")
   # show the "before" summary; datasum() prints its own stats and
   # invisibly returns them, so no extra cat() is needed around it
-  cat("-----", "Summary of data BEFORE filtering the zeroes", "-----")
+  cat("\n", "-----", "Summary of data BEFORE filtering the zeroes", "-----", "\n")
   datasum(x)
   # keep asking until the user provides a valid number between 0 and 1
   repeat {
@@ -70,7 +70,7 @@ filt_data <- function(x) {
   samp_filt <- samp_filt[, apply(samp_filt, 2, function(col) median(col[col > 0]) >= 5)]
   cat("#-----------------------------------------------------------------------# \n")
   # show the "after" summary
-  cat("-----", "Summary of data AFTER filtering the zeroes", "-----")
+  cat("\n", "-----", "Summary of data AFTER filtering the zeroes", "-----", "\n")
   datasum(samp_filt)
   cat("Used prevalence threshold was", question_num, "\n")
   # if a taxa table exists in the calling environment, align it to
