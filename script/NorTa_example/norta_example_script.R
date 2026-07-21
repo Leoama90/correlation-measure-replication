@@ -39,7 +39,8 @@ library(VGAM)
 # Sample size
 n <- 10^3
 
-# Correlation matrix: D variables with a strong negative correlation between var 2 and var 4
+# Correlation matrix: D variables with a strong negative correlation between
+# var 2 and var 4
 D <- 5
 R <- diag(D)
 R[4, 2] <- R[2, 4] <- -0.9

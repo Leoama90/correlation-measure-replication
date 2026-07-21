@@ -26,7 +26,7 @@ findings described in the paper.
 # Versions
 
 The R version used was the  4.5.3.
-Rstudio version was 2026.06.0+242.
+Rstudio version was 2026.07.1+147.
 
 # Syntax
 About the syntax I follow the conventions stated in the Tidyverse guide, found here: 
