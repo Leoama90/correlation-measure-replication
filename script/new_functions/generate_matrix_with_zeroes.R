@@ -20,6 +20,7 @@ library(here)
 # tidyverse: data science toolkit (dplyr, ggplot2, tidyr, etc.)
 # https://tidyverse.org
 library(tidyverse)
+
 #' Generate a symmetric correlation-like matrix with a specific number of zeroes
 #'
 #' @param n integer. Dimension of the matrix (n x n).

@@ -1,5 +1,8 @@
 # List of all the packages necessary to reproduce the analysis with the associated
 # command to install them.
+
+# -------- List of packages --------
+
 # cowplot: draw ggplot2 in new figures
 # https://cran.r-project.org/web/packages/cowplot/index.html
 install.packages("cowplot")
@@ -72,6 +75,9 @@ install.packages("VGAM")
 # zCompositions: imputation of zeros, left-censored and missing values in compositional data
 # https://cran.r-project.org/web/packages/zCompositions/index.html
 install.packages("zCompositions")
+
+# -------- List of packages from GitHub --------
+
 # propr: package with proportionality rho method
 # https://github.com/tpq/propr
 install_github("https://github.com/tpq/propr")

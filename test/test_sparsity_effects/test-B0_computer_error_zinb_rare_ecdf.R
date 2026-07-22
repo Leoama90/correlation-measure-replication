@@ -5,7 +5,14 @@ library(here)
 # https://cran.r-project.org/web/packages/testthat/index.html
 library(testthat)
 # load the script under test
-source(here("script", "sparsity_effects", "B0_computer_error_zinb_rare_ecdf.R"))
+source(
+  list.files(
+    path = here(),
+    pattern = "^B0_computer_error_zinb_rare_ecdf\\.R$",
+    full.names = TRUE,
+    recursive = TRUE
+  )
+)
 
 
 # ---- OTU filtering & rarefaction -------------------------------------------

@@ -9,10 +9,10 @@
 #   - clr_pearson.R (sourced below)
 #   - otu_HMP2.rds: a metagenomic OTU count table (samples x OTUs)
 #
-# Outputs:
-#   - samp_filt.rds: the filtered OTU table (tibble)
-#   - y_clr.rds: the CLR-transformed OTU table (matrix)
-#   - cor_matrix.rds: the OTU x OTU Pearson correlation matrix (matrix)
+# Outputs (saved in the "outputs/" folder at the project root):
+#   - outputs/samp_filt.rds: the filtered OTU table (tibble)
+#   - outputs/y_clr.rds: the CLR-transformed OTU table (matrix)
+#   - outputs/cor_matrix.rds: the OTU x OTU Pearson correlation matrix (matrix)
 
 # here: builds file paths relative to the project root
 # https://cran.r-project.org/web/packages/here/index.html
@@ -43,9 +43,11 @@ otu <- readRDS(
 result <- clr_on_data(otu)
 
 # -------- save each element of the result list as a separate .rds file --------
+# create the outputs folder once, before the loop, if it does not exist yet
+dir.create(here("outputs"), showWarnings = FALSE)
 # each file is named after the element itself (e.g. samp_filt.rds, y_clr.rds, ...)
 for (name in names(result)) {
-  saveRDS(result[[name]], here(paste0(name, ".rds")))
+  saveRDS(result[[name]], here("outputs", paste0(name, ".rds")))
 }
 
 # -------- report to the user which files were saved and where --------
@@ -53,9 +55,9 @@ for (name in names(result)) {
 # message stays correct even if clr_on_data() changes in the future
 cat("\n")
 cat("The pipeline result was saved as", length(result), "separate .rds files ")
-cat("in this project's root folder:\n")
+cat("in the 'outputs/' folder at the project root:\n")
 for (name in names(result)) {
-  cat("  -", paste0(name, ".rds"), "\n")
+  cat("  - outputs/", paste0(name, ".rds"), "\n", sep = "")
 }
 
 # -------- remind the user what each file contains --------
@@ -68,10 +70,12 @@ cat("  - cor_matrix: the OTU x OTU Pearson correlation matrix (matrix)\n")
 # -------- reload the saved .rds files into the environment --------
 # even though result already holds these objects in memory, reloading
 # them from disk confirms the files were saved correctly and gives the
-# user ready-to-view objects under clear, dedicated names
-samp_filt_view <- readRDS(here("samp_filt.rds"))
-y_clr_view <- readRDS(here("y_clr.rds"))
-cor_matrix_view <- readRDS(here("cor_matrix.rds"))
+# user ready-to-view objects under clear, dedicated names. Since we just
+# wrote these files ourselves, we read them back directly by path,
+# instead of searching the whole project for them.
+samp_filt_view <- readRDS(here("outputs", "samp_filt.rds"))
+y_clr_view <- readRDS(here("outputs", "y_clr.rds"))
+cor_matrix_view <- readRDS(here("outputs", "cor_matrix.rds"))
 
 # -------- let the user know the objects are ready to inspect --------
 cat("\n")

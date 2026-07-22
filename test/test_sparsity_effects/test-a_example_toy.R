@@ -11,7 +11,14 @@ library(tidyverse)
 library(testthat)
 
 # load the function to test
-source(here("script", "sparsity_effects", "a_example_toy.R"))
+source(
+  list.files(
+    path = here(),
+    pattern = "^a_example_toy\\.R$",
+    full.names = TRUE,
+    recursive = TRUE
+  )
+)
 
 
 # -------- testing adjancency matrix --------

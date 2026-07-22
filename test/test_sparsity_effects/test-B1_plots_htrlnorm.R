@@ -11,7 +11,14 @@ library(tidyverse)
 library(here)
 
 # load script to test
-source(here("script", "sparsity_effects", "B1_plots_htrlnorm.R"))
+source(
+  list.files(
+    path = here(),
+    pattern = "^B1_plots_htrlnorm\\.R$",
+    full.names = TRUE,
+    recursive = TRUE
+  )
+)
 
 # -------- test on the dataframe df --------
 
@@ -66,13 +73,14 @@ test_that("Plot contains a geom_tile layer", {
 
 # -------- test the output file --------
 
-# check that the output file error.rds was created
-test_that("error.rds file was saved", {
-  expect_true(file.exists("error.rds"))
+# check that the output file was created, at the exact path and with the
+# exact name used by B1_plots_htrlnorm.R to save it
+test_that("error_htlrlnorm.rds file was saved", {
+  expect_true(file.exists(here("script", "sparsity_effects", "error_htlrlnorm.rds")))
 })
 
-# check that error.rds contains a ggplot object
-test_that("error.rds contains a ggplot object", {
-  saved_plot <- readRDS("error.rds")
+# check that error_htlrlnorm.rds contains a ggplot object
+test_that("error_htlrlnorm.rds contains a ggplot object", {
+  saved_plot <- readRDS(here("script", "sparsity_effects", "error_htlrlnorm.rds"))
   expect_true(inherits(saved_plot, "gg"))
 })

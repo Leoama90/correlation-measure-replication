@@ -12,23 +12,30 @@ library(ToyModel)
 library(VGAM)
 
 # load script to test
-source(here("script", "NorTa example", "norta_example_script.R"))
+source(
+  list.files(
+    path = here(),
+    pattern = "^norta_example_script\\.R$",
+    full.names = TRUE,
+    recursive = TRUE
+  )
+)
 
 
 # -------- test for the R matrix --------
 
 # test that R matrix is symmetric
-test_that("R is not symmetric",{
+test_that("R is not symmetric", {
   expect_true(isSymmetric.matrix(R))
 })
 
 # test that the matrix entry [2, 4] has the proper value
-test_that("Matrix entry [2, 4] is different from -0.9",{
+test_that("Matrix entry [2, 4] is different from -0.9", {
   expect_true(R[2, 4] == -0.9)
 })
 
 # testing that [4, 2] entry is equal to [2, 4] entry
-test_that("Matrix entries in positions [4, 2] and [2, 4] are not identical",{
+test_that("Matrix entries in positions [4, 2] and [2, 4] are not identical", {
   expect_equal(R[4, 2], R[2, 4])
 })
 
@@ -36,7 +43,7 @@ test_that("Matrix entries in positions [4, 2] and [2, 4] are not identical",{
 # -------- test the applying of the inverse CDF function --------
 
 # testing that NorTa is a matrix
-test_that("NorTa is not a matrix",{
+test_that("NorTa is not a matrix", {
   expect_true(is.matrix(NorTA))
 })
 
@@ -49,7 +56,3 @@ test_that("NorTA does not contains only positive integers", {
   expect_true(all(NorTA >= 0))
   expect_true(all(NorTA == floor(NorTA)))
 })
-
-
-
-
