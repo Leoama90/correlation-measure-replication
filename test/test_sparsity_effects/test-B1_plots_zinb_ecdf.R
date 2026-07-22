@@ -11,7 +11,14 @@ library(here)
 library(tidyverse)
 
 # load function to test
-source(here("script", "sparsity_effects", "B1_plots_zinb_ecdf.R"))
+source(
+  list.files(
+    path = here(),
+    pattern = "^B1_plots_zinb_ecdf\\.R$",
+    full.names = TRUE,
+    recursive = TRUE
+  )
+)
 
 # -------- test that the database was correctly read --------
 test_that("The file was not correctly read", {
@@ -26,7 +33,7 @@ test_that("The column pstr0_2 was not dropped", {
 
 test_that("The column pstr0_1 was not renamed to pstr0", {
   expect_false(hasName(df, "pstr0_1"))
-  expect_true( hasName(df, "pstr0"  ))
+  expect_true(hasName(df, "pstr0"))
 })
 
 # check for the presence of the ERR_CLR column

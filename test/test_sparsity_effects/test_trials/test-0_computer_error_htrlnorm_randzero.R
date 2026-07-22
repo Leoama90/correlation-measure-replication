@@ -41,22 +41,26 @@ library(ToyModel)
 # that will allow the creation of the test
 
 # Load OTU abundance matrix (samples x OTUs)
-otu <- readRDS(list.files(path       = here(), 
-                          pattern    = "otu_HMP2.rds",  
-                          full.names = TRUE, 
-                          recursive  = TRUE))
+otu <- readRDS(list.files(
+  path = here(),
+  pattern = "otu_HMP2.rds",
+  full.names = TRUE,
+  recursive = TRUE
+))
 # Load sample metadata
-meta <- readRDS(list.files(path      = here(), 
-                           pattern    = "meta_HMP2.rds",  
-                           full.names = TRUE, 
-                           recursive  = TRUE))
+meta <- readRDS(list.files(
+  path = here(),
+  pattern = "meta_HMP2.rds",
+  full.names = TRUE,
+  recursive = TRUE
+))
 
 
 # Subset samples belonging to subject 69-001 in the healthy state
 otu_69001_H <- otu[meta$SubjectID == "69-001" & meta$CL4_2 == "Healthy", ]
 
 # Remove OTUs present in fewer than 33% of samples (low prevalence)
-otu_filt <- otu_69001_H[, colSums(otu_69001_H > 0)/nrow(otu_69001_H) >= 0.33]
+otu_filt <- otu_69001_H[, colSums(otu_69001_H > 0) / nrow(otu_69001_H) >= 0.33]
 # Further remove OTUs whose median non-zero count is below 5 (too rare)
 otu_filt <- otu_filt[, apply(otu_filt, 2, function(x) median(x[x > 0]) >= 5)]
 
@@ -65,7 +69,7 @@ otu_filt <- otu_filt[, apply(otu_filt, 2, function(x) median(x[x > 0]) >= 5)]
 
 test_that("The row number is not correct", {
   # get otu row number
-  otu_rown    <- nrow(otu)
+  otu_rown <- nrow(otu)
   # get otu_69001_H row number
   otu_69_rown <- nrow(otu_69001_H)
   # expect less rows after filtering for subject and health status
@@ -83,12 +87,12 @@ test_that("The column number is not correct", {
 # Build a data frame pairing each OTU's log-mean with its log-maximum,
 # used to learn a realistic mean–max relationship from the real data
 df_mean_max <- tibble(
-  "y" = apply(log(otu_filt + 1), 2, max ),
+  "y" = apply(log(otu_filt + 1), 2, max),
   "x" = apply(log(otu_filt + 1), 2, mean)
 )
 
 # Fit a simple linear model: log(max) ~ log(mean)
-model <- lm(y~x, data = df_mean_max)
+model <- lm(y ~ x, data = df_mean_max)
 
 
 # -------- test the 2. chunk --------
@@ -98,9 +102,10 @@ make_otu <- function(nrow = 10, ncol = 5, seed = 42) {
   # fix the random seed for reproducibility
   set.seed(seed)
   # draw Poisson counts with lambda = 10 and arrange them into a matrix
-  m <- matrix(rpois(nrow * ncol, lambda = 10), 
-              nrow = nrow, 
-              ncol = ncol)
+  m <- matrix(rpois(nrow * ncol, lambda = 10),
+    nrow = nrow,
+    ncol = ncol
+  )
   # assign sequential OTU names to columns
   colnames(m) <- paste0("OTU", seq_len(ncol))
   m
@@ -170,15 +175,17 @@ test_that("predict() returns as many values as rows in df_mean_max", {
 
 # generate a dummy matrix that will be used in the tests
 HMP2_quantile_params <- matrix(
-  c(1.0, 0.3, 0.1,
-    3.0, 1.2, 0.8),
+  c(
+    1.0, 0.3, 0.1,
+    3.0, 1.2, 0.8
+  ),
   nrow = 2, byrow = TRUE,
   dimnames = list(c("10%", "90%"), c("meanlog", "sdlog", "phi"))
 )
 
 # set parameters for the test
 n_background_otus <- 20
-n_samples         <- 100
+n_samples <- 100
 
 
 # -------- test for the outer loop --------
@@ -187,15 +194,21 @@ n_samples         <- 100
 test_that("params_random_HMP2 does not have correct shape and values within HMP2 bounds", {
   set.seed(1)
   params_random_HMP2 <- data.frame(
-    meanlog = runif(n_background_otus,
-                    HMP2_quantile_params["10%", "meanlog"],
-                    HMP2_quantile_params["90%", "meanlog"]),
-    sdlog   = runif(n_background_otus,
-                    HMP2_quantile_params["10%", "sdlog"],
-                    HMP2_quantile_params["90%", "sdlog"]),
-    phi     = runif(n_background_otus,
-                    HMP2_quantile_params["10%", "phi"],
-                    HMP2_quantile_params["90%", "phi"])
+    meanlog = runif(
+      n_background_otus,
+      HMP2_quantile_params["10%", "meanlog"],
+      HMP2_quantile_params["90%", "meanlog"]
+    ),
+    sdlog = runif(
+      n_background_otus,
+      HMP2_quantile_params["10%", "sdlog"],
+      HMP2_quantile_params["90%", "sdlog"]
+    ),
+    phi = runif(
+      n_background_otus,
+      HMP2_quantile_params["10%", "phi"],
+      HMP2_quantile_params["90%", "phi"]
+    )
   )
   # one row must be generated per background OTU
   expect_equal(nrow(params_random_HMP2), n_background_otus)
@@ -205,13 +218,13 @@ test_that("params_random_HMP2 does not have correct shape and values within HMP2
   expect_true(all(params_random_HMP2$meanlog >= HMP2_quantile_params["10%", "meanlog"]))
   expect_true(all(params_random_HMP2$meanlog <= HMP2_quantile_params["90%", "meanlog"]))
   # sampled phi values must stay within the 10th–90th percentile range
-  expect_true(all(params_random_HMP2$phi     >= HMP2_quantile_params["10%", "phi"]))
-  expect_true(all(params_random_HMP2$phi     <= HMP2_quantile_params["90%", "phi"]))
+  expect_true(all(params_random_HMP2$phi >= HMP2_quantile_params["10%", "phi"]))
+  expect_true(all(params_random_HMP2$phi <= HMP2_quantile_params["90%", "phi"]))
 })
 
 # params_set must be a full factorial grid with the correct row count and columns
 test_that("params_set is a full factorial grid with all required columns", {
-  phi_seq <- seq(0, 0.95, by = 0.05)  # 20 levels
+  phi_seq <- seq(0, 0.95, by = 0.05) # 20 levels
   cor_seq <- seq(-0.9, 0.9, by = 0.1) # 19 levels
   set.seed(1)
   params_set <- expand_grid(
@@ -219,16 +232,20 @@ test_that("params_set is a full factorial grid with all required columns", {
     phi_2 = phi_seq,
     cor   = cor_seq
   ) %>%
-    mutate(meanlog_1 = runif(n(), 1  ,   3),
-           meanlog_2 = runif(n(), 1  ,   3),
-           sdlog_1   = runif(n(), 0.3, 1.2),
-           sdlog_2   = runif(n(), 0.3, 1.2))
+    mutate(
+      meanlog_1 = runif(n(), 1, 3),
+      meanlog_2 = runif(n(), 1, 3),
+      sdlog_1 = runif(n(), 0.3, 1.2),
+      sdlog_2 = runif(n(), 0.3, 1.2)
+    )
   # Row count must equal 20 × 20 × 19 = 7,600
   expect_equal(nrow(params_set), length(phi_seq)^2 * length(cor_seq))
   # all seven parameter columns must be present
-  expect_true(all(c("phi_1", "phi_2", "cor",
-                    "meanlog_1", "meanlog_2",
-                    "sdlog_1",   "sdlog_2") %in% names(params_set)))
+  expect_true(all(c(
+    "phi_1", "phi_2", "cor",
+    "meanlog_1", "meanlog_2",
+    "sdlog_1", "sdlog_2"
+  ) %in% names(params_set)))
 })
 
 
@@ -239,16 +256,17 @@ test_that("params_set is a full factorial grid with all required columns", {
 test_that("replacing target columns leaves all other columns unchanged", {
   set.seed(42)
   background <- matrix(rpois(n_samples * n_background_otus, 5),
-                       nrow = n_samples, ncol = n_background_otus)
-  new_col_a  <- rpois(n_samples, lambda = 8)
-  new_col_b  <- rpois(n_samples, lambda = 3)
-  modified        <- background
+    nrow = n_samples, ncol = n_background_otus
+  )
+  new_col_a <- rpois(n_samples, lambda = 8)
+  new_col_b <- rpois(n_samples, lambda = 3)
+  modified <- background
   # overwrite column 5 with the first synthetic OTU
-  modified[, 5]  <- new_col_a
+  modified[, 5] <- new_col_a
   # overwrite column 15 with the second synthetic OTU
   modified[, 15] <- new_col_b
   # target columns must reflect the new values exactly
-  expect_equal(modified[, 5],  new_col_a)
+  expect_equal(modified[, 5], new_col_a)
   expect_equal(modified[, 15], new_col_b)
   # Every column other than 5 and 15 must be untouched
   expect_equal(modified[, -c(5, 15)], background[, -c(5, 15)])
@@ -261,7 +279,8 @@ test_that("pseudo-value imputation removes all zeros without altering non-zero e
   mat <- matrix(c(0, 1, 2, 0, 5, 0), nrow = 2)
   # generate a uniform random pseudo-count for every cell
   rand_pseudo <- matrix(runif(length(mat), min = 0.065, max = 0.65),
-                        nrow = nrow(mat), ncol = ncol(mat))
+    nrow = nrow(mat), ncol = ncol(mat)
+  )
   # add pseudo-count only where the original matrix is zero
   mat_imputed <- mat + (mat == 0) * rand_pseudo
   # all cells must now be strictly positive
@@ -275,8 +294,9 @@ test_that("pseudo-value imputation removes all zeros without altering non-zero e
 test_that("CLR correlation matrix is valid (symmetric, diagonal = 1, values in [-1,1])", {
   set.seed(42)
   # Build a positive matrix (no zeros) so log is always defined
-  mat     <- matrix(rpois(n_samples * n_background_otus, 10) + 1,
-                    nrow = n_samples, ncol = n_background_otus)
+  mat <- matrix(rpois(n_samples * n_background_otus, 10) + 1,
+    nrow = n_samples, ncol = n_background_otus
+  )
   # apply log transformation
   log_mat <- log(mat)
   # center log counts by subtracting the row geometric mean (CLR transform)
@@ -297,11 +317,12 @@ test_that("CLR correlation matrix is valid (symmetric, diagonal = 1, values in [
 # the correlation estimate must be a finite scalar within [-1, 1]
 test_that("inner loop result row has all required columns and a valid correlation", {
   set.seed(42)
-  n_col   <- 20
-  mat     <- matrix(rpois(n_samples * n_col, 10) + 1,
-                    nrow = n_samples, ncol = n_col)
-  log_mat  <- log(mat)
-  clr_mat  <- log_mat - rowMeans(log_mat)
+  n_col <- 20
+  mat <- matrix(rpois(n_samples * n_col, 10) + 1,
+    nrow = n_samples, ncol = n_col
+  )
+  log_mat <- log(mat)
+  clr_mat <- log_mat - rowMeans(log_mat)
   cor_pclr <- cor(clr_mat)
   # build a one-row data frame mirroring the inner loop output schema
   row_result <- data.frame(
@@ -319,9 +340,11 @@ test_that("inner loop result row has all required columns and a valid correlatio
     # extract the pairwise CLR correlation between the two grafted OTU positions
     cor_NorTA_PCLR = cor_pclr[5, 15]
   )
-  expected_cols <- c("iteration", "cor_input", "cor_normal",
-                     "meanlog_1", "meanlog_2", "sdlog_1", "sdlog_2",
-                     "b_1", "b_2", "phi_1", "phi_2", "cor_NorTA_PCLR")
+  expected_cols <- c(
+    "iteration", "cor_input", "cor_normal",
+    "meanlog_1", "meanlog_2", "sdlog_1", "sdlog_2",
+    "b_1", "b_2", "phi_1", "phi_2", "cor_NorTA_PCLR"
+  )
   # all 12 output columns must be present with the correct names
   expect_named(row_result, expected_cols)
   # cor_NorTA_PCLR must be a single scalar, not a vector
@@ -335,25 +358,25 @@ test_that("inner loop result row has all required columns and a valid correlatio
 # After N iterations the accumulated data frame must have N × K rows and no NAs
 test_that("accumulated result has correct row count and no NAs after all iterations", {
   set.seed(42)
-  n_iter   <- 3
+  n_iter <- 3
   n_params <- 5
   # start with an empty data frame that will grow with each iteration
-  result   <- data.frame()
+  result <- data.frame()
   for (iter in seq_len(n_iter)) {
     # build a dummy result block for the current iteration
     dummy_df <- data.frame(
       iteration      = iter,
-      cor_input      = runif(n_params, -0.9,  0.9 ),
-      cor_normal     = runif(n_params, -0.9,  0.9 ),
-      meanlog_1      = runif(n_params,  1  ,  3   ),
-      meanlog_2      = runif(n_params,  1  ,  3   ),
-      sdlog_1        = runif(n_params,  0.3,  1.2 ),
-      sdlog_2        = runif(n_params,  0.3,  1.2 ),
-      b_1            = runif(n_params,  2  ,  5   ),
-      b_2            = runif(n_params,  2  ,  5   ),
-      phi_1          = runif(n_params,  0  ,  0.95),
-      phi_2          = runif(n_params,  0  ,  0.95),
-      cor_NorTA_PCLR = runif(n_params, -1  ,  1   )
+      cor_input      = runif(n_params, -0.9, 0.9),
+      cor_normal     = runif(n_params, -0.9, 0.9),
+      meanlog_1      = runif(n_params, 1, 3),
+      meanlog_2      = runif(n_params, 1, 3),
+      sdlog_1        = runif(n_params, 0.3, 1.2),
+      sdlog_2        = runif(n_params, 0.3, 1.2),
+      b_1            = runif(n_params, 2, 5),
+      b_2            = runif(n_params, 2, 5),
+      phi_1          = runif(n_params, 0, 0.95),
+      phi_2          = runif(n_params, 0, 0.95),
+      cor_NorTA_PCLR = runif(n_params, -1, 1)
     )
     # append this iteration's rows to the growing result data frame
     result <- bind_rows(result, dummy_df)

@@ -23,8 +23,8 @@ library(VGAM)
 
 # Small ZINB parameter set representing a single OTU pair
 test_params <- data.frame(
-  munb  = c(10 , 15 ),
-  size  = c(2  , 3  ),
+  munb  = c(10, 15),
+  size  = c(2, 3),
   pstr0 = c(0.2, 0.4)
 )
 
@@ -32,18 +32,19 @@ test_params <- data.frame(
 # -------- toy_model returns the expected structure --------
 
 test_that("toy_model returns NorTA matrix and cor_normal with correct dimensions", {
-  
-  result <- toy_model(n     = 50,
-                      cor   = diag(2),
-                      M     = 1,
-                      qdist = VGAM::qzinegbin,
-                      param = test_params)
-  
+  result <- toy_model(
+    n = 50,
+    cor = diag(2),
+    M = 1,
+    qdist = VGAM::qzinegbin,
+    param = test_params
+  )
+
   # NorTA should be a 50 x 2 non-negative integer matrix
   expect_equal(dim(result$NorTA), c(50, 2))
   expect_true(all(result$NorTA >= 0))
-  
+
   # cor_normal should be a 2x2 symmetric matrix with ones on the diagonal
-  expect_equal(dim(result$cor_normal),  c(2, 2))
+  expect_equal(dim(result$cor_normal), c(2, 2))
   expect_equal(diag(result$cor_normal), c(1, 1))
 })
