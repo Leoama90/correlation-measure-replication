@@ -17,14 +17,14 @@ Computing for Applied Physics** and the **Statistical Data Analysis for Applied 
 The paper investigates the biases affecting correlation estimates in metagenomic data, which arise from the compositional nature of the data, within-sample diversity, and high sparsity (many unobserved/zero taxa). Using simulated data, the authors show that standard compositional-data transformations — especially the centered log-ratio (CLR) — allow simple Pearson correlation to reliably recover the true correlation structure, particularly in high-dimensional settings. Sparsity, however, remains an open issue, tending to underestimate negative correlations.
  
 **Methods:**
-- Gaussian data simulated via `mvtnorm`, varying dimensionality (D) and within-sample diversity (*Pielou* index, P, for more informationabout its: [Pielou_index_description_link](https://www.statology.org/how-to-calculate-interpret-pielous-evenness-index/)), to isolate compositional biases under L1 vs. CLR normalization.
+- Gaussian data simulated using the R package `mvtnorm`, varying dimensionality (D) and within-sample diversity (*Pielou* index, P, for more informationabout its: [Pielou_index_description_link](https://www.statology.org/how-to-calculate-interpret-pielous-evenness-index/)), to isolate compositional biases under L1 vs. CLR normalization.
 - Realistic sparse data simulated with the "Normal to Anything" (NorTA) approach, using a zero-inflated negative binomial marginal distribution; zeros replaced with 65% of the detection limit before CLR.
-- Validation on real data from the HMP2 gut microbiome dataset (single healthy subject, 51 samples), comparing Pearson + CLR against Rho and SparCC.  
+- Validation on real data from the HMP2 gut microbiome dataset (single healthy subject: *69-001*, contributed with 51 samples in total, the highest count in the dataset), comparing CLR + Pearson against Rho and SparCC.  
 
 **Key findings:**
 - L1-normalized correlations are strongly biased by within-sample diversity and do not improve with dimensionality.
 - CLR-normalized correlations are independent of diversity, and their bias decreases rapidly with dimensionality (negligible above ~100 taxa) — typical of metagenomic datasets.
-- On real HMP2 data, Pearson+CLR closely matches Rho and SparCC at high dimensionality (OTU level), while differences grow at low dimensionality (phylum level).
+- On real HMP2 data, CLR + Pearson closely matches Rho and SparCC at high dimensionality (OTU level), while differences grow at low dimensionality (phylum level).
 - Data sparsity remains a limitation: error increases with the fraction of zeros, especially for negative correlations; CLR mitigates but does not eliminate this bias.  
 
 **Takeaway:** in typical high-dimensional metagenomic settings, simple Pearson correlation on CLR-transformed data is a robust and computationally cheap choice, with more complex compositional-correction methods becoming relevant mainly at low dimensionality. Sparsity handling remains the main open challenge.  
@@ -33,7 +33,7 @@ The paper investigates the biases affecting correlation estimates in metagenomic
 ## Research goal
 
 This project builds on the simulation framework and findings described in the paper.  
-The aim is to reproduce the results obtained in the paper and to add new proposal of solutions about the problem of sparsity.  
+The aim of this repository is to reproduce the results obtained in the paper and to add new proposal of solutions for the (persistent) problem of sparsity.  
 
 
 # Versions

@@ -27,6 +27,8 @@ library(here)
 # tidyverse: data science toolkit (dplyr, ggplot2, tidyr, etc.)
 # https://tidyverse.org
 library(tidyverse)
+
+
 # -------- recall scripts for filtering, pseudocount adding and summarizing --------
 # bring datasum() into scope
 source(
@@ -71,6 +73,7 @@ source(
 #'
 #' @export
 
+
 # -------- body of the function --------
 
 clr_on_data <- function(x) {
@@ -98,6 +101,7 @@ clr_on_data <- function(x) {
   # cor() computes correlations between columns (OTUs) by default,
   # yielding the OTU x OTU correlation matrix
   cor_matrix <- cor(y_clr, method = "pearson")
+
 
   # -------- return the invisible values --------
   invisible(list(
