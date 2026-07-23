@@ -17,12 +17,15 @@
 #
 # Used functions:
 #   - datasum from the script "datasummary.R"
+
 # here: builds file paths relative to the project root
 # https://cran.r-project.org/web/packages/here/index.html
 library(here)
 # tidyverse: data science toolkit (dplyr, ggplot2, tidyr, etc.)
 # [https://tidyverse.org](https://tidyverse.org)
 library(tidyverse)
+
+
 # -------- recall datasum function from the datasummary.R script --------
 # bring datasum() into scope by sourcing the file where it is defined
 source(
@@ -33,6 +36,7 @@ source(
     recursive = TRUE
   )
 )
+
 #' Interactively filter a metagenomic OTU table by prevalence
 #'
 #' @param x a data.frame, tibble, or matrix with samples on rows and
@@ -43,6 +47,8 @@ source(
 #'   (the taxonomy table restricted to the surviving OTUs).
 #' @export
 #
+
+
 # -------- body of the function --------
 filt_data <- function(x) {
   cat("#-----------------------------------------------------------------------# \n")
