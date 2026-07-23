@@ -8,10 +8,16 @@ Data: The Blessing of Dimensionality"* (from now on I will refer to it as "the p
 > Remondini, D. Correlation Measures in Metagenomic Data: The Blessing of
 > Dimensionality. *Appl. Sci.* **2025**, *15*, 8602.
 > https://doi.org/10.3390/app15158602
- 
+
 This repository is used for the final projects of both the **Software and
 Computing for Applied Physics** and the **Statistical Data Analysis for Applied Physics** courses.
+
+## What's the paper about
+
+The paper investigates the systematic biases that occur when reconstructing microbial interaction networks from metagenomic data.
+These biases are primarily caused by the compositional nature of the data (where values are proportions that must sum to 1, for more informations about the topic here is a good reference: [Wikipedia_link_compositional_data](https://en.wikipedia.org/wiki/Compositional_data)), within-sample diversity, and high sparsity (an excess of zeros due to technical detection limits).
  
+
 ## Research goal
 
 The aim of the paper is to investigate the __biases__ affecting correlation measures used 
