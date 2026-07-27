@@ -259,6 +259,7 @@ p2 <- ggscatter(
   xlab("Pearson + CLR") +
   theme(plot.title = element_text(hjust = 0.5))
 
+
 # -------- panel C: Histogram of CLR vs GLASSO correlation distributions --------
 
 # Dashed line at y = 200 as visual reference threshold
@@ -324,6 +325,7 @@ names(colpal) <- unique(taxa_filt[, "family"])
 
 # Node size proportional to mean CLR abundance
 vertex_size <- colMeans(CLR(otu_filt) - min(CLR(otu_filt)))
+
 
 # -------- panel D: CLR network --------
 

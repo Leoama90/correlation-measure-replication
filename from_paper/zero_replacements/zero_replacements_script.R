@@ -35,9 +35,16 @@ library(ggpubr)
 # Imputation of zeros, left-censored and missing values in compositional data
 # https://cran.r-project.org/web/packages/zCompositions/index.html
 library(zCompositions)
-# Load custom function
-source(here("script", "method_comparison", "CLR.R"))
 
+# Load custom function
+source(
+  list.files(
+    path = here(),
+    pattern = "^CLR\\.R$",
+    full.names = TRUE,
+    recursive = TRUE
+  )
+)
 # -------- read and filter data --------
 
 # Read the OTU counts and subject metadata

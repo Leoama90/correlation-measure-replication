@@ -123,7 +123,7 @@ results_block <- foreach(corr_val = Correlation_Sequence, .combine = "rbind") %:
 close(pb)
 stopCluster(cl)
 
-saveRDS(results_block, here("script", "correlation_sparsity", "results_block.rds"))
+saveRDS(results_block, here("from_paper", "correlation_sparsity", "results_block.rds"))
 
 # -------- gaussian distributed correlation values --------
 
@@ -185,7 +185,7 @@ results_gauss <- foreach(
 }
 
 # save results
-saveRDS(results_gauss, here("script", "correlation_sparsity", "results_gauss.rds"))
+saveRDS(results_gauss, here("from_paper", "correlation_sparsity", "results_gauss.rds"))
 
 
 # create the plot with improved aesthetics

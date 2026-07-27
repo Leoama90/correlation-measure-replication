@@ -58,7 +58,7 @@ library(SpiecEasi)
 
 # -------- create new folder --------
 
-dir.create(here("script", "sparsity_effects", "trials"), showWarnings = FALSE, recursive = TRUE)
+dir.create(here("from_paper", "sparsity_effects", "trials"), showWarnings = FALSE, recursive = TRUE)
 
 
 # -------- read data --------
@@ -66,14 +66,14 @@ dir.create(here("script", "sparsity_effects", "trials"), showWarnings = FALSE, r
 # Load OTU abundance matrix (samples x OTUs)
 otu <- readRDS(list.files(
   path       = here(),
-  pattern    = "otu_HMP2.rds",
+  pattern    = "^otu_HMP2\\.rds$",
   full.names = TRUE,
   recursive  = TRUE
 ))
 # Load sample metadata
 meta <- readRDS(list.files(
   path       = here(),
-  pattern    = "meta_HMP2.rds",
+  pattern    = "^meta_HMP2\\.rds$",
   full.names = TRUE,
   recursive  = TRUE
 ))

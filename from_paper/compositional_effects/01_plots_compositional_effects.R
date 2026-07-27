@@ -38,7 +38,7 @@ dir.create(here("Plots"), showWarnings = FALSE, recursive = TRUE)
 # -------- data loading --------
 
 # Load preprocessed compositional effects data
-df <- readRDS(here("script", "compositional_effects", "compositional_effects_02.rds"))
+df <- readRDS(here("from_paper", "compositional_effects", "compositional_effects_02.rds"))
 
 
 # -------- grid sampling: match Pielou values to target grid --------

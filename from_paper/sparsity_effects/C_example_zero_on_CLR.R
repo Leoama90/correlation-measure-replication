@@ -32,7 +32,7 @@ library(ggpubr)
 library(tidyverse)
 
 # load CLR script
-source(here("script", "method_comparison", "CLR.R"))
+source(here("from_paper", "method_comparison", "CLR.R"))
 
 # Read the OTU counts and subject metadata
 otu <- readRDS(list.files(
@@ -243,7 +243,7 @@ pall <- ggarrange(
 )
 
 # Save the combined figure as an RDS object for later use
-saveRDS(pall, here("script", "sparsity_effects", "example_couple.rds"))
+saveRDS(pall, here("from_paper", "sparsity_effects", "example_couple.rds"))
 
 # UI reminder where to search the generated plot
 cat("the .rds file has been saved in the 'sparsity_effects' folder with the name 'example_couple.rds' ")

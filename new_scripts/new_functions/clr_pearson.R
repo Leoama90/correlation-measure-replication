@@ -30,6 +30,7 @@ library(tidyverse)
 
 
 # -------- recall scripts for filtering, pseudocount adding and summarizing --------
+
 # bring datasum() into scope
 source(
   list.files(
@@ -77,19 +78,23 @@ source(
 # -------- body of the function --------
 
 clr_on_data <- function(x) {
+  
   # -------- step 1: filter rare/low-quality OTUs --------
+  
   # filt_data() prints a before/after summary and asks the user for a
   # prevalence threshold interactively
   filt_result <- filt_data(x)
   samp_filt <- filt_result$samp_filt
 
   # -------- step 2: replace zeroes with row-specific pseudocounts --------
+  
   # pseudocount() converts counts to row-wise proportions and asks the
   # user for a percentage threshold of the detection limit interactively;
   # the returned tibble no longer contains any zeroes
   y_prop <- as.matrix(pseudocount(samp_filt))
 
   # -------- step 3: CLR transformation --------
+  
   # log of every value (safe: y_prop has no zeroes left, thanks to
   # pseudocount()), then subtract the row-wise mean of the logs, which
   # is equivalent to dividing by the geometric mean of each sample
@@ -98,12 +103,14 @@ clr_on_data <- function(x) {
   y_clr <- log_data - log_geo_mean
 
   # -------- step 4: Pearson correlation on CLR-transformed data --------
+  
   # cor() computes correlations between columns (OTUs) by default,
   # yielding the OTU x OTU correlation matrix
   cor_matrix <- cor(y_clr, method = "pearson")
 
 
   # -------- return the invisible values --------
+  
   invisible(list(
     samp_filt = samp_filt,
     y_clr = y_clr,

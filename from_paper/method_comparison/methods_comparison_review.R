@@ -71,11 +71,11 @@ library(tidyverse)
 # -------- load other scripts needed for the test (custom functions) --------
 
 # loads Centered Log-Ratio transform function
-source(here("script", "method_comparison", "CLR.R"))
+source(here("from_paper", "method_comparison", "CLR.R"))
 # loads upper-triangle matrix extraction function
-source(here("script", "method_comparison", "TRIU.R"))
+source(here("from_paper", "method_comparison", "TRIU.R"))
 # loads signed network layout function
-source(here("script", "method_comparison", "layout_signed.R"))
+source(here("from_paper", "method_comparison", "layout_signed.R"))
 
 
 # -------- READ AND FILTER DATA --------

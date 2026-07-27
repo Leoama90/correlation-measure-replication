@@ -35,7 +35,7 @@ library(here)
 library(tidyverse)
 
 # Load the dataset, drop phi_2, rename phi_1 to phi, and compute CLR absolute error
-df <- readRDS(here("script", "sparsity_effects", "Sparsity_Effects_htrlnorm_2.rds")) %>%
+df <- readRDS(here("from_paper", "sparsity_effects", "Sparsity_Effects_htrlnorm_2.rds")) %>%
   dplyr::select(-phi_2) %>%
   rename(phi = phi_1) %>%
   mutate("ERR_CLR" = abs(cor_normal - cor_NorTA_PCLR))
@@ -80,7 +80,7 @@ p <- df %>%
   ylab("Zero %")
 
 # Save the plot object to an RDS file for later use
-saveRDS(p, here("script", "sparsity_effects", "error_htlrlnorm.rds"))
+saveRDS(p, here("from_paper", "sparsity_effects", "error_htlrlnorm.rds"))
 
 # UI reminder where to search the generated plot
 cat("the .rds file has been saved in the 'sparsity_effects' folder with the name 'error_htlrlnorm.rds' ")

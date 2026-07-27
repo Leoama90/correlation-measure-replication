@@ -20,7 +20,7 @@ library(tidyverse)
 # Recursively search the project directory for the simulation results file
 path <- list.files(
   path       = here(),
-  pattern    = "Sparsity_Effects_htrlnorm.rds",
+  pattern    = "^Sparsity_Effects_htrlnorm\\.rds$",
   full.names = TRUE,
   recursive  = TRUE
 )
@@ -113,7 +113,7 @@ p_htrlnorm_max <- df %>%
   scale_x_continuous(breaks = seq(-0.8, 0.8, 0.2), expand = c(0, 0))
 
 # Save the three-panel heatmap figure
-png(here("script", "sparsity_effects", "trials", "effects_htrlnorm_zerorand.png"), width = 3600, height = 1500, res = 300)
+png(here("from_paper", "sparsity_effects", "trials", "effects_htrlnorm_zerorand.png"), width = 3600, height = 1500, res = 300)
 print(ggarrange(
   p_htrlnorm_min, p_htrlnorm_mean, p_htrlnorm_max,
   ncol = 3,
@@ -131,13 +131,13 @@ dev.off()
 # Read the OTU counts and subject metadata
 otu <- readRDS(list.files(
   path       = here(),
-  pattern    = "otu_HMP2.rds",
+  pattern    = "^otu_HMP2\\.rds$",
   full.names = TRUE,
   recursive  = TRUE
 ))
 meta <- readRDS(list.files(
   path       = here(),
-  pattern    = "meta_HMP2.rds",
+  pattern    = "^meta_HMP2\\.rds$",
   full.names = TRUE,
   recursive  = TRUE
 ))
@@ -374,7 +374,7 @@ pall <- plot_grid(pall1, pall2, pall3, pall4, nrow = 4)
 
 
 # save the final figure as a high-resolution PNG
-png(here("script", "sparsity_effects", "trials", "examples_htrlnorm_zerorand.png"), width = 3600, height = 4800, res = 300)
+png(here("from_paper", "sparsity_effects", "trials", "examples_htrlnorm_zerorand.png"), width = 3600, height = 4800, res = 300)
 # allows to generate the .png file
 print(pall)
 # close the graphics device and write the file to disk

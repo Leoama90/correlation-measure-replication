@@ -82,4 +82,4 @@ stopCluster(cl)
 # dir.create(here("script", "compositional_effects"), showWarnings = FALSE)
 
 # save the results in output folder
-saveRDS(simulation_results, here("script", "compositional_effects", "compositional_effects_01.rds"))
+saveRDS(simulation_results, here("from_paper", "compositional_effects", "compositional_effects_01.rds"))

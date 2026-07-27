@@ -35,6 +35,9 @@ The paper investigates the biases affecting correlation estimates in metagenomic
 This project builds on the simulation framework and findings described in the paper.  
 The aim of this repository is to reproduce the results obtained in the paper and to add new proposal of solutions for the (persistent) problem of sparsity.  
 
+# Structure of the repository
+
+
 
 # Versions
 

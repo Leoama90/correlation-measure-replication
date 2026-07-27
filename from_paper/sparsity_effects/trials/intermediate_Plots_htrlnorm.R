@@ -171,7 +171,7 @@ dev.off()
 # this code allows R to search for the target file without specifying the folder names
 f1 <- list.files(
   path       = here(),
-  pattern    = "otu_HMP2.rds",
+  pattern    = "^otu_HMP2\\.rds$",
   full.names = TRUE,
   recursive  = TRUE
 )
@@ -182,7 +182,7 @@ otu <- readRDS(f1)
 # this code allows R to search for the target file without specifying the folder names
 f2 <- list.files(
   path       = here(),
-  pattern    = "meta_HMP2.rds",
+  pattern    = "^meta_HMP2\\.rds$",
   full.names = TRUE,
   recursive  = TRUE
 )
@@ -423,7 +423,7 @@ pall4 <- annotate_figure(pall4, "n = 1000, cor = 0.9, meanlog = [2.5, 5.5], sdlo
 pall <- plot_grid(pall1, pall2, pall3, pall4, nrow = 4)
 
 # save the final figure as a high-resolution PNG
-png(here("script", "sparsity_effects", "trials", "examples_htrlnorm.png"), width = 3600, height = 4800, res = 300)
+png(here("from_paper", "sparsity_effects", "trials", "examples_htrlnorm.png"), width = 3600, height = 4800, res = 300)
 # this allows to generate the .png file
 print(pall)
 # close the graphics device and write the file to disk

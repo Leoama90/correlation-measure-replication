@@ -39,7 +39,7 @@ library(tidyverse)
 # rename the first one, and compute the absolute correlation error for CLR
 df <- readRDS(list.files(
   path = here(),
-  pattern = "Sparsity_Effects_zinbin_rare_ecdf_2.rds",
+  pattern = "^Sparsity_Effects_zinbin_rare_ecdf_2\\.rds$",
   full.names = TRUE,
   recursive = TRUE
 )) %>%
@@ -95,7 +95,7 @@ p <- df %>%
   theme(legend.position = "top")
 
 # Save the ggplot object to an RDS file for later reuse
-saveRDS(p, here("script", "sparsity_effects", "error_zinb.rds"))
+saveRDS(p, here("from_paper", "sparsity_effects", "error_zinb.rds"))
 
 # UI reminder where to search the generated plot
 cat("the .rds file has been saved in the 'sparsity_effects' folder with the name 'error_zinb.rds' ")

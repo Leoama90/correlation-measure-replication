@@ -1,29 +1,25 @@
-# B0_computer_error_htrlnorm.R
+# 0_computer_error_htrlnorm_randzero.R
 #
 # Purpose:
-#   Study how sparsity affects CLR correlation estimation, using a hurdle
-#   truncated log-normal distribution as the marginal model for OTU counts.
+#   Variant of the htrlnorm sparsity simulation that introduces random
+#   pseudo-count imputation before CLR transformation, to test whether the
+#   zero-handling strategy changes the results.
 #
 # Input:
 #   - HMP2 OTU abundance table
 #   - HMP2 sample metadata
 #   - The script subsets subject 69-001 in healthy status
-#   - OTU-level hurdle truncated log-normal parameters are fitted from the
-#     filtered HMP2 data, and the 10th–90th percentile range is used to
-#     avoid outlier parameter values
+#   - OTUs are filtered by prevalence and abundance
+#   - htrlnorm parameters are fitted to each filtered OTU
+#   - A mean–max relationship is learned via linear regression
 #
-#   Additional model inputs are generated internally:
-#   - a regression model relating mean and maximum log-abundance across OTUs
-#   - random parameter sets sampled within the observed HMP2 range
-#   - a background compositional dataset of 200 uncorrelated OTUs
+#   Compared with the earlier htrlnorm script:
+#   - phi_1 and phi_2 vary independently
+#   - zeros are replaced with random pseudo-counts before CLR
 #
-# Outputs:
-#   - Sparsity_Effects_htrlnorm.rds
-#
-#   The script simulates OTU pairs across a grid of sparsity and input
-#   correlation values, inserts them into a background compositional
-#   context, applies CLR transformation, and records the resulting
-#   Pearson correlation.
+# Output:
+#   - A simulation results file saved in:
+#     here("script", "sparsity_effects", "trials", "Sparsity_Effects_htrlnorm_rand_pseudo.rds")
 #
 # doSNOW: parallel backend for foreach, supports progress bars via snow clusters
 # https://cran.r-project.org/web/packages/doSNOW/index.html
@@ -49,94 +45,106 @@ library(tidyverse)
 # https://github.com/Fuschi/ToyModel
 library(ToyModel)
 
-# Read the OTU counts and subject metadata
+
+# -------- create new folder --------
+
+dir.create(here("from_paper", "sparsity_effects", "trials"), showWarnings = FALSE, recursive = TRUE)
+
+
+# -------- read data --------
+
+# Load OTU abundance matrix (samples x OTUs)
 otu <- readRDS(list.files(
   path       = here(),
-  pattern    = "otu_HMP2.rds",
+  pattern    = "^otu_HMP2\\.rds$",
   full.names = TRUE,
   recursive  = TRUE
 ))
+# Load sample metadata
 meta <- readRDS(list.files(
   path       = here(),
-  pattern    = "meta_HMP2.rds",
+  pattern    = "^meta_HMP2\\.rds$",
   full.names = TRUE,
   recursive  = TRUE
 ))
 
-# select samples belonging to subject 69-001 in healthy status
+
+# -------- filter data --------
+
+# Subset samples belonging to subject 69-001 in the healthy state
 otu_69001_H <- otu[meta$SubjectID == "69-001" & meta$CL4_2 == "Healthy", ]
 
-# remove rarest OTUs: keep only those present in at least 33% of samples
+# Remove OTUs present in fewer than 33% of samples (low prevalence)
 otu_filt <- otu_69001_H[, colSums(otu_69001_H > 0) / nrow(otu_69001_H) >= 0.33]
-
-# keep only OTUs whose median non-zero abundance is at least 5
+# Further remove OTUs whose median non-zero count is below 5 (too rare)
 otu_filt <- otu_filt[, apply(otu_filt, 2, function(x) median(x[x > 0]) >= 5)]
-
-# remove objects no longer needed to free memory
+# Free memory by removing objects no longer needed
 rm(otu, otu_69001_H, meta)
 
-# fit ZINB parameters from real data for each filtered OTU and
-# save the 10th and 90th percentile of the parameter distributions
+
+# -------- create the fits --------
+
+# Fit Hurdle Truncated Log-Normal (htrlnorm) parameters to each filtered OTU,
+# then summarise their distribution by extracting the 10th and 90th percentiles
 HMP2_quantile_params <- apply(otu_filt, 2, function(x) {
   ToyModel::mle.htrlnorm(x)$estimate
 }) %>% apply(1, function(x) quantile(x, probs = c(0.1, 0.9)))
 
-# fit a linear model between mean and max abundance (log scale) across OTUs
+# Build a data frame pairing each OTU's log-mean with its log-maximum,
+# used to learn a realistic mean–max relationship from the real data
 df_mean_max <- tibble(
   "y" = apply(log(otu_filt + 1), 2, max),
   "x" = apply(log(otu_filt + 1), 2, mean)
 )
+
+# Fit a simple linear model: log(max) ~ log(mean)
 model <- lm(y ~ x, data = df_mean_max)
 
-# function to predict new maximum values from mean values,
-# accounting for prediction uncertainty via leverage-based standard errors
+# Function to predict new maximum values (b) from given mean values,
+# adding prediction uncertainty via random draws from the error distribution
 predict_max <- function(new_xs) {
-  # predict mean values for new inputs
+  # Predict fitted values at the requested mean values
   new_data <- data.frame(x = new_xs)
   predicted_values <- predict(model, new_data, interval = "none")
 
-  # calculate residual variance from the fitted model
+  # Estimate the residual variance of the fitted model
   residuals_variance <- sum(residuals(model)^2) / model$df.residual
-
-  # number of observations in the original training data
+  # Number of observations used to fit the original model
   n <- length(model$model$x)
-
-  # mean of the original independent variable
+  # Mean of the original predictor variable
   x_bar <- mean(model$model$x)
 
-  # compute leverage for each new point (influence on the regression line)
-  # hii = 1/n + (xi - x̄)^2 / Σ(xi - x̄)^2
+  # Compute leverage for each new point (how far it is from the training mean)
   leverages <- 1 / n + ((new_data$x - x_bar)^2 / sum((model$model$x - x_bar)^2))
 
-  # compute standard error of prediction for each new input
+  # Compute the full prediction standard error (model + residual uncertainty)
   std_error_prediction <- sqrt(residuals_variance * (1 + leverages))
 
-  # sample predicted maximum values adding gaussian noise
+  # Sample a random predicted maximum for each new mean, adding realistic noise
   simulated_ys <- rnorm(nrow(new_data), mean = predicted_values, sd = std_error_prediction)
   return(simulated_ys)
 }
 
-# set total number of outer iterations
-nIteration <- 100
-
-# initialize progress bar
+# Set the total number of outer iterations and initialise a progress bar
+n_iteration <- 100
 pb <- progress_bar$new(
   format = "[:bar] :elapsed | eta: :eta",
-  total  = nIteration * 7600,
+  total  = n_iteration * 7600,
   width  = 60
 )
+# Callback function used to tick the progress bar from parallel workers
 progress <- function(n) {
   pb$tick()
 }
 
-# set seed for reproducibility
+# set sedd for reproducibility
 set.seed(42)
 result <- data.frame()
-for (iter in 1:nIteration) {
-  # -------- START OUTER LOOP --------
+for (iter in 1:n_iteration) {
+  # -------- OUTER LOOP --------
 
-
-  # randomly sample ZINB parameters for 200 OTUs within the observed HMP2 range
+  # Sample random htrlnorm parameters for 200 background OTUs
+  # uniformly within the HMP2 10th–90th percentile range
   params_random_HMP2 <- data.frame(
     "meanlog" = runif(
       n = 200,
@@ -155,28 +163,31 @@ for (iter in 1:nIteration) {
     )
   )
 
-  # predict maximum abundance values for the randomly sampled OTUs
+  # Predict a realistic maximum count (b) for each background OTU from its meanlog
   params_random_HMP2$b <- predict_max(params_random_HMP2$meanlog)
 
-  # simulate a background dataset of 200 uncorrelated OTUs (identity correlation matrix)
-  random_HMP2 <- ToyModel::toy_model(
+  # Simulate n = 10,000 samples for the 200 background OTUs with zero correlation
+  # (identity matrix), using the htrlnorm quantile function (NorTA approach)
+  random_HMP2 <- toy_model(
     n = 10^4,
     cor = diag(200),
     M = 1,
     qdist = ToyModel::qhtrlnorm,
     param = params_random_HMP2
   )
+  # Store the Pearson correlation in normal space for reference
+  random_cor_zero_HMP2 <- random_HMP2$cor_normal
 
-  # store the underlying normal correlation matrix of the background dataset
-  # random_cor0_HMP2 <- random_HMP2$cor_normal
-
-  # generate all combinations of sparsity (phi) and correlation values to test
+  # Build a full factorial grid of sparsity levels (phi_1, phi_2) and
+  # latent correlations (cor), then attach random HMP2-calibrated meanlog and sdlog
   params_set <- expand_grid(
+    # zero-inflation probability of OTU 1
     "phi_1" = seq(0, 0.95, by = 0.05),
+    # zero-inflation probability of OTU 2
     "phi_2" = seq(0, 0.95, by = 0.05),
+    # target latent Pearson correlation
     "cor"   = seq(-0.9, 0.9, by = 0.1)
   ) %>%
-    # assign random log-normal parameters to each combination
     mutate(
       "meanlog_1" = runif(
         n = n(),
@@ -200,28 +211,27 @@ for (iter in 1:nIteration) {
       )
     ) %>%
     as.data.frame() %>%
-    # predict maximum values for each OTU pair
+    # Add a predicted maximum count for each of the two OTUs in the pair
     mutate(
       b_1 = predict_max(meanlog_1),
       b_2 = predict_max(meanlog_2)
     )
 
-  # initialize a parallel cluster with 6 workers
+  # Initialise a parallel cluster with 6 workers
   cl <- makeCluster(6)
   registerDoSNOW(cl)
 
-  # -------- START INNER LOOP --------
 
+  # -------- INNER LOOP (parallel) --------
 
-  # iterate over all parameter combinations in parallel
   df <- foreach(
     i = 1:nrow(params_set),
     .combine = "rbind",
     .packages = c("ToyModel"),
     .options.snow = list(progress = progress)
   ) %dopar% {
-    # simulate a pair of OTUs with the given sparsity and correlation
-    couple <- ToyModel::toy_model(
+    # Generate a pair of correlated OTUs with the i-th parameter set
+    couple <- toy_model(
       n = 10^4,
       cor = params_set[i, "cor"],
       M = 1,
@@ -233,18 +243,29 @@ for (iter in 1:nIteration) {
       )
     )
 
-    # inject the simulated OTU pair into the background dataset
-    # at positions 25 and 125
+    # Copy the background NorTA matrix and replace columns 25 and 125
+    # with the two simulated OTUs of interest
     random_HMP2_NorTA_i <- random_HMP2$NorTA
     random_HMP2_NorTA_i[, 25] <- couple$NorTA[, 1]
     random_HMP2_NorTA_i[, 125] <- couple$NorTA[, 2]
 
-    # apply CLR transformation and compute Pearson correlation matrix
+    # Replace exact zeros with small random pseudo-values in [0.065, 0.65]
+    # to avoid log(0) issues before CLR transformation
+    rand_pseudo <- matrix(runif(length(random_HMP2_NorTA_i), min = 0.065, max = 0.65),
+      nrow = nrow(otu_filt),
+      ncol = ncol(otu_filt)
+    )
+
+    random_HMP2_NorTA_i <- random_HMP2_NorTA_i + (random_HMP2_NorTA_i == 0) * rand_pseudo
+
+    # Apply the Centred Log-Ratio (CLR) transform and compute the
+    # full Pearson correlation matrix across all 200 OTUs
     cor_PCLR <- random_HMP2_NorTA_i %>%
       ToyModel::clr() %>%
       cor()
 
-    # store results for this parameter combination
+    # Return a one-row summary with all input params and the estimated
+    # CLR correlation between the two target OTUs (cols 25 and 125)
     data.frame(
       "iteration" = iter,
       "cor_input" = params_set[i, "cor"],
@@ -260,18 +281,24 @@ for (iter in 1:nIteration) {
       "cor_NorTA_PCLR" = cor_PCLR[25, 125]
     )
   }
+
+
   # -------- END INNER LOOP --------
 
-
-  # shut down the parallel cluster
+  # shut down the parallel cluster after each outer iteration
   stopCluster(cl)
-  # append results of this iteration to the global result dataframe
+  # append this iteration's results to the accumulator data frame
   result <- bind_rows(result, df)
+
 
   # -------- END OUTER LOOP --------
 }
-# save the final results to disk
-saveRDS(result, here("script", "sparsity_effects", "Sparsity_Effects_htrlnorm.rds"))
+
+
+# -------- save results in a .rds file --------
+
+# Save the complete results table to disk as an R serialised object
+saveRDS(result, here("from_paper", "sparsity_effects", "trials", "Sparsity_Effects_htrlnorm_rand_pseudo.rds"))
 
 # UI reminder where to search the generated plot
-cat("the .rds file has been saved in the 'sparsity_effects' folder with the name 'Sparsity_Effects_htrlnorm.rds' ")
+cat("the .png file has been saved in the 'Plots' folder with the name 'sparsity.png'")

@@ -35,7 +35,7 @@ library(tidyverse)
 # Load a saved ggplot object for error visualization and move legend to top
 p_err_zinb <- readRDS(list.files(
   path = here(),
-  pattern = "error_zinb.rds",
+  pattern = "^error_zinb\\.rds$",
   full.names = TRUE,
   recursive = TRUE
 )) +
@@ -66,7 +66,7 @@ dev.off()
 # opens the output PNG in the default image viewer once the script completes
 browseURL(list.files(
   path       = here(),
-  pattern    = "sparsity.png",
+  pattern    = "^sparsity\\.png$",
   full.names = TRUE,
   recursive  = TRUE
 ))
