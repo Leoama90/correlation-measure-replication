@@ -17,7 +17,7 @@ Computing for Applied Physics** and the **Statistical Data Analysis for Applied 
 The paper investigates the biases affecting correlation estimates in metagenomic data, which arise from the compositional nature of the data, within-sample diversity, and high sparsity (many unobserved/zero taxa). Using simulated data, the authors show that standard compositional-data transformations — especially the centered log-ratio (CLR) — allow simple Pearson correlation to reliably recover the true correlation structure, particularly in high-dimensional settings. Sparsity, however, remains an open issue, tending to underestimate negative correlations.
  
 **Methods:**
-- Gaussian data simulated using the R package `mvtnorm`, varying dimensionality (D) and within-sample diversity (*Pielou* index, P, for more informationabout its: [Pielou_index_description_link](https://www.statology.org/how-to-calculate-interpret-pielous-evenness-index/)), to isolate compositional biases under L1 vs. CLR normalization.
+- Gaussian data simulated using the R package `mvtnorm`, varying dimensionality (D) and within-sample diversity (*Pielou* index, P, for more informations about it: [Pielou_index_description_link](https://www.statology.org/how-to-calculate-interpret-pielous-evenness-index/)), to isolate compositional biases under L1 vs. CLR normalization.
 - Realistic sparse data simulated with the "Normal to Anything" (NorTA) approach, using a zero-inflated negative binomial marginal distribution; zeros replaced with 65% of the detection limit before CLR.
 - Validation on real data from the HMP2 gut microbiome dataset (single healthy subject: *69-001*, contributed with 51 samples in total, the highest count in the dataset), comparing CLR + Pearson against Rho and SparCC.  
 
