@@ -1,7 +1,8 @@
 # demo_clr_pearson.R
 #
 # Purpose:
-#   Demonstrates the usage of clr_on_data(), loading a real metagenomic
+#   Demonstrates the usage of the function "clr_on_data()" (from the script 
+#   "clr_pearson"), loading a real metagenomic
 #   OTU count table and running the full filtering + pseudocount + CLR +
 #   Pearson correlation pipeline on it.
 #
@@ -13,6 +14,10 @@
 #   - outputs/samp_filt.rds: the filtered OTU table (tibble)
 #   - outputs/y_clr.rds: the CLR-transformed OTU table (matrix)
 #   - outputs/cor_matrix.rds: the OTU x OTU Pearson correlation matrix (matrix)
+#
+# Used scripts:
+#   - clr_pearson.R
+
 
 # here: builds file paths relative to the project root
 # https://cran.r-project.org/web/packages/here/index.html
@@ -21,7 +26,9 @@ library(here)
 # https://tidyverse.org
 library(tidyverse)
 
+
 # -------- load the clr_pearson.R script --------
+
 # load clr_on_data() and its dependencies (datasum, filt_data, pseudocount)
 source(
   list.files(

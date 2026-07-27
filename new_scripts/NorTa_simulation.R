@@ -66,6 +66,9 @@ source(
 #' norta_simulation(n = 10, n_zeroes = 4, N = 100, seed = 42)
 #'
 #' @export
+
+# -------- body of the function --------
+
 norta_simulation <- function(n, n_zeroes, N, seed = NULL) {
   
   # generate a synthetic n x n correlation matrix with the requested

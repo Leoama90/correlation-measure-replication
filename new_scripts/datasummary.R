@@ -14,12 +14,14 @@
 #   - printed column count, row count, number of zeroes and their
 #     percentage; invisibly returns these same values as a list
 #
+
 # here: builds file paths relative to the project root
 # https://cran.r-project.org/web/packages/here/index.html
 library(here)
 # tidyverse: data science toolkit (dplyr, ggplot2, tidyr, etc.)
 # [https://tidyverse.org](https://tidyverse.org)
 library(tidyverse)
+
 #
 #' Summarize a dataset's dimensions and zero content
 #'

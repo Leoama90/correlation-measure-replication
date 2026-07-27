@@ -14,6 +14,7 @@
 #   - the generated matrix printed to the console
 #   - a summary of the matrix properties (dimensions, min, max, determinant,
 #     number of zeroes) printed to the console
+
 # here: builds file paths relative to the project root
 # https://cran.r-project.org/web/packages/here/index.html
 library(here)
@@ -36,6 +37,10 @@ library(tidyverse)
 #' @examples
 #' generate_matrix_with_zeroes(n = 5, n_zeroes = 4, seed = 42)
 #
+
+
+# -------- body of the function --------
+
 # generate_matrix_with_zeroes(): builds a symmetric n x n matrix with values
 # in [-1, 1], a diagonal of 1s, and a chosen number of symmetric zero pairs
 generate_matrix_with_zeroes <- function(n, n_zeroes, seed = NULL) {
