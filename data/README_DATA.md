@@ -1,3 +1,7 @@
+## What's inside this folder
+The raw data is saved in *.csv* format and is stored in the subfolder "raw".  
+Here you can find the script "data_process.R" that takes the raw and trasnforms it in the *.rds* R format.  
+
 ## Human Microbiome Project 2 - Gut
 
 HMP2 OTU counts and their taxonomic classification were obtained from a

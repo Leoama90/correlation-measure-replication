@@ -10,15 +10,14 @@
 #   - A saved real-data example plot object:
 #     here("script", "sparsity_effects", "example_couple.rds")
 #
-#   The heatmap legend is moved to the top before composition.
-#
 # Output:
 #   - A high-resolution PNG figure:
 #     here("Plots", "sparsity.png")
-#
-#   The final figure places the simulation-based heatmap and the real-data
-#   example side by side as panels A and B.
-#
+# Notes:
+#   - The final figure places the simulation-based heatmap and the real-data
+#     example side by side as panels A and B.
+#   - The heatmap legend is moved to the top before composition.
+
 # ggpubr: nice plots based on ggplot2
 # https://cran.r-project.org/web/packages/ggpubr/index.html
 library(ggpubr)
@@ -44,7 +43,7 @@ p_err_zinb <- readRDS(list.files(
 # Load a saved ggplot object showing an example couple (pair of elements)
 p_couple <- readRDS(list.files(
   path = here(),
-  pattern = "example_couple.rds",
+  pattern = "^example_couple\\.rds$",
   full.names = TRUE,
   recursive = TRUE
 ))
