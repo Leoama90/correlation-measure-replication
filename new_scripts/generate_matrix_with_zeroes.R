@@ -14,14 +14,12 @@
 #   - the generated matrix printed to the console
 #   - a summary of the matrix properties (dimensions, min, max, determinant,
 #     number of zeroes) printed to the console
-
 # here: builds file paths relative to the project root
 # https://cran.r-project.org/web/packages/here/index.html
 library(here)
 # tidyverse: data science toolkit (dplyr, ggplot2, tidyr, etc.)
 # https://tidyverse.org
 library(tidyverse)
-
 #' Generate a symmetric correlation-like matrix with a specific number of zeroes
 #'
 #' @param n integer. Dimension of the matrix (n x n).
@@ -35,8 +33,20 @@ library(tidyverse)
 #'   diagonal of 1s, and exactly n_zeroes off-diagonal entries set to zero.
 #'
 #' @examples
+#' # First example:
 #' generate_matrix_with_zeroes(n = 5, n_zeroes = 4, seed = 42)
-#
+#' # with these numbers the function generates a 5x5 matrix with 4 zeroes
+#'
+#' # Second example:
+#' generate_matrix_with_zeroes(n = 10, n_zeroes = 32, seed = 42)
+#' # with these numbers the function generates a 10x10 matrix with 32 zeroes
+#'
+#' \dontrun{
+#' # Third example:
+#' generate_matrix_with_zeroes(n = 11, n_zeroes = 19, seed = 42)
+#' # with an odd number of zeroes, the function stops (the number of zeroes
+#' # must be even)
+#' }
 
 
 # -------- body of the function --------
