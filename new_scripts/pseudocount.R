@@ -86,6 +86,11 @@ pseudocount <- function(x) {
   # This is done on a plain matrix, not a tibble: tibbles do not support
   # indexing/assignment via a logical matrix, only base matrices do.
   zero_mask <- y_prop == 0
+  
+  # rep() relies on R's column-major storage: repeating the row-wise
+  # pseudo vector `ncol` times produces the same flattened order as a
+  # matrix where every column equals `pseudo`, so indexing by zero_mask
+  # (also flattened column-major) pairs each zero with its own row's value.
   y_prop[zero_mask] <- rep(pseudo, times = ncol(y_prop))[zero_mask]
 
   # Return the transformed data as a tibble.
