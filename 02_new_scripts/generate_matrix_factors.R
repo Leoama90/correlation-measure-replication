@@ -21,6 +21,13 @@
 #   - No external files required. All inputs are defined inline:
 #     * n <- 40
 #     * n_groups <- 5
+#
+# Outputs:
+#   - a list with three elements: mat (the resulting n x n symmetric,
+#     PSD, unit-diagonal correlation matrix), groups (the group
+#     assignment vector of length n, one group id per taxon), and
+#     n_zeroes (the exact number of off-diagonal zero entries in mat,
+#     counting both symmetric halves)
 
 # here: builds file paths relative to the project root
 # https://cran.r-project.org/web/packages/here/index.html
