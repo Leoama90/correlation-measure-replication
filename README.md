@@ -41,8 +41,9 @@ The aim of this repository is to reproduce the results obtained in the paper and
 
 # Versions
 
-The R version used was the  4.6.1.
-Rstudio version was 2026.07.1+147.
+Programming language used was R, updated at the version 4.6.1.
+The Integrated Development Environment (IDE) used to write the scripts was RStudio, updated at its version 2026.07.1+147.
+
 
 # Syntax
 About the syntax, the conventions stated in the Tidyverse guide have been followed, they are found here: 
