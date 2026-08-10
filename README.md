@@ -45,6 +45,8 @@ The R version used was the  4.6.1.
 Rstudio version was 2026.07.1+147.
 
 # Syntax
-About the syntax I follow the conventions stated in the Tidyverse guide, found here: 
+About the syntax, the conventions stated in the Tidyverse guide have been followed, they are found here: 
 
 https://style.tidyverse.org/syntax.html
+
+A very useful tool (which has been used intensively) for styling the code syntax is the library ["styler"](https://styler.r-lib.org/).

@@ -14,11 +14,10 @@
 #   - test results printed to the console (pass/fail for each check)
 #
 # Note:
-#   filt_data() uses a readline() command which goes into an infinite loop
-#   once the script is sourced in the test. To avoid this, I duplicated the
-#   body of the function in the test without the problematic command.
-#   the trade-off is that this test must be changed accordingly to the original
-#   script, if the script changes in the future.
+#   filt_data() now accepts prevalence_threshold and abundance_threshold
+#   as explicit arguments; passing both avoids the interactive readline()
+#   prompt entirely, so the actual function can be tested directly,
+#   without needing a non-interactive duplicate of its body.
 
 # testthat: unit testing framework for R
 # https://cran.r-project.org/web/packages/testthat/index.html
@@ -27,50 +26,19 @@ library(testthat)
 # https://cran.r-project.org/web/packages/here/index.html
 library(here)
 
-# load filt_data.R only for reference/documentation purposes; the
-# actual function used in the tests below is the non-interactive
-# duplicate defined right after
+# bring filt_data() (and datasum(), sourced inside it) into scope
 source(here("02_new_scripts", "filt_data.R"))
 
-# -------- non-interactive duplicate of filt_data(), for testing --------
-# same logic as filt_data.R, but prevalence_threshold is a direct
-# argument instead of being requested via readline()
-filt_data_for_test <- function(x, prevalence_threshold) {
-  # show the "before" summary; datasum() prints its own stats and
-  # invisibly returns them, so no extra cat() is needed around it
-  datasum(x)
-  # filter the OTU table by the given prevalence threshold
-  # drop = FALSE keeps the result as a data.frame/matrix even if only
-  # one OTU survives the filter
-  samp_filt <- x[, colSums(x > 0) / nrow(x) >= prevalence_threshold, drop = FALSE]
-  # -------- median filter --------
-  # number of OTUs still in the table after the prevalence filter
-  n_otu <- ncol(samp_filt)
-  # logical vector marking which OTUs pass the median (>= 5 reads) filter
-  keep <- logical(n_otu)
-  for (i in seq_len(n_otu)) {
-    col <- samp_filt[, i]
-    keep[i] <- median(col[col > 0]) >= 5
-  }
-  # keep only the OTUs whose median non-zero abundance is >= 5 reads
-  samp_filt <- samp_filt[, keep, drop = FALSE]
-  # show the "after" summary
-  datasum(samp_filt)
-  # if a taxa table exists in the calling environment, align it to
-  # the OTUs that survived filtering; otherwise skip this step
-  result <- list(samp_filt = samp_filt)
-  if (exists("taxa")) {
-    taxa_filt <- taxa[colnames(samp_filt), , drop = FALSE]
-    result$taxa_filt <- taxa_filt
-  }
-  # return result as an invisible value
-  invisible(result)
-}
-
-# suppress cat() output (from datasum(), called inside the duplicate)
+# suppress cat() output (from datasum(), called inside filt_data())
 # so tests stay clean, keep the return value
-quiet_filt_data <- function(x, prevalence_threshold) {
-  capture.output(result <- filt_data_for_test(x, prevalence_threshold))
+quiet_filt_data <- function(x, prevalence_threshold, abundance_threshold = 5) {
+  capture.output(
+    result <- filt_data(
+      x,
+      prevalence_threshold = prevalence_threshold,
+      abundance_threshold = abundance_threshold
+    )
+  )
   result
 }
 
@@ -84,11 +52,13 @@ quiet_filt_data <- function(x, prevalence_threshold) {
 #   - OTU3: present in every sample, but very low counts -> dropped by
 #     the median (>= 5 reads) filter
 otu_test <- matrix(
-  c(10, 0, 1,
+  c(
+    10, 0, 1,
     12, 0, 2,
     11, 0, 1,
-    9, 0, 1,
-    13, 0, 2),
+     9, 0, 1,
+    13, 0, 2
+  ),
   nrow = 5, byrow = TRUE,
   dimnames = list(NULL, c("OTU1", "OTU2", "OTU3"))
 )
@@ -138,4 +108,15 @@ test_that("result includes taxa_filt, aligned to the surviving OTUs, when 'taxa'
   expect_equal(rownames(result$taxa_filt), "OTU1")
   # clean up, so later tests are not affected by this global object
   rm(taxa, envir = .GlobalEnv)
+})
+
+
+# -------- test 5: abundance_threshold parameter is respected --------
+
+test_that("a lower abundance_threshold rescues an OTU otherwise dropped by the median filter", {
+  if (exists("taxa")) rm(taxa, envir = .GlobalEnv)
+  # OTU3 has non-zero values of 1 and 2 (median well below the default
+  # threshold of 5); lowering abundance_threshold to 1 should let it pass
+  result <- quiet_filt_data(otu_test, prevalence_threshold = 0.1, abundance_threshold = 1)
+  expect_true("OTU3" %in% colnames(result$samp_filt))
 })
