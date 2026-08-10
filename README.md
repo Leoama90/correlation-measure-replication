@@ -41,7 +41,7 @@ The aim of this repository is to reproduce the results obtained in the paper and
 
 # Versions
 
-The R version used was the  4.5.3.
+The R version used was the  4.6.1.
 Rstudio version was 2026.07.1+147.
 
 # Syntax
