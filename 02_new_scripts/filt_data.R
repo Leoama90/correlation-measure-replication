@@ -30,8 +30,14 @@ library(here)
 # bring datasum() into scope by sourcing the file where it is defined
 # (explicit relative path instead of a recursive list.files() search,
 # to avoid ambiguity if more than one datasummary.R exists in the project)
-source(here("02_new_scripts", "datasummary.R"))
-
+source(
+  list.files(
+    path = here(),
+    pattern = "^datasummary\\.R$",
+    full.names = TRUE,
+    recursive = TRUE
+  )
+)
 
 #' Filter a metagenomic OTU table by prevalence and abundance
 #'

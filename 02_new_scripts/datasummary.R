@@ -59,7 +59,7 @@ datasum <- function(x) {
     det_val <- det(x)
   } else {
     cat("the dataset does not have the same number of columns and rows.
-The determinant can't be computed\n")
+    The determinant can't be computed\n")
   }
 
   # print on screen the dataset type before converting it in a tibble

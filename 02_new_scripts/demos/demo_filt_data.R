@@ -23,8 +23,14 @@
 library(here)
 
 # bring filt_data() (and datasum(), sourced inside it) into scope
-source(here("02_new_scripts", "filt_data.R"))
-
+source(
+  list.files(
+    path = here(),
+    pattern = "^filt_data\\.R$",
+    full.names = TRUE,
+    recursive = TRUE
+  )
+)
 
 # -------- build a small example OTU count table --------
 
