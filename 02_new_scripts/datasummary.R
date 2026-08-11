@@ -72,7 +72,7 @@ datasum <- function(x) {
   # present, instead of letting the function crash
   if (is_square_matrix) {
     if (anyNA(x) || any(is.infinite(x))) {
-      cat("the matrix contains NA or infinite values.
+      cat("the matrix contains NA or infinite values.\n
   The determinant and minimum eigenvalue can't be computed\n")
     } else {
       det_val <- det(x)
@@ -80,12 +80,11 @@ datasum <- function(x) {
       min_eigenvalue <- min(eigenvalues)
     }
   } else {
-    cat("the dataset does not have the same number of columns and rows.
-  The determinant and minimum eigenvalue can't be computed\n")
+    cat("The dataset does not have the same number of columns and rows.\nThe determinant and minimum eigenvalue can't be computed\n")
   }
 
   # print on screen the dataset type before converting it in a tibble
-  cat("the type of dataset before becoming a tibble was", typeof(x))
+  cat("The type of dataset before becoming a tibble was", typeof(x))
 
   # if x is a list (but not already a data.frame/tibble), try to coerce it
   # into a data.frame so the rest of the function can work on it
