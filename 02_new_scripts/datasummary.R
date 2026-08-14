@@ -110,13 +110,13 @@ datasum <- function(x) {
   max_val <- max(x, na.rm = TRUE)
   mean_val <- mean(as.matrix(x), na.rm = TRUE)
   median_val <- median(as.matrix(x), na.rm = TRUE)
-  sd_val <- sd(as.matrix(x), na.rm = TRUE)
+  sd_val <- round(sd(as.matrix(x), na.rm = TRUE), 2)
 
   # skewness: third standardized moment, computed manually (no external
   # package needed); positive values indicate a right-skewed (heavy
   # right tail) distribution, as typically found in raw metagenomic
   # counts before CLR transformation
-  skewness_val <- mean((as.matrix(x) - mean_val)^3, na.rm = TRUE) / sd_val^3
+  skewness_val <- round(mean((as.matrix(x) - mean_val)^3, na.rm = TRUE) / sd_val^3, 2)
 
   # print a header line with the given dataset_name
   cat("\n---", dataset_name, "---\n")

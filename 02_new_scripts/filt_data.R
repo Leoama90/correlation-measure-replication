@@ -63,7 +63,7 @@ source(
 # -------- body of the function --------
 
 filt_data <- function(x, prevalence_threshold = NULL, abundance_threshold = 5) {
-  cat("#-----------------------------------------------------------------------# \n")
+  cat("\n #-----------------------------------------------------------------------# \n")
   # show the "before" summary; datasum() prints its own stats and
   # invisibly returns them, so no extra cat() is needed around it
   cat("\n", "###-----###", "Summary of data BEFORE filtering the zeroes", "###-----###", "\n")

@@ -42,7 +42,7 @@ The aim of this repository is to reproduce the results obtained in the paper and
 # Versions
 
 Programming language used was R, updated at the version 4.6.1.
-The Integrated Development Environment (IDE) used to write the scripts was RStudio, updated at its version 2026.07.1+147.
+The Integrated Development Environment (IDE) used to write the scripts was RStudio, updated at its version 2026.08.0 + 187.
 
 
 # Syntax
