@@ -33,7 +33,7 @@ source(
 
 # -------- test 1: correct stats on a known square matrix --------
 
-test_that("datasum returns incorrect stats for a simple square matrix", {
+test_that("datasum returns correct stats for a simple square matrix", {
   # fixed 2x2 matrix so expected values are known in advance:
   # values 1, 0, 3, 4 -> mean 2, median 2, min 0, max 4
   m <- matrix(c(1, 0, 3, 4), nrow = 2, ncol = 2)
@@ -55,7 +55,7 @@ test_that("datasum returns incorrect stats for a simple square matrix", {
 
 # -------- test 2: minimum eigenvalue correctly flags a PSD matrix --------
 
-test_that("datasum reports a negative minimum eigenvalue for a valid correlation matrix", {
+test_that("datasum reports a non-negative minimum eigenvalue for a valid correlation matrix", {
   # the identity matrix is a trivially valid (PSD) correlation matrix
   m <- diag(4)
   

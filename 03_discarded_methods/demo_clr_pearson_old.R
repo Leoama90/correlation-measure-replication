@@ -1,18 +1,14 @@
 # demo_clr_pearson.R
 #
 # Purpose:
-#   Demonstrates the usage of the function clr_on_data() (from
-#   clr_pearson.R), loading a real metagenomic OTU count table,
-#   restricting it to subject 69-001 in healthy condition (the same
-#   subset used in Fuschi et al., 2025), and running the full
-#   filtering + pseudocount + CLR + Pearson correlation pipeline on it.
+#   Demonstrates the usage of the function "clr_on_data()" (from the script 
+#   "clr_pearson"), loading a real metagenomic
+#   OTU count table and running the full filtering + pseudocount + CLR +
+#   Pearson correlation pipeline on it.
 #
 # Inputs:
 #   - clr_pearson.R (sourced below)
-#   - otu_HMP2.rds: the full metagenomic OTU count table (1122 samples
-#     x OTUs, 96 subjects)
-#   - meta_HMP2.rds: sample metadata, used to subset to subject 69-001
-#     in healthy condition (51 samples), matching the paper
+#   - otu_HMP2.rds: a metagenomic OTU count table (samples x OTUs)
 #
 # Outputs (saved in the "outputs/" folder at the project root):
 #   - outputs/samp_filt.rds: the filtered OTU table (tibble)
@@ -21,14 +17,7 @@
 #
 # Used scripts:
 #   - clr_pearson.R
-#
-# Note:
-#   An earlier version of this script ran the pipeline on the full
-#   otu_HMP2.rds table (1122 samples, 96 subjects) instead of the
-#   69-001/healthy subset, giving results not directly comparable to
-#   the paper (e.g. 162 OTUs after filtering instead of the paper's
-#   171, and a Pielou diversity of ~0.60 instead of the paper's 0.68).
-#   This version fixes that by subsetting before running the pipeline.
+
 
 # here: builds file paths relative to the project root
 # https://cran.r-project.org/web/packages/here/index.html
@@ -51,10 +40,10 @@ source(
 )
 
 
-# -------- read raw data and metadata --------
+# -------- read raw data and run the pipeline --------
 
-# Load the full OTU abundance matrix (samples x OTUs) from its .rds file
-otu_full <- readRDS(
+# Load the OTU abundance matrix (samples x OTUs) from its .rds file
+otu <- readRDS(
   list.files(
     path = here(),
     pattern = "^otu_HMP2\\.rds$",
@@ -62,36 +51,6 @@ otu_full <- readRDS(
     recursive = TRUE
   )
 )
-
-# Load the sample metadata, needed to subset by subject and health status
-meta <- readRDS(
-  list.files(
-    path = here(),
-    pattern = "^meta_HMP2\\.rds$",
-    full.names = TRUE,
-    recursive = TRUE
-  )
-)
-
-
-# -------- restrict to subject 69-001, healthy condition --------
-
-# UI message describing the subsetting step
-cat("Restricting the full HMP2 table (", nrow(otu_full), "samples) to ",
-    "subject 69-001 in healthy condition, matching Fuschi et al. (2025).\n")
-
-# subset to the same 51 samples used in the paper (subject 69-001,
-# healthy condition), before any filtering
-otu <- otu_full[meta$SubjectID == "69-001" & meta$CL4_2 == "Healthy", ]
-
-cat("Subset has", nrow(otu), "samples and", ncol(otu), "OTUs (before filtering).\n\n")
-
-# free memory: the full table and metadata are no longer needed
-rm(otu_full, meta)
-
-
-# -------- run the pipeline --------
-
 # run the full pipeline: filtering, pseudocount, CLR, Pearson correlation
 result <- clr_on_data(otu)
 
@@ -119,7 +78,6 @@ for (name in names(result)) {
 
 
 # -------- remind the user what each file contains --------
-
 cat("\n")
 cat("Reminder of what each file contains:\n")
 cat("  - samp_filt: the filtered OTU table (tibble)\n")
