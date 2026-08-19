@@ -15,7 +15,7 @@
 #   the combinatorics of the group sizes. This function instead takes
 #   the number of groups as input, and returns the resulting number of
 #   zero pairs alongside the matrix, so the actual sparsity achieved is
-#   always known exactly (not just approximately, as with nearPD).
+#   always known exactly.
 #
 # Inputs:
 #   - No external files required. All inputs are defined inline:
