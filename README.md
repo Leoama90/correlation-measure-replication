@@ -1,4 +1,13 @@
-# correlation-measure-replication
+# Table of contents
+1. [Introduction: correlation-measure-replication](#introduction)
+2. [What's the paper about](#paragraph1)
+    1. [Methods](#subparagraph1)
+    2. [Key findings](#subparagraph2)
+    3. [Takeaway](#subparagraph3)
+3. [Structure of the repository](#paragraph2)
+4. [Research goal](#paragraph3)
+
+# Introduction: correlation-measure-replication
  
 The aim of this repository is to store the code needed to replicate and
 extend the analysis from the paper *"Correlation Measures in Metagenomic
@@ -29,14 +38,14 @@ The paper investigates the biases affecting correlation estimates in metagenomic
 
 **Takeaway:** in typical high-dimensional metagenomic settings, simple Pearson correlation on CLR-transformed data is a robust and computationally cheap choice, with more complex compositional-correction methods becoming relevant mainly at low dimensionality. Sparsity handling remains the main open challenge.  
 
+## Structure of the repository
+
+
 
 ## Research goal
 
 This project builds on the simulation framework and findings described in the paper.  
 The aim of this repository is to reproduce the results obtained in the paper and to add new proposal of solutions for the (persistent) problem of sparsity.  
-
-# Structure of the repository
-
 
 
 # Versions
