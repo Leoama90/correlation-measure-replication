@@ -4,7 +4,7 @@
     1. [Methods](#methods)
     2. [Key findings](#key-findings)
     3. [Takeaway](#takeaway)
-3. [Theoretical prerequisites](#theoretical-prerequisites)
+3. [Theoric prerequisites](#theoric-prerequisites)
     1. [Compositional data and spurious correlation](#compositional-data-and-spurious-correlation)
     2. [CLR transformation](#clr-transformation)
     3. [Sparsity and pseudocounts](#sparsity-and-pseudocounts)
@@ -13,6 +13,8 @@
     6. [Pielou diversity index](#pielou-diversity-index)
 4. [Research goal](#research-goal) 
 5. [Structure of the repository](#structure-of-the-repository)
+    1. [Folder explanations](#folder-explanations)
+    2. [Repository tree structure](#repository-tree-structure)
 6. [Versions](#versions)
 7. [Syntax](#syntax)
 
@@ -50,8 +52,8 @@ Sparsity, however, remains an open issue, tending to underestimate negative corr
 ### Takeaway
 In typical high-dimensional metagenomic settings, simple Pearson correlation on CLR-transformed data is a robust and computationally cheap choice, with more complex compositional-correction methods becoming relevant mainly at low dimensionality. Sparsity handling remains the main open challenge.  
 
-## Theoretical prerequisites
-This section covers briefly the theoretical concepts needed to understand the whole project.
+## Theoric prerequisites
+This section covers briefly the theoric concepts needed to understand the whole project.
 
 ### Compositional data and spurious correlation
 
@@ -131,14 +133,39 @@ This project reproduces the paper's core pipeline (filtering, CLR, Pearson corre
 
 ## Structure of the repository
 
-The strutcture of this repository was originally designed to replicate the original repository from the above mentioned paper.  
+The structure of this repository was designed to replicate the original repository from the above mentioned paper.  
 With the evolution of the project I've decided to maintain some folders and divide the newly created scripts from the ones from the original repo.  
 The folders named *"00_data"* and *"01_from_paper"* contain the original scripts, while the ones named *"02_new_scripts"* and *"03_discarded_methods"* have the newly written scripts for this project.  
 Why keeping old scripts from the original repository?   
 The original work was excellent and understanding it was a good exercise.  
 Very few changes were done, where the most important was the usage of the "Here" R library, which allows to make scripts more reproducible and less dependent from hard coded paths.  
 The rest of the work was restyling the scripts according to the Tidyverse guidelines (useful link can be found in [Syntax](#syntax)) and the creation of test scripts.  
-Here follows the structure:
+
+
+### Folder explanations
+Here follows a brief explanation of every folder:
+
+- 00_data: inside here there are the .csv raw data, the dataprocess.R script that generates the .rds version of data. The choice of giving the 00 is conceptual, because everything starts from datas (yeah, I know that it may not sound 100% true, but I thought it was clever)
+
+- 01_from_paper: this folder contains all the original scripts. Their order mirrors the one in the original repository
+
+- 02_new_scripts: here are stored all the new scripts that does not come from the original paper.  
+The "demo" subfolder contains demonstrative scripts of some other scripts inside the 02_new_scripts folder (the idea was to create them in a way that they could explain some of the most complicate scripts present there)
+
+- 03_discarded_methods: name of the folder misleading, because inside there a couple of scripts that I've abandoned due to the fact that they were not useful for the whole project
+
+- outputs: this present in the original folder and are stored the outputs of few scripts from the 01_from_paper
+
+- Plots: same thing of the outputs folder, except that here there are the Plots coming from scripts from the 01_from_paper folder
+
+- requirements: inside here there is one script with all the libraries used in this repository (in the original repo there was only the script, I decided to put it in a folder).  
+
+_Note about the libraries: every library used, in all scripts, have a link to its own cran/GitHub page and a brief description of what the library can do, written in two comment rows on top of the library(-name of the library-) command._
+
+- test: contains all tests, organized into subfolders that mirror the structure of the folders containing the scripts under test.
+
+### Repository tree structure
+Here follows the tree structure:
 
 
 ```

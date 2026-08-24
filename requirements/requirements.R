@@ -1,6 +1,6 @@
 # List of all the packages necessary to reproduce the analysis with the associated
 # command to install them.
-# Important: this script is not intended to be run, it is inteded as a list of
+# Important: this script is not intended to be run, it is intended as a list of
 # packages used in the whole repository
 
 # -------- List of packages --------
