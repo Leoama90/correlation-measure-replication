@@ -33,16 +33,17 @@ Computing for Applied Physics** and the **Statistical Data Analysis for Applied 
 
 ## What's the paper about
 
-The paper investigates the biases affecting correlation estimates in metagenomic data, which arise from the compositional nature of the data, within-sample diversity, and high sparsity (many unobserved/zero taxa). Using simulated data, the authors show that standard compositional-data transformations — especially the centered log-ratio (CLR) — allow simple Pearson correlation to reliably recover the true correlation structure, particularly in high-dimensional settings. Sparsity, however, remains an open issue, tending to underestimate negative correlations.
+The paper investigates the biases affecting correlation estimates in metagenomic data, which arise from the compositional nature of the data, within-sample diversity, and high sparsity (many unobserved/zero taxa).    Using simulated data, the authors show that standard compositional-data transformations, especially the centered log-ratio (CLR)   allow simple Pearson correlation to reliably recover the true correlation structure, particularly in high-dimensional settings.  
+Sparsity, however, remains an open issue, tending to underestimate negative correlations.
  
 ### Methods
-- Gaussian data simulated using the R package `mvtnorm`, varying dimensionality (D) and within-sample diversity (*Pielou* index, P, for more information about it: [Pielou index explained](https://www.statology.org/how-to-calculate-interpret-pielous-evenness-index/)), to isolate compositional biases under L1 vs. CLR normalization.
+- Gaussian data simulated using the R package `mvtnorm`, varying dimensionality (D) and within-sample diversity (*Pielou* index, for more information about it see chapter 3.6, [Pielou diversity index](#pielou-diversity-index)), to isolate compositional biases under L1 vs. CLR normalization.
 - Realistic sparse data simulated with the "Normal to Anything" (NorTA) approach, using a zero-inflated negative binomial marginal distribution; zeros replaced with 65% of the detection limit before CLR.
 - Validation on real data from the HMP2 gut microbiome dataset (single healthy subject: *69-001*, contributed with 51 samples in total, the highest count in the dataset), comparing CLR + Pearson against Rho and SparCC.  
 
 ### Key findings
 - L1-normalized correlations are strongly biased by within-sample diversity and do not improve with dimensionality.
-- CLR-normalized correlations are independent of diversity, and their bias decreases rapidly with dimensionality (negligible above ~100 taxa) — typical of metagenomic datasets.
+- CLR-normalized correlations are independent of diversity, and their bias decreases rapidly with dimensionality (negligible above ~100 taxa), typical of metagenomic datasets.
 - On real HMP2 data, CLR + Pearson closely matches Rho and SparCC at high dimensionality (OTU level), while differences grow at low dimensionality (phylum level).
 - Data sparsity remains a limitation: error increases with the fraction of zeros, especially for negative correlations; CLR mitigates but does not eliminate this bias.  
 
@@ -54,7 +55,7 @@ This section covers briefly the theoretical concepts needed to understand the wh
 
 ### Compositional data and spurious correlation
 
-Compositional data are vectors of proportions that sum to 1 and therefore lie on a simplex.  
+Compositional data are vectors of proportions that sum to 1 (by a mathematical point of view they lie on a simplex).  
 Because of this constraint, standard Euclidean distances and correlations may not properly capture the relationships between components, potentially leading to **spurious correlations**.  
 More information can be found on the [compositional data Wikipedia page](https://en.wikipedia.org/wiki/Compositional_data).
 
@@ -83,7 +84,7 @@ Note: CLR requires $`x_i > 0`$, so zero counts must first be replaced with pseud
 ### Sparsity and pseudocounts
 
 One of the main problems of metagenomic data is their sparsity: the dataset has many zeroes.  
-A zero doesn't mean an absence of microorganisms — it means the detection method used to collect the data couldn't find them (their abundance is below the detection limit).  
+A zero doesn't mean an absence of microorganisms, it means the detection method used to collect the data couldn't find them (their abundance is below the detection limit).  
 For a better understanding of this problem, here is a useful page: [Viable But Nonculturable (VBNC) - Wikipedia](https://en.wikipedia.org/wiki/Viable_but_nonculturable)
 
 Zeroes are replaced with row-specific pseudocounts before applying CLR (see `pseudocount.R`).
@@ -97,8 +98,8 @@ A correlation matrix is a table of numbers where each entry gives the correlatio
 3. **Positive semi-definite (PSD)**: all eigenvalues must be ≥ 0.
 4. **Diagonal values equal to 1**: a variable is perfectly correlated with itself.
 
-Not every matrix satisfying properties 1, 2, and 4 is automatically PSD — see `generate_matrix_factors.R` for how this repository builds matrices that are PSD by construction.
-For a more detailed reference: [what is a correlation matrix](https://www.displayr.com/what-is-a-correlation-matrix/)
+Not every matrix satisfying properties 1, 2, and 4 is automatically PSD, see `generate_matrix_factors.R` for how this repository builds matrices that are PSD by construction.  
+For a more detailed reference: [what_is_a_correlation_matrix](https://www.displayr.com/what-is-a-correlation-matrix/)
 
 ### NorTA (Normal to Anything)
 
@@ -108,7 +109,7 @@ It works in two steps:
 1. **Correlated normal data**: draw samples from a multivariate normal distribution with the desired correlation matrix (`rmvnorm()`).
 2. **Marginal transformation**: convert each normal value to its percentile via the normal CDF (`pnorm()`), then map that percentile through the quantile function of the target distribution (e.g. `qzinegbin()` for sparse, zero-inflated counts).
 
-Since both steps are **monotonic transformations**, rank correlation is preserved — but not exactly the Pearson correlation, since that is scale-sensitive and the mapping is non-linear. This is why the correlation recovered from the final simulated counts is not identical to the one used to generate the underlying normal data.
+Since both steps are **monotonic transformations**, rank correlation is preserved, but not exactly the Pearson correlation, since that is scale-sensitive and the mapping is non-linear. This is why the correlation recovered from the final simulated counts is not identical to the one used to generate the underlying normal data.
 
 Implemented in `NorTa_simulation.R` (fixed zero-inflation shared by all taxa) and `data_sim_ph_driven.R` (per-taxon zero-inflation driven by an environmental pH gradient).
 
@@ -129,6 +130,16 @@ Implemented in `pielou_ind.R`.
 This project reproduces the paper's core pipeline (filtering, CLR, Pearson correlation) on the same real data (HMP2, subject 69-001), validating it against a value reported in the paper (Pielou index ≈ 0.68). It also fixes a methodological gap found along the way: the standard method to simulate a correlation matrix with controlled sparsity (random values corrected with `nearPD()`) destroys nearly all the imposed zeroes, so this repository builds correlation matrices that are valid by construction instead (`generate_matrix_factors.R`). Finally, it proposes a new approach to sparsity, the paper's main open problem: instead of a fixed zero-inflation parameter, sparsity here depends on an environmental driver (pH) and each taxon's ecological niche (`data_sim_ph_driven.R`).
 
 ## Structure of the repository
+
+The strutcture of this repository was originally designed to replicate the original repository from the above mentioned paper.  
+With the evolution of the project I've decided to maintain some folders and divide the newly created scripts from the ones from the original repo.  
+The folders named *"00_data"* and *"01_from_paper"* contain the original scripts, while the ones named *"02_new_scripts"* and *"03_discarded_methods"* have the newly written scripts for this project.  
+Why keeping old scripts from the original repository?   
+The original work was excellent and understanding it was a good exercise.  
+Very few changes were done, where the most important was the usage of the "Here" R library, which allows to make scripts more reproducible and less dependent from hard coded paths.  
+The rest of the work was restyling the scripts according to the Tidyverse guidelines (useful link can be found in [Syntax](#syntax)) and the creation of test scripts.  
+Here follows the structure:
+
 
 ```
 .
@@ -246,21 +257,19 @@ This project reproduces the paper's core pipeline (filtering, CLR, Pearson corre
     │   ├── test-generate_matrix_factors.R
     │   ├── test-NorTa_simulation.R
     │   └── test-pseudocount.R
-    └── test_03_discarded_methods/   
+    └── test_03_discarded_methods/
+        └── test-generate_matrix_with_zeroes.R  
 ```
-
-*(to be expanded with a short description of the main scripts in `02_new_scripts/`)*
 
 ## Versions
 
-Programming language used was R, updated at the version 4.6.1.
+Programming language used was R, updated at the version 4.6.1.  
 The Integrated Development Environment (IDE) used to write the scripts was RStudio, updated at its version 2026.08.1 + 195.
-
-
 
 ## Syntax
 About the syntax, the conventions stated in the Tidyverse guide have been followed, they can be found here: 
 
-https://style.tidyverse.org/syntax.html
+[Tidyverse_guidelines](https://style.tidyverse.org/syntax.html)
 
 A very useful tool (which has been used intensively) for styling the code syntax is the library ["styler"](https://styler.r-lib.org/).
+
