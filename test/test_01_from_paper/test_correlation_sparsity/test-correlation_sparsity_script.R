@@ -1,3 +1,34 @@
+# test-correlation_sparsity_script.R
+#
+# Purpose:
+#   This script tests the fundamental features of correlation_sparsity.R,
+#   checking:
+#       - the block correlation matrix is built with the correct diagonal,
+#         the correct correlation value inside the block, and zeros outside it
+#       - edge density is computed correctly and bounded within [0, 1]
+#       - nearPD() produces a valid, symmetric, positive semi-definite
+#         correlation matrix from the block-structured input
+#       - a random Gaussian matrix, made symmetric and eigenvalue-corrected,
+#         is still symmetric and positive semi-definite after nearPD()
+#
+# Inputs:
+#   - test parameters generated in this script
+#
+# Outputs:
+#   - test results printed to the console (pass/fail for each check)
+#
+# Note:
+#   This script does not source correlation_sparsity.R directly, since
+#   doing so would re-run its full parallelized simulations (doSNOW
+#   cluster, 500 x 500 matrices, up to 200 connected taxa across a
+#   correlation grid, plus 100 random Gaussian replicates) on every test
+#   run. Instead, it locally re-implements the same matrix-construction
+#   logic at a much smaller scale (Dimension = 10), so the construction
+#   and PSD-correction steps can be tested directly and quickly. Trade-off:
+#   this duplicates part of correlation_sparsity.R's logic here; if that
+#   logic changes in the original script, this script must be updated to
+#   match, or the tests will silently keep checking the old behaviour.
+
 # Matrix: needed for nearPD() and eigenvalue checks
 # https://cran.r-project.org/web/packages/Matrix/index.html
 library(Matrix)

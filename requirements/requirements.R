@@ -3,6 +3,7 @@
 # Important: this script is not intended to be run, it is intended as a list of
 # packages used in the whole repository
 
+
 # -------- List of packages --------
 
 # cowplot: draw ggplot2 in new figures
@@ -78,14 +79,18 @@ install.packages("VGAM")
 # https://cran.r-project.org/web/packages/zCompositions/index.html
 install.packages("zCompositions")
 
+
 # -------- List of packages from GitHub --------
 
 # propr: package with proportionality rho method
 # https://github.com/tpq/propr
-install_github("https://github.com/tpq/propr")
+devtools::install_github("https://github.com/tpq/propr")
+# pulsar: parallel utilities for lambda selection along a regularization path
+# https://github.com/zdk123/pulsar
+devtools::install_github("zdk123/pulsar")
 # SpiecEasi: package with spiec.easi and sparCC methods
 # https://github.com/zdk123/SpiecEasi
-install_github("zdk123/SpiecEasi")
+devtools::install_github("zdk123/SpiecEasi")
 # ToyModel: lightweight package with necessary function to generate metagenomics data
 # https://github.com/Fuschi/ToyModel
-install_github("https://github.com/Fuschi/ToyModel")
+devtools::install_github("https://github.com/Fuschi/ToyModel")

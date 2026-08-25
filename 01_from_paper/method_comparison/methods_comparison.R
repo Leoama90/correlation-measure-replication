@@ -51,6 +51,10 @@ library(here)
 # https://cran.r-project.org/web/packages/igraph/index.html
 library(igraph)
 
+# magick: advanced image processing and manipulation (read, write, transform images)
+# https://cran.r-project.org/web/packages/magick/index.html
+library(magick)
+
 # Sparse microbial network estimation (SPIEC-EASI: MB and GLASSO)
 # https://github.com/zdk123/SpiecEasi
 library(SpiecEasi)
