@@ -8,7 +8,7 @@
     1. [Compositional data and spurious correlation](#compositional-data-and-spurious-correlation)
     2. [CLR transformation](#clr-transformation)
     3. [Sparsity and pseudocounts](#sparsity-and-pseudocounts)
-    4. [Correlation matrices](#correlation-matrices)
+    4. [Correlation matrixes](#correlation-matrixes)
     5. [NorTA (Normal to Anything)](#norta-normal-to-anything)
     6. [Pielou diversity index](#pielou-diversity-index)
 4. [Research goal](#research-goal) 
@@ -91,7 +91,7 @@ For a better understanding of this problem, here is a useful page: [Viable But N
 
 Zeroes are replaced with row-specific pseudocounts before applying CLR (see `pseudocount.R`).
 
-### Correlation matrices
+### Correlation matrixes
 
 A correlation matrix is a table of numbers where each entry gives the correlation strength between two variables. It has the following properties:
 
@@ -100,7 +100,7 @@ A correlation matrix is a table of numbers where each entry gives the correlatio
 3. **Positive semi-definite (PSD)**: all eigenvalues must be ≥ 0.
 4. **Diagonal values equal to 1**: a variable is perfectly correlated with itself.
 
-Not every matrix satisfying properties 1, 2, and 4 is automatically PSD, see `generate_matrix_factors.R` for how this repository builds matrices that are PSD by construction.  
+Not every matrix satisfying properties 1, 2, and 4 is automatically PSD, see `generate_matrix_factors.R` for how this repository builds matrixes that are PSD by construction.  
 For a more detailed reference: [what_is_a_correlation_matrix](https://www.displayr.com/what-is-a-correlation-matrix/)
 
 ### NorTA (Normal to Anything)
@@ -129,7 +129,7 @@ Implemented in `pielou_ind.R`.
 
 ## Research goal
 
-This project reproduces the paper's core pipeline (filtering, CLR, Pearson correlation) on the same real data (HMP2, subject 69-001), validating it against a value reported in the paper (Pielou index ≈ 0.68). It also fixes a methodological gap found along the way: the standard method to simulate a correlation matrix with controlled sparsity (random values corrected with `nearPD()`) destroys nearly all the imposed zeroes, so this repository builds correlation matrices that are valid by construction instead (`generate_matrix_factors.R`). Finally, it proposes a new approach to sparsity, the paper's main open problem: instead of a fixed zero-inflation parameter, sparsity here depends on an environmental driver (pH) and each taxon's ecological niche (`data_sim_ph_driven.R`).
+This project reproduces the paper's core pipeline (filtering, CLR, Pearson correlation) on the same real data (HMP2, subject 69-001), validating it against a value reported in the paper (Pielou index ≈ 0.68). It also fixes a methodological gap found along the way: the standard method to simulate a correlation matrix with controlled sparsity (random values corrected with `nearPD()`) destroys nearly all the imposed zeroes, so this repository builds correlation matrixes that are valid by construction instead (`generate_matrix_factors.R`). Finally, it proposes a new approach to sparsity, the paper's main open problem: instead of a fixed zero-inflation parameter, sparsity here depends on an environmental driver (pH) and each taxon's ecological niche (`data_sim_ph_driven.R`).
 
 ## Structure of the repository
 

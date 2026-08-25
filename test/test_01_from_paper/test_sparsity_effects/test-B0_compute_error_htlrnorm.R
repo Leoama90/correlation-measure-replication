@@ -1,44 +1,42 @@
-# doSNOW: parallel backend for foreach, supports progress bars via snow clusters
-# https://cran.r-project.org/web/packages/doSNOW/index.html
-library(doSNOW)
+# test-B0_compute_error_htlrnorm.
+#
+# Purpose:
+#   <clever test here>
+#   checking:
+#       - 
+#       - 
+#       - 
+#       - 
+#
+# Inputs:
+#   - 
+#
+# Outputs:
+#   - test results printed to the console (pass/fail for each check)
 
-# foreach: parallel foreach loops
-# https://cran.r-project.org/package=foreach
-library(foreach)
 
 # here: builds file paths relative to the project root
 # https://cran.r-project.org/web/packages/here/index.html
 library(here)
 
-# progress: displays text progress bars for long-running loops
-# https://cran.r-project.org/web/packages/progress/index.html
-library(progress)
-
-# tidyverse: useful to manage data (dplyr) and make nice plots (ggplot2)
-# https://cran.r-project.org/web/packages/tidyverse/index.html
-library(tidyverse)
-
-# ToyModel: lightweight package with necessary function to generate metagenomics data
-# https://github.com/Fuschi/ToyModel
-library(ToyModel)
-
 # testthat: unit testing framework for R
 # https://cran.r-project.org/web/packages/testthat/index.html
 library(testthat)
+
 
 # -------- test data loading --------
 
 # load OTU abundance matrix (samples x OTUs) and sample metadata
 otu <- readRDS(list.files(
   path = here(),
-  pattern = "otu_HMP2.rds",
+  pattern = "^otu_HMP2\\.rds$",
   full.names = TRUE,
   recursive = TRUE
 ))
 
 meta <- readRDS(list.files(
   path = here(),
-  pattern = "meta_HMP2.rds",
+  pattern = "^meta_HMP2\\.rds$",
   full.names = TRUE,
   recursive = TRUE
 ))

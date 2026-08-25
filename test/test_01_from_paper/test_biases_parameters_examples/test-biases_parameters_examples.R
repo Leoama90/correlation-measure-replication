@@ -24,7 +24,8 @@ library(testthat)
 # https://cran.r-project.org/package=vegan
 library(vegan)
 
-# loads the main script to make its variables available in the test environment
+
+# -------- loads the main script to make its variables available in the test environment --------
 source(
   list.files(
     path = here(),
@@ -33,6 +34,7 @@ source(
     recursive = TRUE
   )
 )
+
 
 # -------- generate a dummy matrix for testing purposes --------
 
