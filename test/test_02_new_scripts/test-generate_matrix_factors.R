@@ -100,3 +100,12 @@ test_that("using the same seed produces identical output", {
   expect_equal(result_a$mat, result_b$mat)
   expect_equal(result_a$groups, result_b$groups)
 })
+
+# -------- test 8: check that one of the listed output is a matrix --------
+
+test_that("mat is one of the element of the final output list and is a matrix",{
+  # generate a dummy list to check that the <list_name>$mat is a matrix
+  dum_mtrx <- generate_matrix_factors(20, 5, min_loading = 0.3, max_loading = 1.0, seed = 42)
+  
+  expect_true(is.matrix(dum_mtrx$mat))
+})

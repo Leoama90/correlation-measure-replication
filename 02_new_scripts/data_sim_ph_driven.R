@@ -5,8 +5,8 @@
 #   approach, as in NorTa_simulation.R) where sparsity is not imposed
 #   as a single fixed zero-inflation probability shared by all taxa,
 #   but derives mechanistically from a single environmental pH value
-#   for the simulated community and each taxon's own pH niche. Each
-#   taxon is assigned a random optimal pH (mu_i) and tolerance (sigma_i);
+#   for the simulated community and each taxon's own pH niche. 
+#   Each taxon is assigned a random optimal pH (mu_i) and tolerance (sigma_i);
 #   taxa whose niche is far from the community's pH are given a higher
 #   zero-inflation probability (more likely to be absent from a sample),
 #   while taxa well matched to the environmental pH are given a low
@@ -50,7 +50,7 @@ library(mvtnorm)
 library(VGAM)
 
 
-# bring generate_matrix_factors() into scope
+# -------- bring generate_matrix_factors() into scope --------
 source(
   list.files(
     path = here(),
@@ -151,7 +151,7 @@ data_sim_ph_driven <- function(n, N, ph, n_groups, ph_min = 5.5, ph_max = 7.5,
 
   # -------- NorTA step 1: simulate correlated normal data --------
 
-  sim_data <- rmvnorm(n = N, mean = rep(0, n), sigma = R_true)
+  sim_data <- mvtnorm::rmvnorm(n = N, mean = rep(0, n), sigma = R_true)
 
 
   # -------- NorTA step 2: map normal data to sparse ZINB counts --------

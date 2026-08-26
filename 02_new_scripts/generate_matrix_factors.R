@@ -5,8 +5,9 @@
 #   with an exact, controlled zero pattern, using a latent-factor (Gram
 #   matrix) construction instead of generating random values and
 #   correcting them afterwards (as generate_matrix_with_zeroes.R +
-#   nearPD() does). Zeroes arise here by construction, not by projection,
-#   so no PSD-correction step is needed and no zeroes are lost.
+#   nearPD() does). 
+#   Zeroes arise here by construction, not by projection, so no 
+#   PSD-correction step is needed and no zeroes are lost.
 #
 # Design note:
 #   Exact control over the *number* of zeroes (as in
@@ -125,6 +126,9 @@ generate_matrix_factors <- function(n, n_groups, min_loading = 0.3,
   # halves), i.e. the pairs of taxa placed in different groups
   tol <- 1e-8
   n_zeroes <- sum(abs(corr_mat[upper.tri(corr_mat)]) < tol) * 2
+  
+  # converts the data into a real matrix
+  mat <- as.matrix(corr_mat)
   
   # return the matrix, the group assignment, and the exact zero count
   list(
