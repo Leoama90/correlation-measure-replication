@@ -1,14 +1,28 @@
-# here: builds file paths relative to the project root
-# https://cran.r-project.org/web/packages/here/index.html
-library(here)
+# test-0_compute_error_zinb_rare.R
+#
+# Purpose:
+#   This script tests important features from the 0_compute_error_zinb_rare.R script,
+#   checking:
+#       - ToyModel() (from ToyModel library) returns a correlation and a NorTa Matrixes
+#         with correct dimensions
+#
+# Inputs:
+#   - data generated inside this script for purpose test only
+#
+# Outputs:
+#   - test results printed to the console (pass/fail for each check)
+# Note: 
+#     This test does not source the original script, because it was too much time consuming.
+#     Instead, it tests the individual building blocks the original script relies on
+#     (toy_model()) on small, self-contained data.
+#     The trade-off is that this duplicates part of the original script's logic here;
+#     if that logic changes in 0_compute_error_zinb_rare.R, this script must be updated to
+#     match, or the tests will silently keep checking the old behaviour.
+
 
 # testthat: unit testing framework for R
 # https://cran.r-project.org/web/packages/testthat/index.html
 library(testthat)
-
-# tidyverse: useful to manage data (dplyr) and make nice plots (ggplot2)
-# https://cran.r-project.org/web/packages/tidyverse/index.html
-library(tidyverse)
 
 # ToyModel: lightweight package with necessary function to generate metagenomics data
 # https://github.com/Fuschi/ToyModel

@@ -1,3 +1,39 @@
+# test-intermediate_Plots_htrlnorm_randzero.R
+#
+# Purpose:
+#   This script tests the fundamental building blocks used in
+#   intermediate_Plots_htrlnorm_randzero.R, checking:
+#       - the simulation results file is found and loaded correctly,
+#         with all expected columns present, and err_clr bounded in [0, 1]
+#       - the derived sparsity summary columns are internally consistent
+#         (phi_min <= phi_mean <= phi_max for every row)
+#       - my_palette() returns exactly 12 valid hex color codes
+#       - summarise() correctly aggregates err_clr_mean by (cor_input,
+#         phi_min), with each group appearing exactly once and the mean
+#         error bounded in [0, 1]
+#       - predict_max() returns one numeric, non-NA prediction per input
+#       - random pseudo-count injection eliminates all zeros from a
+#         NorTA matrix, without altering its non-zero entries
+#
+# Inputs:
+#   - Sparsity_Effects_htrlnorm.rds
+#   - otu_HMP2.rds
+#   - meta_HMP2.rds
+#
+# Outputs:
+#   - test results printed to the console (pass/fail for each check)
+#
+# Note:
+#   This script does not source intermediate_Plots_htrlnorm_randzero.R
+#   directly, since doing so would re-run the full script, which is too
+#   time-consuming. Instead, it tests small, self-contained chunks that
+#   mirror the logic of the original script, using either real HMP2 data
+#   (only for the data-loading and predict_max chunks) or small synthetic
+#   data for everything else. Trade-off: this duplicates parts of the
+#   original script's logic here; if that logic changes in the original
+#   script, this script must be updated to match.
+
+
 # here: builds file paths relative to the project root
 # https://cran.r-project.org/web/packages/here/index.html
 library(here)
@@ -23,7 +59,7 @@ test_that("df is loaded correctly and derived columns are computed", {
   )
   # ensure exactly one matching file was found
   expect_length(path, 1)
-
+  
   # load the dataset and derive four new columns
   df <- readRDS(path) %>%
     # absolute error between observed and NorTA-PCLR-estimated correlation
@@ -34,7 +70,7 @@ test_that("df is loaded correctly and derived columns are computed", {
     mutate(phi_max = pmax(phi_1, phi_2)) %>%
     # element-wise minimum of phi_1 and phi_2
     mutate(phi_min = pmin(phi_1, phi_2))
-
+  
   # verify all required columns are present in the dataframe
   expect_true(all(c(
     "err_clr", "phi_mean", "phi_max", "phi_min",
@@ -63,7 +99,7 @@ test_that("phi_min <= phi_mean <= phi_max for every row", {
     mutate(phi_mean = 0.5 * (phi_1 + phi_2)) %>%
     mutate(phi_max = pmax(phi_1, phi_2)) %>%
     mutate(phi_min = pmin(phi_1, phi_2))
-
+  
   # the minimum must never exceed the mean
   expect_true(all(df$phi_min <= df$phi_mean))
   # the mean must never exceed the maximum
@@ -79,7 +115,7 @@ test_that("my_palette returns the correct number of colours and valid hex values
   my_palette <- RColorBrewer::brewer.pal(n = 11, "Spectral") %>%
     rev() %>%
     grDevices::colorRampPalette()
-
+  
   # request 12 interpolated colors from the palette
   colors_12 <- my_palette(12)
   # confirm exactly 12 colors were returned
@@ -103,11 +139,11 @@ test_that("summarise computes err_clr_mean correctly for each group", {
   df <- readRDS(path) %>%
     mutate(err_clr = abs(cor_normal - cor_NorTA_PCLR)) %>%
     mutate(phi_min = pmin(phi_1, phi_2))
-
+  
   # compute mean error for each (cor_input, phi_min) group
   agg <- df %>%
     summarise(err_clr_mean = mean(err_clr), .by = c(cor_input, phi_min))
-
+  
   # mean absolute error must be non-negative
   expect_true(all(agg$err_clr_mean >= 0))
   # mean absolute error must be at most 1 (bounded correlation scale)
@@ -134,14 +170,14 @@ test_that("predict_max returns a numeric value for each input without NAs", {
     full.names = TRUE,
     recursive  = TRUE
   ))
-
+  
   # keep only samples from subject 69-001 in the Healthy group
   otu_69001_h <- otu[meta$SubjectID == "69-001" & meta$CL4_2 == "Healthy", ]
   # retain taxa present in at least 33% of samples
   otu_filt <- otu_69001_h[, colSums(otu_69001_h > 0) / nrow(otu_69001_h) >= 0.33]
   # further retain taxa with a positive-read median >= 5
   otu_filt <- otu_filt[, apply(otu_filt, 2, function(x) median(x[x > 0]) >= 5)]
-
+  
   # build a tibble with log-scale max and mean abundance per taxon
   df_mean_max <- tibble(
     # log-transformed maximum across samples for each taxon
@@ -151,7 +187,7 @@ test_that("predict_max returns a numeric value for each input without NAs", {
   )
   # fit a simple linear model: max ~ mean (log scale)
   model <- lm(y ~ x, data = df_mean_max)
-
+  
   # predicts the maximum for new mean-abundance values,
   # adding observation-level noise from the fitted residual distribution
   predict_max <- function(new_xs) {
@@ -172,7 +208,7 @@ test_that("predict_max returns a numeric value for each input without NAs", {
     # draw one random prediction per new observation
     rnorm(nrow(new_data), mean = predicted_values, sd = std_error_prediction)
   }
-
+  
   # call predict_max with three test values
   result <- predict_max(c(1, 2, 3))
   # must return exactly one value per input
@@ -191,7 +227,7 @@ test_that("random pseudo-count eliminates all zeros from the NorTA matrix", {
   set.seed(42)
   # build a small dummy NorTA matrix with known zeros
   dummy_norta <- matrix(c(0, 1, 2, 0, 3, 0), nrow = 2, ncol = 3)
-
+  
   # generate a matrix of uniform random pseudo-counts, one per cell
   rand_pseudo <- matrix(
     runif(length(dummy_norta), min = 0.065, max = 0.65),
@@ -200,7 +236,7 @@ test_that("random pseudo-count eliminates all zeros from the NorTA matrix", {
   )
   # add the pseudo-count only where the original matrix is zero
   result <- dummy_norta + (dummy_norta == 0) * rand_pseudo
-
+  
   # all values must now be strictly positive
   expect_true(all(result > 0))
   # non-zero entries must remain unchanged
