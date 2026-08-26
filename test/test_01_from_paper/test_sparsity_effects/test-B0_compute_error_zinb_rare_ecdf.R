@@ -115,7 +115,7 @@ test_that("params_set covers all expected cor x pstr0 combinations", {
   # grid must span 19 correlation values x 20 zero-inflation values = 380 rows
   expect_equal(
     nrow(params_set),
-    length(seq(-.9, .9, by = .1)) * length(seq(0, .95, by = .05))
+    length(seq(-0.9, 0.9, by = 0.1)) * length(seq(0, 0.95, by = 0.05))
   )
 })
 

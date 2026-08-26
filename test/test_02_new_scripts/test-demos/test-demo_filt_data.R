@@ -25,9 +25,15 @@ library(here)
 # the objects it creates (otu_demo, filt_result, filt_result_with_taxa)
 # available in this environment for the tests below
 capture.output(
-  source(here("02_new_scripts", "demo_filt_data.R"))
+  source(
+    list.files(
+      path = here(),
+      pattern = "^demo_filt_data\\.R$",
+      full.names = TRUE,
+      recursive = TRUE
+    )
+  )
 )
-
 
 # -------- test 1: the example OTU table has the expected shape --------
 
