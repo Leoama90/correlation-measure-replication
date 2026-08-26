@@ -8,7 +8,7 @@
 #   - A saved heatmap plot object:
 #     here("script", "sparsity_effects", "error_zinb.rds")
 #   - A saved real-data example plot object:
-#     here("script", "sparsity_effects", "example_couple.rds")
+#     here("01_from_paper", "sparsity_effects", "example_couple.rds")
 #
 # Output:
 #   - A high-resolution PNG figure:

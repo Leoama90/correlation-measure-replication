@@ -19,7 +19,7 @@
 #
 # Output:
 #   - A simulation results file saved in:
-#     here("script", "sparsity_effects", "trials", "Sparsity_Effects_htrlnorm_rand_pseudo.rds")
+#     here("01_from_paper", "sparsity_effects", "trials", "Sparsity_Effects_htrlnorm_rand_pseudo.rds")
 #
 # doSNOW: parallel backend for foreach, supports progress bars via snow clusters
 # https://cran.r-project.org/web/packages/doSNOW/index.html
@@ -137,7 +137,7 @@ progress <- function(n) {
   pb$tick()
 }
 
-# set sedd for reproducibility
+# set seed for reproducibility
 set.seed(42)
 result <- data.frame()
 for (iter in 1:n_iteration) {
@@ -250,10 +250,16 @@ for (iter in 1:n_iteration) {
     random_HMP2_NorTA_i[, 125] <- couple$NorTA[, 2]
 
     # Replace exact zeros with small random pseudo-values in [0.065, 0.65]
-    # to avoid log(0) issues before CLR transformation
+    # to avoid log(0) issues before CLR transformation.
+    # NOTE (bug fix): rand_pseudo must match the dimensions of
+    # random_HMP2_NorTA_i (10,000 x 200, the simulated background matrix),
+    # not otu_filt (the real, much smaller filtered OTU table). Using
+    # otu_filt's dimensions here made length(random_HMP2_NorTA_i) not
+    # divide evenly by nrow(otu_filt) * ncol(otu_filt) in general,
+    # silently recycling values into the wrong shape.
     rand_pseudo <- matrix(runif(length(random_HMP2_NorTA_i), min = 0.065, max = 0.65),
-      nrow = nrow(otu_filt),
-      ncol = ncol(otu_filt)
+      nrow = nrow(random_HMP2_NorTA_i),
+      ncol = ncol(random_HMP2_NorTA_i)
     )
 
     random_HMP2_NorTA_i <- random_HMP2_NorTA_i + (random_HMP2_NorTA_i == 0) * rand_pseudo
@@ -300,5 +306,5 @@ for (iter in 1:n_iteration) {
 # Save the complete results table to disk as an R serialised object
 saveRDS(result, here("01_from_paper", "sparsity_effects", "trials", "Sparsity_Effects_htrlnorm_rand_pseudo.rds"))
 
-# UI reminder where to search the generated plot
-cat("the .png file has been saved in the 'Plots' folder with the name 'sparsity.png'")
+# UI reminder where to search the generated file
+cat("the .rds file has been saved in the 'sparsity_effects/trials' folder with the name 'Sparsity_Effects_htrlnorm_rand_pseudo.rds'")

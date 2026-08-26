@@ -1,3 +1,33 @@
+# test-0_compute_error_zinb.R
+#
+# Purpose:
+#   This script aims to test the script 0_compute_error_zinb.R
+#   checking:
+#       - ToyModel returns a correlation matrix and a NorTa matrix with correct 
+#         dimensions
+#       - fitdistr() (function from SpiecEasi library) correctly fits a ZINB model and 
+#         returns valid `munb` (mean), `size` (dispersion), and `pstr0` 
+#         (structural-zero probability) estimates. 
+#       - clr() (function from ToyModel library) applies the center log-ratio transformation
+#         generating rows that sum up to zero
+#       - replacing two target columns in a background matrix with a
+#         simulated OTU pair leaves every other column unchanged
+#
+# Inputs:
+#   - data generated inside this test for testing purpose only
+#
+# Outputs:
+#   - test results printed to the console (pass/fail for each check)
+#
+# Note: 
+#     This test does not source the original script, because it was too much time consuming.
+#     Instead, it tests the individual building blocks the original script relies on
+#     (toy_model(), fitdistr(), clr(), column injection) on small, self-contained data.
+#     The trade-off is that this duplicates part of the original script's logic here;
+#     if that logic changes in 0_compute_error_zinb.R, this script must be updated to
+#     match, or the tests will silently keep checking the old behaviour.
+
+
 # SpiecEasi: package with spiec.easi and sparCC methods
 # https://github.com/zdk123/SpiecEasi
 library(SpiecEasi)
@@ -39,11 +69,11 @@ test_that("toy_model returns NorTA matrix and cor_normal with correct dimensions
     qdist = VGAM::qzinegbin,
     param = test_params
   )
-
+  
   # NorTA should be a 50 x 2 non-negative integer matrix
   expect_equal(dim(result$NorTA), c(50, 2))
   expect_true(all(result$NorTA >= 0))
-
+  
   # cor_normal should be a 2x2 symmetric matrix with ones on the diagonal
   expect_equal(dim(result$cor_normal), c(2, 2))
   expect_equal(diag(result$cor_normal), c(1, 1))
@@ -61,12 +91,12 @@ test_that("fitdistr returns munb, size, and pstr0 for a ZINB-distributed vector"
     size = 2,
     pstr0 = 0.3
   )
-
+  
   fitted <- SpiecEasi::fitdistr(as.numeric(x), "zinegbin")$par
-
+  
   # All three parameter names must be present
   expect_true(all(c("munb", "size", "pstr0") %in% names(fitted)))
-
+  
   # Fitted values should be positive and pstr0 in [0, 1)
   expect_true(fitted["munb"] > 0)
   expect_true(fitted["size"] > 0)
@@ -90,9 +120,9 @@ test_that("clr() produces rows that sum to zero (up to floating-point tolerance)
       pstr0 = rep(0.1, 5)
     )
   )$NorTA
-
+  
   clr_matrix <- ToyModel::clr(counts)
-
+  
   # Each row of the CLR-transformed matrix must sum to ~0
   row_sums <- rowSums(clr_matrix)
   expect_true(all(abs(row_sums) < 1e-10))
@@ -114,7 +144,7 @@ test_that("replacing columns 25 and 125 leaves all other columns unchanged", {
       pstr0 = rep(0.2, 200)
     )
   )
-
+  
   pair <- toy_model(
     n = 100,
     cor = 0.6,
@@ -122,11 +152,11 @@ test_that("replacing columns 25 and 125 leaves all other columns unchanged", {
     qdist = VGAM::qzinegbin,
     param = test_params
   )
-
+  
   modified <- bg$NorTA
   modified[, 25] <- pair$NorTA[, 1]
   modified[, 125] <- pair$NorTA[, 2]
-
+  
   # Columns other than 25 and 125 must be identical to the original background
   other_cols <- setdiff(1:200, c(25, 125))
   expect_equal(modified[, other_cols], bg$NorTA[, other_cols])

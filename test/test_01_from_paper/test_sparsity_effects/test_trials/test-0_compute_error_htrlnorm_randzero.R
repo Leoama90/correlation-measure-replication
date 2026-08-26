@@ -1,3 +1,48 @@
+# test-0_compute_error_htrlnorm_randzero.R
+#
+# Purpose:
+#   This script tests the fundamental features of
+#   0_computer_error_htrlnorm_randzero.R, checking, chunk by chunk:
+#       - (chunk 1: filtering) row/column counts decrease correctly
+#         after subject/health subsetting and prevalence/abundance filtering
+#       - (chunk 2: mean-max model) df_mean_max has one row per OTU,
+#         y (log-max) >= x (log-mean) always, both are non-negative, the
+#         fitted model formula is exactly y ~ x, and predict() returns
+#         one value per row
+#       - (outer loop) params_random_HMP2 has the correct shape and
+#         values within the HMP2 quantile bounds; params_set is a full
+#         factorial grid (20 x 20 x 19 = 7,600 rows) with all required
+#         columns
+#       - (inner loop) replacing target columns leaves all other
+#         columns unchanged; random pseudo-value imputation removes all
+#         zeros without altering non-zero entries; the resulting CLR
+#         correlation matrix is valid (symmetric, diagonal = 1, values
+#         in [-1,1]); the one-row simulation result has all expected
+#         columns and a valid, finite, bounded correlation value
+#       - the accumulated result across iterations has the correct row
+#         count and no NA values
+#
+# Inputs:
+#   - otu_HMP2.rds, meta_HMP2.rds (used by chunk 1 only)
+#   - synthetic data generated inside this script for all other chunks
+#
+# Outputs:
+#   - test results printed to the console (pass/fail for each check)
+#
+# Note:
+#   This script does not source 0_computer_error_htrlnorm_randzero.R
+#   directly, since doing so would re-run the full simulation (100
+#   outer iterations, each with a parallel foreach over 7,600 parameter
+#   combinations, 10^4 samples each) on every test run - far too slow
+#   for a test suite. Instead, it tests small, self-contained chunks
+#   that mirror the logic of the original script at each stage
+#   (filtering, mean-max regression, outer-loop parameter generation,
+#   inner-loop simulation logic), using either real HMP2 data (only for
+#   the filtering chunk) or small synthetic data for everything else.
+#   Trade-off: this duplicates parts of the original script's logic
+#   here; if that logic changes in the original script, this script
+#   must be updated to match.
+
 # doSNOW: parallel backend for foreach, supports progress bars via snow clusters
 # https://cran.r-project.org/web/packages/doSNOW/index.html
 library(doSNOW)
@@ -27,14 +72,6 @@ library(tidyverse)
 library(ToyModel)
 
 
-# -------- READ FIRST --------
-
-# for this test, I will load some chunk of code taken from the original one,
-# because loading the whole script would a too long execution time
-# the different chunks will have a number. The test will have in the comments
-# which chunk is being tested
-
-
 # -------- 1. data filtering code --------
 
 # load the first chunk of code from the script 0_computer_error_htrlnorm_randzero.R
@@ -43,14 +80,14 @@ library(ToyModel)
 # Load OTU abundance matrix (samples x OTUs)
 otu <- readRDS(list.files(
   path = here(),
-  pattern = "otu_HMP2.rds",
+  pattern = "^otu_HMP2\\.rds$",
   full.names = TRUE,
   recursive = TRUE
 ))
 # Load sample metadata
 meta <- readRDS(list.files(
   path = here(),
-  pattern = "meta_HMP2.rds",
+  pattern = "^meta_HMP2\\.rds$",
   full.names = TRUE,
   recursive = TRUE
 ))

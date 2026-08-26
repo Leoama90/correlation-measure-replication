@@ -1,19 +1,36 @@
-# test-B0_compute_error_htlrnorm.
+# test-B0_compute_error_htlrnorm.R
 #
 # Purpose:
-#   <clever test here>
-#   checking:
-#       - 
-#       - 
-#       - 
-#       - 
+#   This script tests the fundamental preprocessing and parameter-
+#   generation steps of B0_computer_error_htrlnorm.R, checking:
+#       - the loaded OTU table and metadata have the expected types
+#       - the prevalence filter reduces the number of OTUs, and every
+#         surviving OTU is present in at least 33% of samples
+#       - the median-abundance filter leaves only OTUs whose non-zero
+#         median is at least 5
+#       - the fitted htrlnorm quantile parameters have the correct
+#         shape, row names, and a 10th percentile always below the 90th
+#       - the generated params_set grid has the expected columns, with
+#         all sampled correlation and sparsity (phi) values within
+#         their defined ranges
 #
 # Inputs:
-#   - 
+#   - otu_HMP2.rds, meta_HMP2.rds
 #
 # Outputs:
 #   - test results printed to the console (pass/fail for each check)
-
+#
+# Note:
+#   This script does not source B0_computer_error_htrlnorm.R directly,
+#   nor does it run its main simulation loop (100 outer iterations,
+#   each running a parallel foreach over ~7600 sparsity/correlation
+#   combinations, 10^4 samples each), that would be far too slow and
+#   resource-heavy to run as part of a test suite. Instead, it locally
+#   re-implements only the early preprocessing and parameter-generation
+#   steps (data loading, filtering, quantile fitting, params_set
+#   construction), stopping before the expensive part. Trade-off: this
+#   duplicates that part of the original script's logic here;If the original 
+#   logic changes, this script must be updated to match.
 
 # here: builds file paths relative to the project root
 # https://cran.r-project.org/web/packages/here/index.html
@@ -23,6 +40,9 @@ library(here)
 # https://cran.r-project.org/web/packages/testthat/index.html
 library(testthat)
 
+# tidyverse: useful to manage data (dplyr) and make nice plots (ggplot2)
+# https://cran.r-project.org/web/packages/tidyverse/index.html
+library(tidyverse)
 
 # -------- test data loading --------
 
@@ -49,6 +69,7 @@ test_that("otu is a numeric matrix and meta is a list", {
   expect_true(is.list(meta))
 })
 
+
 # -------- test the filtering functions --------
 
 # select samples belonging to subject 69-001 in healthy status
@@ -59,7 +80,7 @@ otu_filt <- otu_69001_h[, colSums(otu_69001_h > 0) / nrow(otu_69001_h) >= 0.33]
 
 # verify that the prevalence filter actually removed at least one OTU
 test_that("prevalence filter removes at least one OTU", {
-  expect_gte(ncol(otu_69001_h), ncol(otu_filt))
+  expect_gt(ncol(otu_69001_h), ncol(otu_filt))
 })
 
 # verify that every OTU that passed the filter truly appears
@@ -77,6 +98,7 @@ test_that("all remaining OTUs have median non-zero abundance >= 5", {
   medians <- apply(otu_filt, 2, function(x) median(x[x > 0]))
   expect_true(all(medians >= 5))
 })
+
 
 # -------- test quantile parameters --------
 
@@ -98,6 +120,7 @@ test_that("quantile params matrix has correct shape and row names", {
   expect_true(all(hmp2_quantile_params["10%", ] < hmp2_quantile_params["90%", ]))
 })
 
+
 # -------- test params_set structure --------
 
 # fit a linear model between mean and max abundance (log scale) across OTUs
@@ -108,7 +131,7 @@ df_mean_max <- tibble(
 model <- lm(y ~ x, data = df_mean_max)
 
 # generate all combinations of sparsity (phi) and correlation values to test,
-# then assign random log-normal parameters and predicted maxima to each combination
+# then assign random log-normal parameters to each combination
 params_set <- expand_grid(
   phi_1 = seq(0, 0.95, by = 0.05),
   phi_2 = seq(0, 0.95, by = 0.05),

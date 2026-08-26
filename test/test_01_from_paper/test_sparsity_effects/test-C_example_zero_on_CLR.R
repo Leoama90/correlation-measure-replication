@@ -1,3 +1,42 @@
+# test-C_example_zero_on_CLR.R
+#
+# Purpose:
+#   This script tests the fundamental data-processing logic used in
+#   C_example_zero_on_CLR.R (CLR transformation, correlation, prevalence,
+#   zero-rate, upper-triangle pair extraction, threshold filtering, and
+#   detection-pattern labeling), using a small synthetic OTU matrix
+#   instead of the real HMP2 data and the script's specific OTU pairs
+#   (OTU_269, OTU_313, OTU_97). Checking:
+#       - CLR() preserves input dimensions and each row sums to ~0
+#       - the CLR-based Pearson correlation matrix (PCLR) is square,
+#         symmetric, and matches the number of OTUs
+#       - prevalence values are valid proportions with correct OTU names
+#       - the long-format pair table (info) contains exactly the
+#         upper-triangle pairs, with no duplicates or self-pairs
+#       - zero_I/zero_J are valid percentages, complementary to prevalence
+#       - info_filt only retains pairs satisfying both the prevalence
+#         (<=0.5) and correlation (|r|>=0.4) thresholds used in the script
+#       - the case_when() detection logic assigns exactly one of the
+#         four expected labels to every sample, with no case unclassified
+#
+# Inputs:
+#   - CLR.R (sourced below)
+#   - a small synthetic OTU matrix, generated inside this script
+#
+# Outputs:
+#   - test results printed to the console (pass/fail for each check)
+#
+# Note:
+#   This script does not source C_example_zero_on_CLR.R directly, since
+#   that script requires the real HMP2 data and is written around two
+#   specific, hard-coded OTU pairs (idx.min, idx.max) picked by hand from
+#   that real dataset. Instead, this script re-implements the same processing 
+#   pattern on a small, self-contained synthetic dataset, 
+#   so the underlying logic (not the specific OTU pairs) can be tested directly. 
+#   Trade-off: this duplicates part of C_example_zero_on_CLR.R's logic here;
+#   if that logic changes in the original script, this script must be updated 
+#   to match.
+
 # testthat: unit testing framework for R
 # https://cran.r-project.org/web/packages/testthat/index.html
 library(testthat)
@@ -10,8 +49,17 @@ library(tidyverse)
 # https://cran.r-project.org/web/packages/here/index.html
 library(here)
 
-# Load CLR function
-source(here("script", "method_comparison", "CLR.R"))
+
+# -------- Load CLR function --------
+
+source(
+  list.files(
+    path = here(),
+    pattern = "^CLR\\.R$",
+    full.names = TRUE,
+    recursive = TRUE
+  )
+)
 
 # Set seed for reproducibility
 set.seed(42)

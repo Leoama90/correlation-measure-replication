@@ -17,7 +17,7 @@
 #
 # Output:
 #   - A 2x2 panel figure saved as an RDS object:
-#     here("script", "sparsity_effects", "example_couple.rds")
+#     here("01_from_paper", "sparsity_effects", "example_couple.rds")
 #
 # here: builds file paths relative to the project root
 # https://cran.r-project.org/web/packages/here/index.html
@@ -31,9 +31,15 @@ library(ggpubr)
 # https://cran.r-project.org/web/packages/tidyverse/index.html
 library(tidyverse)
 
-# load CLR script
-source(here("01_from_paper", "method_comparison", "CLR.R"))
-
+# -------- load CLR script --------
+source(
+  list.files(
+    path = here(),
+    pattern = "^CLR\\.R$",
+    full.names = TRUE,
+    recursive = TRUE
+  )
+)
 # Read the OTU counts and subject metadata
 otu <- readRDS(list.files(
   path       = here(),

@@ -20,7 +20,7 @@
 #
 # Output:
 #   - A results file saved in:
-#     here("script", "sparsity_effects", "trials", "Sparsity_Effects_zinbin_rare.rds")
+#     here("01_from_paper", "sparsity_effects", "trials", "Sparsity_Effects_zinbin_rare.rds")
 #
 # doSNOW: parallel backend for foreach, supports progress bars via snow clusters
 # https://cran.r-project.org/web/packages/doSNOW/index.html

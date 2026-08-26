@@ -1,3 +1,31 @@
+# test-Z_final_plot.R
+#
+# Purpose:
+#   This script tests the fundamental features of Z_final_plot.R,
+#   checking:
+#       - exactly one file is found for each expected .rds pattern
+#         (error_zinb.rds, example_couple.rds), with no missing or
+#         duplicated matches
+#       - the legend.position theme override to "top" is correctly
+#         stored on the loaded heatmap plot
+#       - combining the two panels with ggarrange() produces a
+#         renderable object, and that it actually draws without error
+#         when printed to a real graphics device
+#
+# Inputs:
+#   - error_zinb.rds, example_couple.rds (located via list.files())
+#
+# Outputs:
+#   - test results printed to the console (pass/fail for each check)
+#
+# Note:
+#   This script does not source Z_final_plot.R directly. Instead, it
+#   loads the same two saved plot objects the script depends on, and
+#   re-applies the same theme override and ggarrange() call locally, so
+#   the composition logic can be tested without also re-running the
+#   PNG export and browseURL() calls at the end of the original script
+#   (the latter would open an image viewer window on every test run).
+
 # here: builds file paths relative to the project root
 # https://cran.r-project.org/web/packages/here/index.html
 library(here)
@@ -15,7 +43,7 @@ library(ggpubr)
 # repeating the list.files() call
 path_err <- list.files(
   path = here(),
-  pattern = "error_zinb.rds",
+  pattern = "^error_zinb\\.rds$",
   full.names = TRUE,
   recursive = TRUE
 )
