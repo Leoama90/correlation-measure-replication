@@ -1,4 +1,4 @@
-# demo_clr_pearson.R
+# demo_clr_pearson_old.R
 #
 # Purpose:
 #   Demonstrates the usage of the function "clr_on_data()" (from the script 
