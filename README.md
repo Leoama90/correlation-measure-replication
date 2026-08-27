@@ -15,6 +15,7 @@
 5. [Structure of the repository](#structure-of-the-repository)
     1. [Folder explanations](#folder-explanations)
     2. [Repository tree structure](#repository-tree-structure)
+    3. [02_new_scripts](#02_new_scripts)
 6. [Versions](#versions)
 7. [Syntax](#syntax)
 
@@ -291,6 +292,40 @@ Here follows the tree structure:
     └── test_03_discarded_methods/
         └── test-generate_matrix_with_zeroes.R  
 ```
+
+## Scripts in 02_new_scripts
+
+Ok, this is where the fun goes live.  
+Most of these scripts define a single function and are meant to be sourced, not run on their own.  
+The `demo/` subfolder shows how to actually use them (some demos are missing).  
+`compositional_bias_D_P.R` is the only standalone analysis script in this folder (for the moment).  
+We can say there are three main types of scripts: base functions, orchestrators, and standalone analyses.  
+Here are their explanations:
+
+**Base functions**
+- `datasummary.R`: has the function `datasum()`, a quick summary of a dataset (dimensions, mean/median/sd, skewness, zero count, and determinant/min eigenvalue for square matrices).
+
+- `filt_data.R`: has the function `filt_data()`, filters an OTU table by prevalence and abundance.
+
+- `pseudocount.R`: has the function `pseudocount()`, replaces zero counts with row-specific pseudocounts.
+
+- `generate_matrix_factors.R`: has the function `generate_matrix_factors()`, builds a valid correlation matrix (PSD by construction) with an exact, controlled zero pattern.
+
+- `pielou_ind.R`: has the function `pielou_ind()`, computes the Pielou diversity index, works on real count data (zeroes included).
+
+**Orchestrators** (combine the base functions above)
+- `clr_pearson.R`: contains the function `clr_on_data()`, runs the full filtering → pseudocount → CLR → Pearson correlation pipeline.
+
+- `NorTa_simulation.R`: brings the `norta_simulation()`, simulates a sparse dataset with a known correlation structure (NorTA approach), with a single zero-inflation probability shared by all taxa.
+
+- `data_sim_ph_driven.R`: the key `data_sim_ph_driven()`, same NorTA approach, but zero-inflation is derived per-taxon from an environmental pH gradient instead of being fixed.
+
+**Standalone analysis**
+- `compositional_bias_D_P.R`: quantifies L1 vs CLR bias as a function of dimensionality (D) and diversity (P), replicating the paper's Analysis 1 on a reduced grid. Produces `compositional_bias_results.rds` and a heatmap.
+
+
+**Demos** (`02_new_scripts/demo/`)  
+Each demo shows one of the functions above in action, with explanatory `cat()` output and, where relevant, printed results.
 
 ## Versions
 
