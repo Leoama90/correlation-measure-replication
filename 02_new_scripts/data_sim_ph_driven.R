@@ -37,6 +37,11 @@
 #
 # Used scripts:
 #   - generate_matrix_factors.R
+# Note:
+#     columns are labeled OTU_XX for consistency with the naming convention of the
+#     real HMP2 dataset used elsewhere in this project,
+#     though no sequence clustering is actually performed here,
+#     each column is an abstract simulated taxon.
 
 # here: builds file paths relative to the project root
 # https://cran.r-project.org/web/packages/here/index.html
@@ -51,6 +56,7 @@ library(VGAM)
 
 
 # -------- bring generate_matrix_factors() into scope --------
+
 source(
   list.files(
     path = here(),
@@ -173,7 +179,7 @@ data_sim_ph_driven <- function(n, N, ph, n_groups, ph_min = 5.5, ph_max = 7.5,
   # apply the ZINB quantile function with a per-element (per-taxon)
   # zero-inflation probability, instead of the single shared phi used
   # in NorTa_simulation.R
-  sim_counts <- qzinegbin(sim_unif, size = size, munb = mu, pstr0 = phi_expanded)
+  sim_counts <- VGAM::qzinegbin(sim_unif, size = size, munb = mu, pstr0 = phi_expanded)
 
   # restore the original matrix shape (qzinegbin flattens its input)
   dim(sim_counts) <- dim(sim_data)
