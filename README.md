@@ -40,17 +40,18 @@ Sparsity, however, remains an open issue, tending to underestimate negative corr
  
 ### Methods
 - Gaussian data simulated using the R package `mvtnorm`, varying dimensionality (D) and within-sample diversity (*Pielou* index, for more information about it see chapter 3.6, [Pielou diversity index](#pielou-diversity-index)), to isolate compositional biases under L1 vs. CLR normalization.
-- Realistic sparse data simulated with the "Normal to Anything" (NorTA) approach, using a zero-inflated negative binomial marginal distribution; zeros replaced with 65% of the detection limit before CLR.
+- Realistic sparse data simulated with the "Normal to Anything" (NorTA) approach, using a zero-inflated negative binomial marginal distribution ([zero-inflated negative binomial Wikipedia page](https://en.wikipedia.org/wiki/Zero-inflated_model)); zeroes replaced with 65% of the detection limit before CLR.
 - Validation on real data from the HMP2 gut microbiome dataset (single healthy subject: *69-001*, contributed with 51 samples in total, the highest count in the dataset), comparing CLR + Pearson against Rho and SparCC.  
 
 ### Key findings
 - L1-normalized correlations are strongly biased by within-sample diversity and do not improve with dimensionality.
 - CLR-normalized correlations are independent of diversity, and their bias decreases rapidly with dimensionality (negligible above ~100 taxa), typical of metagenomic datasets.
 - On real HMP2 data, CLR + Pearson closely matches Rho and SparCC at high dimensionality (OTU level), while differences grow at low dimensionality (phylum level).
-- Data sparsity remains a limitation: error increases with the fraction of zeros, especially for negative correlations; CLR mitigates but does not eliminate this bias.  
+- Data sparsity remains a limitation: error increases with the fraction of zeroes, especially for negative correlations; CLR mitigates but does not eliminate this bias.  
 
 ### Takeaway
-In typical high-dimensional metagenomic settings, simple Pearson correlation on CLR-transformed data is a robust and computationally cheap choice, with more complex compositional-correction methods becoming relevant mainly at low dimensionality. Sparsity handling remains the main open challenge.  
+In typical high-dimensional metagenomic settings, simple Pearson correlation on CLR-transformed data is a robust and computationally cheap choice, with more complex compositional-correction methods becoming relevant mainly at low dimensionality.  
+ Sparsity handling remains the main open challenge.  
 
 ## Theoric prerequisites
 This section covers briefly the theoric concepts needed to understand the whole project.
@@ -64,7 +65,7 @@ More information can be found on the [compositional data Wikipedia page](https:/
 
 ### CLR transformation
 
-The Centered Log-Ratio (CLR) transformation maps compositional data out of the constrained simplex space into an unconstrained, real-valued space, allowing tools like Pearson correlation to be applied reliably.
+The Centered Log-Ratio (CLR) transformation maps compositional data out of the constrained simplex space into an unconstrained, real-valued space, allowing tools like Pearson correlation ([Pearson correlation Wikipedia page](https://en.wikipedia.org/wiki/Pearson_correlation_coefficient)) to be applied reliably.
 
 $$CLR(x_i) = \ln\left( \frac{x_i}{g(x)} \right) = \ln(x_i) - \frac{1}{D}\sum_{j=1}^{D}\ln(x_j)$$
 
