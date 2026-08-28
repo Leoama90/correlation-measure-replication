@@ -330,7 +330,7 @@ Each demo shows one of the functions above in action, with explanatory `cat()` o
 ## Versions
 
 Programming language used was R, updated at the version 4.6.1.  
-The Integrated Development Environment (IDE) used to write the scripts was RStudio, updated at its version 2026.08.1 + 195.
+The Integrated Development Environment (IDE) used to write the scripts was RStudio, updated at its version 2026.08.2 + 200.
 
 ## Syntax
 About the syntax, the conventions stated in the Tidyverse guide have been followed, they can be found here: 
