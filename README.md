@@ -220,10 +220,12 @@ Here follows the tree structure:
 ├── 02_new_scripts/
 │   ├── demo/
 │   │   ├── demo_clr_pearson.R
+│   │   ├── demo_data_sim_ph_driven.R    
 │   │   ├── demo_datasummary.R
 │   │   ├── demo_filt_data.R
 │   │   ├── demo_generate_matrix_factors.R
-│   │   └── demo_NorTa_simulation.R
+│   │   ├── demo_NorTa_simulation.R
+│   │   └── demo_pielou_ind.R
 │   ├── clr_pearson.R
 │   ├── compositional_bias_D_P.R
 │   ├── data_sim_ph_driven.R
@@ -279,8 +281,10 @@ Here follows the tree structure:
     ├── test_02_new_scripts/
     │   ├── test-demos/
     │   │   ├── test-demo_clr_pearson.R
-    │   │   ├── test-datasummary.R
-    │   │   └── test-demo_filt_data.R
+    │   │   ├── test-demo_data_sim_ph_driven.R
+    │   │   ├── test-demo_datasummary.R
+    │   │   ├── test-demo_filt_data.R
+    │   │   └── test-demo_pielou_ind.R
     │   ├── test-clr_pearson.R
     │   ├── test-compositional_bias_D_P.R
     │   ├── test-data_sim_ph_driven.R
