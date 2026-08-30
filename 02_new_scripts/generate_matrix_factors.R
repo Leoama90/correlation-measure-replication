@@ -127,9 +127,6 @@ generate_matrix_factors <- function(n, n_groups, min_loading = 0.3,
   tol <- 1e-8
   n_zeroes <- sum(abs(corr_mat[upper.tri(corr_mat)]) < tol) * 2
   
-  # converts the data into a real matrix
-  mat <- as.matrix(corr_mat)
-  
   # return the matrix, the group assignment, and the exact zero count
   list(
     mat = corr_mat,

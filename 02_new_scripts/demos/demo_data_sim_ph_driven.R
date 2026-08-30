@@ -89,7 +89,14 @@ cat("\nFor a simple data generation we will use:
 # generate the demonstrative data using the values mentioned above
 demo_data <- data_sim_ph_driven(n = 20, N = 50, ph = 6.5, n_groups = 5, seed = 42)
 
-cat("\nDataset generated. dim(sim_counts):", dim(demo_data$sim_counts), "\n")
+cat(
+  "\nDataset generated.
+Dimensions of sim_counts:\n",
+  "- number of rows:", nrow(demo_data$sim_counts), "\n",
+  "- number of columns:", ncol(demo_data$sim_counts), "\n",
+  "\n"
+)
+
 cat("Overall zero rate: ", round(demo_data$total_zero_rate, 3), "\n")
 
 
