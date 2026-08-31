@@ -15,7 +15,7 @@
 5. [Structure of the repository](#structure-of-the-repository)
     1. [Folder explanations](#folder-explanations)
     2. [Repository tree structure](#repository-tree-structure)
-    3. [02_new_scripts](#02_new_scripts)
+    3. [Scripts in 02_new_scripts](#Scripts_in_02_new_scripts)
 6. [Versions](#versions)
 7. [Syntax](#syntax)
 
