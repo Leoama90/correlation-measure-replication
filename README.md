@@ -131,11 +131,13 @@ Implemented in `pielou_ind.R`.
 
 ## Research goal
 
-This project reproduces the paper's core pipeline (filtering, CLR, Pearson correlation) on the same real data (HMP2, subject 69-001), validating it against a value reported in the paper (Pielou index ≈ 0.68). It also fixes a methodological gap found along the way: the standard method to simulate a correlation matrix with controlled sparsity (random values corrected with `nearPD()`) destroys nearly all the imposed zeroes, so this repository builds correlation matrixes that are valid by construction instead (`generate_matrix_factors.R`). Finally, it proposes a new approach to sparsity, the paper's main open problem: instead of a fixed zero-inflation parameter, sparsity here depends on an environmental driver (pH) and each taxon's ecological niche (`data_sim_ph_driven.R`).
+This project reproduces the paper's core pipeline (filtering, CLR, Pearson correlation) on the same real data (HMP2, subject 69-001), validating it against a value reported in the paper (Pielou index ≈ 0.68).   
+It also fixes a methodological gap found along the way: the standard method to simulate a correlation matrix with controlled sparsity (random values corrected with `nearPD()`) destroys nearly all the imposed zeroes, so this repository builds correlation matrixes that are valid by construction instead (`generate_matrix_factors.R`).  
+Finally, it proposes a new approach to sparsity, the paper's main open problem: instead of a fixed zero-inflation parameter, sparsity here depends on an environmental driver (pH) and each taxon's ecological niche (`data_sim_ph_driven.R`).
 
 ## Structure of the repository
 
-The structure of this repository was designed to replicate the original repository from the paper mentioned above.  
+The structure of this repository was originally designed to replicate the original repository from the paper mentioned above.  
 As the project evolved, I decided to keep some folders and separate the newly written scripts from the ones in the original repository.  
 The folders named *"00_data"* and *"01_from_paper"* contain the original scripts, while *"02_new_scripts"* and *"03_discarded_methods"* contain the newly written scripts for this project.  
 Why keep the old scripts from the original repository?  
@@ -150,14 +152,16 @@ The rest of the work consisted of restyling the scripts according to the Tidyver
 
 Here follows a brief explanation of every folder:
 
-- **00_data**: contains the raw `.csv` data and the `dataprocess.R` script, which generates the `.rds` version of the data. The choice of "00" is conceptual: everything starts from data (yeah, I know it may not sound 100% true, but I thought it was clever).
+- **00_data**: contains the raw `.csv` data and the `dataprocess.R` script, which generates the `.rds` version of the data.   
+The choice of "00" is conceptual: everything starts from data (yeah, I know it may not sound 100% true, but I thought it was clever).
 
-- **01_from_paper**: contains all the original scripts. Their order mirrors the one in the original repository.
+- **01_from_paper**: contains all the original scripts.  
+Their order mirrors the one in the original repository.
 
-- **02_new_scripts**: contains all the new scripts that do not come from the original paper.  
+- **02_new_scripts**: contains all the new scripts that do not come from the original paper.   
 The "demo" subfolder contains demonstrative scripts for some of the other scripts inside `02_new_scripts` (the idea was to write them so they could explain some of the most complicated scripts in that folder).
 
-- **03_discarded_methods**: a somewhat misleading folder name — it contains a couple of scripts that I abandoned because they turned out not to be useful for the project as a whole.
+- **03_discarded_methods**: a somewhat misleading folder name, it contains a couple of scripts that I abandoned because they turned out not to be useful for the project as a whole.
 
 - **outputs**: present in the original repository; stores the outputs of a few scripts from `01_from_paper`.
 
