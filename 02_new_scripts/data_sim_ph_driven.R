@@ -137,7 +137,9 @@ data_sim_ph_driven <- function(n, N, ph, n_groups, ph_min = 5.5, ph_max = 7.5,
 
   factors_result <- generate_matrix_factors(n = n, n_groups = n_groups, seed = seed)
   R_true <- factors_result$mat
-  groups <- factors_result$groups
+  
+  # groups <- factors_result$groups <----- I don't remember why I put it, so 
+  # instead of deleting it, I preferred to keep it here as a comment
 
 
   # -------- per-taxon pH niche and resulting zero-inflation --------

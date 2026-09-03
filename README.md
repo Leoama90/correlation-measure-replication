@@ -172,9 +172,9 @@ The "demo" subfolder contains demonstrative scripts for some of the other script
 
 - **03_discarded_methods**: a somewhat misleading folder name, it contains a couple of scripts that I abandoned because they turned out not to be useful for the project as a whole.
 
-- **outputs**: present in the original repository; stores the outputs of a few scripts from `01_from_paper`.
+- **outputs**: present in the original repository; stores the outputs coming mainly from `01_from_paper/` (like in the original project) which are not necessarily plots.
 
-- **Plots**: same idea as the outputs folder, except it stores the plots produced by scripts from `01_from_paper`.
+- **Plots**: same idea as the outputs folder, except it stores mainly the plots.
 
 - **requirements**: contains one script listing all the libraries used in this repository (in the original repo it was just a loose script; I decided to put it in its own folder).  
 
@@ -311,6 +311,11 @@ Here follows the tree structure:
     └── test_03_discarded_methods/
         └── test-generate_matrix_with_zeroes.R  
 ```
+
+*Note: the folders "outputs" and "Plots" contain files that are not listed in the tree structure (which are the plots and outputs of all the scripts of this project).  
+This choice was liberate, with the aim was to reduce the visual impact of the tree which is already pretty big.  
+So, why not simply put the unlisted files in the .gitignore? Good question.  
+Let's say that this is to carry on the will to mirror the original folder.*
 
 ## Scripts in 02_new_scripts
 

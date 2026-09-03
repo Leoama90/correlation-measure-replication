@@ -327,16 +327,36 @@ cat("\n#----------------------------------------------------------------------#\
 
 # build a simple text panel for the last (6th) cell of the grid
 caption_panel <- textGrob(
-  "This is the confrontation of different pH/Pielou index\nplots with different tolerances",
-  gp = gpar(fontsize = 20)
+  paste(
+    "This shows how the Pielou index varies",
+    "as a function of taxa's pH tolerance:",
+    "",
+    "- low tolerance means taxa live in a",
+    "  narrow ecological niche, so evenness",
+    "  tends to be low",
+    "",
+    "- high tolerance means taxa can live",
+    "  across a wider pH range, so evenness",
+    "  tends to be high",
+    sep = "\n"
+  ),
+  gp = gpar(fontsize = 15),
+  just = "left"
 )
 
+# generate the final plot in the "Plots" folder
 png(
   filename = here("Plots", "ph_pielou_confrontation.png"),
   width = 4500, height = 3000, res = 300
 )
+# this is needed to arrange the 5 plots + the 6th panel with the description, in a grid 3x2
 grid.arrange(
   p, p_01, p_02, p_03, p_04, caption_panel,
   ncol = 2, nrow = 3
 )
+# close the device
 dev.off()
+
+cat("#----------------------------------------------------------------------#")
+cat("\nThe final plot has been saved in the <Plots> folder\n")
+cat("#----------------------------------------------------------------------#")
