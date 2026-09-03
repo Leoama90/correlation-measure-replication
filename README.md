@@ -127,8 +127,7 @@ where D is the dimensionality of the sample (the number of taxa considered) and 
 
 $$H(x) = -\sum_{i=1}^{D} p_i \cdot \ln(p_i)$$
 
-**What it measures, and what it doesn't.**   
-
+**What it measures, and what it doesn't.**  
 Pielou is an *evenness* index, not a *richness* index: it does not tell you how many species are present (that's what D itself, or richness metrics, are for), but rather how uniformly the abundance is spread across the species that are present.  
 Two samples with the same D can have very different Pielou values: if every taxon has roughly the same abundance, P(x) is close to 1; if abundance is dominated by one or a few taxa while the rest are rare, P(x) drops toward 0, even though richness hasn't changed.  
 Implemented in `pielou_ind.R`.
@@ -243,6 +242,7 @@ Here follows the tree structure:
 │   ├── filt_data.R
 │   ├── generate_matrix_factors.R
 │   ├── NorTa_simulation.R
+│   ├── ph_pielou_confrontation.R
 │   ├── pielou_ind.R
 │   └── pseudocount.R
 ├── 03_discarded_methods/
@@ -302,6 +302,7 @@ Here follows the tree structure:
     │   ├── test-filt_data.R
     │   ├── test-generate_matrix_factors.R
     │   ├── test-NorTa_simulation.R
+    │   ├── test-ph_pielou_confrontation.R
     │   └── test-pseudocount.R
     └── test_03_discarded_methods/
         └── test-generate_matrix_with_zeroes.R  
@@ -336,6 +337,8 @@ Here are their explanations:
 
 **Standalone analysis**
 - `compositional_bias_D_P.R`: quantifies L1 vs CLR bias as a function of dimensionality (D) and diversity (P), replicating the paper's Analysis 1 on a reduced grid. Produces `compositional_bias_results.rds` and a heatmap.
+- `ph_pielou_confrontation.R`: quantifies the variation of Pielou index in function of tolerances of the (artificially generated) taxa. Produces a 
+combined plot named `ph_pielou_confrontation.png`.
 
 
 **Demos** (`02_new_scripts/demo/`)  
@@ -343,13 +346,23 @@ Each demo shows one of the functions above in action, with explanatory `cat()` o
 
 ## Versions
 
-Programming language used was R, updated at the version 4.6.1.  
-The Integrated Development Environment (IDE) used to write the scripts was RStudio, updated at its version 2026.08.2 + 200.
+Programming language used was [R](https://www.r-project.org/), updated at the version 4.6.1.  
+The Integrated Development Environment (IDE) used to write the scripts was [RStudio](https://posit.co/products/open-source/rstudio), updated at its version 2026.08.2 + 200.  
+To write and edit the README.md was used [Visual Studio code](https://code.visualstudio.com/), updated at its latest version (1.136.0).
 
 ## Syntax
 About the syntax, the conventions stated in the Tidyverse guide have been followed, they can be found here: 
 
 [Tidyverse_guidelines](https://style.tidyverse.org/syntax.html)
 
-A very useful tool (which has been used intensively) for styling the code syntax is the library ["styler"](https://styler.r-lib.org/).
+A very useful tool (which has been used intensively) for styling the code syntax is the library ["styler"](https://styler.r-lib.org/).  
+This library allows to style the active script in Rstudio, changing indentation and spaces of the code (by default it respects the Tidyverse conventions).  
+Note about the tests: the library used to create the tests is "testthat".  
+The conventions for writing the tests can be found here: 
+
+[testthat_conventions](https://r-pkgs.org/testing-basics.html)
+
+unfortunately, due to a misunderstanding, these conventions were not respected 
+
+
 
