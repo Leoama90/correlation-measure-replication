@@ -20,7 +20,7 @@
 7. [Syntax](#syntax)
 
 
-# Introduction: correlation-measure-replication
+# Introduction
  
 The aim of this repository is to store the code needed to replicate and
 extend the analysis from the paper *"Correlation Measures in Metagenomic
@@ -118,22 +118,28 @@ Since both steps are **monotonic transformations**, rank correlation is preserve
 Implemented in `NorTa_simulation.R` (fixed zero-inflation shared by all taxa) and `data_sim_ph_driven.R` (per-taxon zero-inflation driven by an environmental pH gradient).
 
 ### Pielou diversity index
-Pielou index, usually denoted as P(x) or J', describes how equally distributed the abundances of different species (or taxa) are within a given sample.  
-It is calculated as:
+
+Pielou index, usually denoted as P(x) or J', describes how equally distributed the abundances of different species (or taxa) are within a given sample. It is calculated as:
 
 $$P(x)= \frac{H(x)}{\ln(D)} $$
 
-where D is the dimensionality of the sample and H(x) is the Shannon entropy index:
+where D is the dimensionality of the sample (the number of taxa considered) and H(x) is the Shannon entropy index:
 
 $$H(x) = -\sum_{i=1}^{D} p_i \cdot \ln(p_i)$$
 
+**What it measures, and what it doesn't.**   
+
+Pielou is an *evenness* index, not a *richness* index: it does not tell you how many species are present (that's what D itself, or richness metrics, are for), but rather how uniformly the abundance is spread across the species that are present.  
+Two samples with the same D can have very different Pielou values: if every taxon has roughly the same abundance, P(x) is close to 1; if abundance is dominated by one or a few taxa while the rest are rare, P(x) drops toward 0, even though richness hasn't changed.  
 Implemented in `pielou_ind.R`.
 
 ## Research goal
 
 This project reproduces the paper's core pipeline (filtering, CLR, Pearson correlation) on the same real data (HMP2, subject 69-001), validating it against a value reported in the paper (Pielou index ≈ 0.68).   
 It also fixes a methodological gap found along the way: the standard method to simulate a correlation matrix with controlled sparsity (random values corrected with `nearPD()`) destroys nearly all the imposed zeroes, so this repository builds correlation matrixes that are valid by construction instead (`generate_matrix_factors.R`).  
-Finally, it proposes a new approach to sparsity, the paper's main open problem: instead of a fixed zero-inflation parameter, sparsity here depends on an environmental driver (pH) and each taxon's ecological niche (`data_sim_ph_driven.R`).
+Then, it proposes a new approach to sparsity, the paper's main open problem: instead of a fixed zero-inflation parameter, sparsity here depends on an environmental driver (pH) and each taxon's ecological niche (`data_sim_ph_driven.R`).  
+Finally, the project allows to generate a small family of bar plots that
+allow to observe how the Pielou Index varies in function of the (fake) species ph tolerances.
 
 ## Structure of the repository
 

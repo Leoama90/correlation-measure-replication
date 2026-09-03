@@ -127,7 +127,7 @@ source(
 
 data_sim_ph_driven <- function(n, N, ph, n_groups, ph_min = 5.5, ph_max = 7.5,
                                sigma_min = 0.3, sigma_max = 0.8,
-                               phi_max = 0.9, mu = 20, size = 30,
+                               phi_max = 0.7, mu = 20, size = 30,
                                seed = NULL) {
   # if a seed is provided, fix it for reproducible random numbers
   if (!is.null(seed)) set.seed(seed)

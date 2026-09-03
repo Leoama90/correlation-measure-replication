@@ -36,7 +36,7 @@ source(
 # override readline() so the interactive prompts inside filt_data() and
 # pseudocount() are answered automatically with a valid threshold (0.1),
 # instead of hanging (or looping forever) when tests run non-interactively
-readline <- function(prompt = "") "0.1"
+assign("readline", function(prompt = "") "0.1", envir = .GlobalEnv)
 
 # suppress cat() output so tests stay clean, keep the return value
 quiet_clr_on_data <- function(x) {
@@ -107,3 +107,6 @@ test_that("cor_matrix is symmetric and has 1s on the diagonal", {
   # every variable is perfectly correlated with itself
   expect_true(all(diag(result$cor_matrix) == 1))
 })
+
+# remove the no longer needed readline created in this test 
+rm(readline, envir = .GlobalEnv)
