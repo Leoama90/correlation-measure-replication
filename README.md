@@ -364,9 +364,5 @@ This library allows to style the active script in Rstudio, changing indentation 
 Note about the tests: the library used to create the tests is "testthat".  
 The conventions for writing the tests can be found here: 
 
-[testthat_conventions](https://r-pkgs.org/testing-basics.html)
-
-unfortunately, due to a misunderstanding, these conventions were not respected 
-
-
+[testthat_conventions](https://r-pkgs.org/testing-basics.html).
 
