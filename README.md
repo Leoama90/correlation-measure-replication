@@ -89,9 +89,12 @@ Note: CLR requires $`x_i > 0`$, so zero counts must first be replaced with pseud
 
 One of the main problems of metagenomic data is their sparsity: the dataset has many zeroes.  
 A zero doesn't mean an absence of microorganisms, it means the detection method used to collect the data couldn't find them (their abundance is below the detection limit).  
-For a better understanding of this problem, here is a useful page: [Viable But Nonculturable (VBNC) - Wikipedia](https://en.wikipedia.org/wiki/Viable_but_nonculturable)
+For a better understanding of this problem, here is a useful page: [Viable But Nonculturable (VBNC) - Wikipedia](https://en.wikipedia.org/wiki/Viable_but_nonculturable).  
+Pseudocounts are small positive values used to replace zeros before applying a log-based transformation like CLR  (since `log(0)` is undefined).  
+For reference : [Wikipedia page for Pseudocounts](https://en.wikipedia.org/wiki/Additive_smoothing#Pseudocount).  
+Honorable mention for a better understanding of what a pseudocount is:
+[more intuitive explanation from Reddit](https://www.reddit.com/r/bioinformatics/comments/8acfss/can_someone_give_a_pseudocounts_for_dummies/).
 
-Zeroes are replaced with row-specific pseudocounts before applying CLR (see `pseudocount.R`).
 
 ### Correlation matrixes
 
@@ -130,7 +133,8 @@ $$H(x) = -\sum_{i=1}^{D} p_i \cdot \ln(p_i)$$
 **What it measures, and what it doesn't.**  
 Pielou is an *evenness* index, not a *richness* index: it does not tell you how many species are present (that's what D itself, or richness metrics, are for), but rather how uniformly the abundance is spread across the species that are present.  
 Two samples with the same D can have very different Pielou values: if every taxon has roughly the same abundance, P(x) is close to 1; if abundance is dominated by one or a few taxa while the rest are rare, P(x) drops toward 0, even though richness hasn't changed.  
-Implemented in `pielou_ind.R`.
+Implemented in `pielou_ind.R`.  
+The script `pielou_ind.R` is used in `ph_pielou_confrontation.R` to generate the bar plots.
 
 ## Research goal
 
