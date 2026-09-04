@@ -1,5 +1,5 @@
 # Table of contents
-1. [Introduction: correlation-measure-replication](#introduction-correlation-measure-replication)
+1. [Introduction](#introduction)
 2. [What's the paper about](#whats-the-paper-about)
     1. [Methods](#methods)
     2. [Key findings](#key-findings)
@@ -142,7 +142,7 @@ This project reproduces the paper's core pipeline (filtering, CLR, Pearson corre
 It also fixes a methodological gap found along the way: the standard method to simulate a correlation matrix with controlled sparsity (random values corrected with `nearPD()`) destroys nearly all the imposed zeroes, so this repository builds correlation matrixes that are valid by construction instead (`generate_matrix_factors.R`).  
 Then, it proposes a new approach to sparsity, the paper's main open problem: instead of a fixed zero-inflation parameter, sparsity here depends on an environmental driver (pH) and each taxon's ecological niche (`data_sim_ph_driven.R`).  
 Finally, the project allows to generate a small family of bar plots that
-allow to observe how the Pielou Index varies in function of the (fake) species ph tolerances.
+allow to observe how the Pielou Index varies in function of the (fake) taxa's ph tolerances.
 
 ## Structure of the repository
 
@@ -238,7 +238,8 @@ Here follows the tree structure:
 │   │   ├── demo_filt_data.R
 │   │   ├── demo_generate_matrix_factors.R
 │   │   ├── demo_NorTa_simulation.R
-│   │   └── demo_pielou_ind.R
+│   │   ├── demo_pielou_ind.R
+│   │   └── demo_pseudocount.R
 │   ├── clr_pearson.R
 │   ├── compositional_bias_D_P.R
 │   ├── data_sim_ph_driven.R
@@ -313,7 +314,7 @@ Here follows the tree structure:
 ```
 
 *Note: the folders "outputs" and "Plots" contain files that are not listed in the tree structure (which are the plots and outputs of all the scripts of this project).  
-This choice was liberate, with the aim was to reduce the visual impact of the tree which is already pretty big.  
+This choice was deliberate, the aim was to reduce the visual impact of the tree structure (which is already pretty big).  
 So, why not simply put the unlisted files in the .gitignore? Good question.  
 Let's say that this is to carry on the will to mirror the original folder.*
 
