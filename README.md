@@ -133,8 +133,15 @@ $$H(x) = -\sum_{i=1}^{D} p_i \cdot \ln(p_i)$$
 **What it measures, and what it doesn't.**  
 Pielou is an *evenness* index, not a *richness* index: it does not tell you how many species are present (that's what D itself, or richness metrics, are for), but rather how uniformly the abundance is spread across the species that are present.  
 Two samples with the same D can have very different Pielou values: if every taxon has roughly the same abundance, P(x) is close to 1; if abundance is dominated by one or a few taxa while the rest are rare, P(x) drops toward 0, even though richness hasn't changed.  
+
+**Within dataset diversity**  
+Starting from the Pielou index definition, the paper defines the within dataset diversity as the mean of the Pielou indexes computed from the datasets:
+
+$$\underline P_ = \frac{1}{N} \sum_{i=1}^{N} P_i(x)$$
+
 Implemented in `pielou_ind.R`.  
 The script `pielou_ind.R` is used in `ph_pielou_confrontation.R` to generate the bar plots.
+
 
 ## Research goal
 
@@ -247,7 +254,7 @@ Here follows the tree structure:
 │   ├── filt_data.R
 │   ├── generate_matrix_factors.R
 │   ├── NorTa_simulation.R
-│   ├── ph_pielou_confrontation.R
+│   ├── ph_dataset_diversity_confrontation.R
 │   ├── pielou_ind.R
 │   └── pseudocount.R
 ├── 03_discarded_methods/
@@ -347,7 +354,7 @@ Here are their explanations:
 
 **Standalone analysis**
 - `compositional_bias_D_P.R`: quantifies L1 vs CLR bias as a function of dimensionality (D) and diversity (P), replicating the paper's Analysis 1 on a reduced grid. Produces `compositional_bias_results.rds` and a heatmap.
-- `ph_pielou_confrontation.R`: quantifies the variation of Pielou index in function of tolerances of the (artificially generated) taxa. Produces a 
+- `ph_dataset_diversity_confrontation.R`: quantifies the variation of dataset diversity (defined in the paper as the mean of Pielou indexes of the samples) in function of tolerances of the (artificially generated) taxa. Produces a 
 combined plot named `ph_pielou_confrontation.png`.
 
 

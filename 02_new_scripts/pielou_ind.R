@@ -20,6 +20,12 @@
 #   - a single numeric value: the Pielou index averaged across samples
 #     (or, if per_sample = TRUE, a numeric vector with one value per
 #     sample)
+#
+# Note:
+#   Despite the name of this script, the function can compute
+#   EITHER the mean Pielou index across samples (using per_sample = FALSE,
+#   the default) OR the per-sample Pielou index vector (using
+#   per_sample = TRUE). The name was chosen to keep it short and simple.
 
 # here: builds file paths relative to the project root
 # https://cran.r-project.org/web/packages/here/index.html
@@ -27,6 +33,11 @@ library(here)
 
 
 #' Compute the average Pielou evenness index (within-dataset diversity P)
+#' 
+#' Naming note: despite the name of this function, it can compute EITHER
+#' the mean Pielou index across samples (using per_sample = FALSE, the
+#' default) OR the per-sample Pielou index vector (using per_sample =
+#' TRUE). The name was chosen to keep it short and simple.
 #'
 #' For each sample (row), computes the Shannon entropy of its relative
 #' abundances, normalized by ln(D), then averages this value across all

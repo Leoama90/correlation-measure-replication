@@ -1,0 +1,324 @@
+---
+title: "notebook_exam_statistical_data_analysis"
+format: html
+editor: visual
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+# load important libraries 
+library(here)
+library(tidyverse)
+
+```
+
+# Introduction
+
+The aim of this notebook is to explain the scripts found in the folder `02_new_script2/`.\
+Scripts can be divided into three categories:
+
+- **base functions**: small scripts that generate simple functions (a wise man once said: "if you have to do it more than once, instead write a script!").\
+  The base functions are:
+
+  - `datasummary.R`
+
+  - `filt_data.R`
+
+  - `pseudocount.R`
+
+  - `generate_matrix_factors.R`
+
+  - `pielou_ind.R`
+
+- **orchestrators**: these are slightly more complex scripts than the base functions; their job is to use base functions to generate something more complex.\
+  The orchestrators are:
+
+  - `clr_pearson.R`
+
+  - `NorTa_simulation.R`
+
+  - `data_sim_ph_driven.R`
+
+- **standalone analysis**: using the previous functions, these scripts generate the analyses that are important for this project. The standalone analyses are:
+
+  - `compositional_bias_D_P.R`
+
+  - `ph_pielou_confrontation.R`
+
+Let's start by looking at the **base functions** scripts:
+
+## Base functions
+
+<clever text here>
+
+### datasummary.R
+
+*What it does:* defines the function `datasum()`, which prints a compact summary of any numeric dataset (tibble, data.frame, list, or matrix).\
+The summary includes:
+
+- dimensions (rows, columns);
+- basic statistics: minimum, maximum, mean, median, standard deviation, skewness;
+- zero structure: total number of zeroes and their percentage;
+- for square numeric matrices only: determinant and minimum eigenvalue (useful to check properties of correlation/covariance matrices).
+
+*Why is it here:* during the project I felt the need for a quick, consistent way to inspect matrices and tables (a wise man once said: "if you have to do it more than once, instead write a script about it").\
+`datasum()` centralises these checks in a single reusable function, which is particularly handy for compositional and metagenomic data, where zeroes and matrix properties matter for statistical analyses.
+
+*How it works:* the function `datasum()`:  
+
+- checks if `x` is a square numeric matrix and, if so and if there are no `NA`/infinite values, computes the determinant and minimum eigenvalue; 
+
+- coerces the input to a tibble (converting lists to data frames if needed);  
+
+- computes min, max, mean, median, standard deviation, and skewness (third standardized moment);  
+
+- counts zeroes and their percentage;  
+
+- prints all these quantities with a short label derived from the object name;  
+
+- returns them invisibly as a named list, so they can be reused programmatically.
+
+```{r}
+# brings the datasummary script into scope
+source(
+  list.files(
+    path = here(),
+    pattern = "^datasummary\\.R$",
+    full.names = TRUE,
+    recursive = TRUE
+  )
+)
+
+# generate a matrix that will be used as example
+example_matrix <- matrix(c(22, 3, 5, 7, 9, 10, 0, 0, 1),
+                         nrow = 3,
+                         ncol = 3,
+                         dimnames = list(NULL, c("A", "B", "C")))
+
+# print the matrix for confrontation
+print(example_matrix)
+
+# apply the datasum function from the scoped script
+datasum(example_matrix)
+
+```
+
+### filt_data.R
+
+*What it does:* filters a metagenomic OTU count table (samples × OTUs) by prevalence and abundance, and shows a before/after summary using `datasum()`.
+
+*Why is it here:* metagenomic data (like HMP2 used for this project) are compositional and very sparse.\
+Before any downstream analysis, it is important to remove rare and low-abundance OTUs that mostly add noise and can distort statistical results.
+
+*How it works:* the script defines the function `filt_data()`, which:
+
+- prints a summary of the data **before** filtering using `datasum()`;
+- asks the user for a **prevalence threshold** (a number between 0 and 1), i.e. the minimum fraction of samples in which an OTU must be present (non-zero) to be kept.\
+  If the user enters an invalid value, the script prints a friendly warning and asks again;
+- keeps only OTUs whose prevalence is at least this threshold;
+- then applies an **abundance filter**: among the remaining OTUs, it keeps only those whose median non-zero count is at least `abundance_threshold` (default = 5);
+- prints a summary of the data **after** filtering and reports the thresholds used;
+- returns (invisibly) a list containing:
+  - `samp_filt`: the filtered OTU table;
+  - `taxa_filt` (if a taxonomy table called `taxa` exists in the environment): the taxonomy table restricted to the surviving OTUs.
+
+The function can be used both interactively (default, with prompt) and non-interactively (passing `prevalence_threshold` as an argument), which is useful for sensitivity analyses over a range of thresholds.
+
+```{r}
+# brings the filt_data script into scope
+source(
+  list.files(
+    path = here(),
+    pattern = "^filt_data\\.R$",
+    full.names = TRUE,
+    recursive = TRUE
+  )
+)
+
+
+```
+
+### pseudocount.R
+
+*What it does:*
+
+*Why is it here:*
+
+*How it works:*
+
+```{r}
+# brings the pseudocount script into scope
+source(
+  list.files(
+    path = here(),
+    pattern = "^pseudocount\\.R$",
+    full.names = TRUE,
+    recursive = TRUE
+  )
+)
+
+
+```
+
+### generate_matrix_factors.R
+
+*What it does:*
+
+*Why is it here:*
+
+*How it works:*
+
+```{r}
+# brings the generate_matrix_factors script into scope
+source(
+  list.files(
+    path = here(),
+    pattern = "^generate_matrix_factors\\.R$",
+    full.names = TRUE,
+    recursive = TRUE
+  )
+)
+
+```
+
+### pielou_ind.R
+
+*What it does:*
+
+*Why is it here:*
+
+*How it works:*
+
+```{r}
+# brings the pielou_ind script into scope
+source(
+  list.files(
+    path = here(),
+    pattern = "^pielou_ind\\.R$",
+    full.names = TRUE,
+    recursive = TRUE
+  )
+)
+
+
+```
+
+## Orchestrators
+
+<different clever text here>
+
+### clr_pearson.R
+
+*What it does:*
+
+*Why is it here:*
+
+*How it works:*
+
+```{r}
+# brings the clr_pearson script into scope
+source(
+  list.files(
+    path = here(),
+    pattern = "^clr_pearson\\.R$",
+    full.names = TRUE,
+    recursive = TRUE
+  )
+)
+
+
+```
+
+### NorTa_simulation.R
+
+*What it does:*
+
+*Why is it here:*
+
+*How it works:*
+
+```{r}
+# brings the NorTa_simulation script into scope
+source(
+  list.files(
+    path = here(),
+    pattern = "^NorTa_simulation\\.R$",
+    full.names = TRUE,
+    recursive = TRUE
+  )
+)
+
+
+```
+
+### data_sim_ph_driven.R
+
+*What it does:*
+
+*Why is it here:*
+
+*How it works:*
+
+```{r}
+# brings the data_sim_ph_driven script into scope
+source(
+  list.files(
+    path = here(),
+    pattern = "^data_sim_ph_driven\\.R$",
+    full.names = TRUE,
+    recursive = TRUE
+  )
+)
+
+
+```
+
+## Standalone analysis
+
+Scripts in this section have the purpose of generating statistical analyses, each one evaluating a different issue that arose in the original paper.
+
+### compositional_bias_D_P.R
+
+*What it does:*
+
+*Why is it here:*
+
+*How it works:*
+
+```{r}
+# brings the compositional_bias_D_P script into scope
+source(
+  list.files(
+    path = here(),
+    pattern = "^compositional_bias_D_P\\.R$",
+    full.names = TRUE,
+    recursive = TRUE
+  )
+)
+
+
+```
+
+### ph_pielou_confrontation.R
+
+*What it does:*
+
+*Why is it here:*
+
+*How it works:*
+
+```{r}
+# brings the ph_pielou_confrontation script into scope
+source(
+  list.files(
+    path = here(),
+    pattern = "^ph_dataset_diversity_confrontation\\.R$",
+    full.names = TRUE,
+    recursive = TRUE
+  )
+)
+
+
+```

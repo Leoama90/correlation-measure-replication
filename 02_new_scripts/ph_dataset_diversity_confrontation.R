@@ -9,7 +9,7 @@
 #   All other parameters (n, N, n_groups, phi_max, ph_min, ph_max, seed)
 #   are kept fixed across the five scenarios, isolating pH tolerance
 #   as the only variable of interest.
-#   For each scenario, computes the Pielou index at every pH value, to
+#   For each scenario, computes the dataset diversity at every pH value, to
 #   study how community evenness responds to an environmental gradient
 #   as a function of how ecologically specialized (narrow tolerance) or
 #   generalist (wide tolerance) the simulated taxa are.
@@ -20,7 +20,7 @@
 #
 # Outputs:
 #   - five bar charts printed to screen (one per tolerance scenario),
-#     each showing Pielou index vs pH
+#     each showing dataset diversity vs pH
 #   - Plots/ph_pielou_confrontation.png: the five charts combined into
 #     a single 3x2 figure, with a caption panel in the last cell
 
@@ -83,7 +83,7 @@ for (i in seq_along(ph_values)) {
     phi_max = 0.9, seed = 42
   )
 
-  # compute its Pielou index and store it alongside the pH value
+  # compute its dataset diversity and store it alongside the pH value
   pielou_list[[i]] <- data.frame(
     ph = ph_sim,
     pielou = round(pielou_ind(sim$sim_counts), 2)
@@ -93,12 +93,12 @@ for (i in seq_along(ph_values)) {
 # combine all rows into a single dataframe
 pielou_data <- bind_rows(pielou_list)
 
-# plot Pielou index as a function of pH, as a bar chart
+# plot dataset diversity as a function of pH, as a bar chart
 p <- ggplot(pielou_data, aes(x = ph, y = pielou)) +
   geom_col(fill = "steelblue") +
-  ggtitle("Pielou Index variation with pH (tolerance 0.1 - 0.2)") +
+  ggtitle("Within dataset diversity variation with pH (tolerance 0.1 - 0.2)") +
   xlab("pH") +
-  ylab("Pielou Index") +
+  ylab("dataset diversity") +
   coord_cartesian(xlim = c(3.0, 11.0), ylim = c(0, 1)) +
   theme_minimal() +
   theme(
@@ -110,7 +110,7 @@ print(p)
 
 # prints on screen the calculated Pielou values along with their pH
 cat("\n#----------------------------------------------------------------------#\n")
-cat("\npH and Pielou index calculated are:\n")
+cat("\npH and within dataset diversity calculated are:\n")
 print(pielou_data)
 # cat("\nColumn number of pielou_data_01 is:", ncol(pielou_data), "\n")
 # cat("\nRow number of pielou_data_01 is:", nrow(pielou_data), "\n")
@@ -133,7 +133,7 @@ for (i in seq_along(ph_values)) {
     n_groups = 10, seed = 42
   )
 
-  # compute its Pielou index and store it alongside the pH value
+  # compute its dataset diversity and store it alongside the pH value
   pielou_list_01[[i]] <- data.frame(
     ph = ph_sim,
     pielou_01 = round(pielou_ind(sim_01$sim_counts), 2)
@@ -143,12 +143,12 @@ for (i in seq_along(ph_values)) {
 # combine all rows into a single dataframe
 pielou_data_01 <- bind_rows(pielou_list_01)
 
-# plot Pielou index as a function of pH, as a bar chart
+# plot dataset diversity as a function of pH, as a bar chart
 p_01 <- ggplot(pielou_data_01, aes(x = ph, y = pielou_01)) +
   geom_col(fill = "steelblue") +
-  ggtitle("Pielou Index variation with pH (tolerance 0.3 - 0.4)") +
+  ggtitle("Within dataset diversity variation with pH (tolerance 0.3 - 0.4)") +
   xlab("pH") +
-  ylab("Pielou Index") +
+  ylab("dataset diversity") +
   coord_cartesian(xlim = c(3.0, 11.0), ylim = c(0, 1)) +
   theme_minimal() +
   theme(
@@ -161,7 +161,7 @@ print(p_01)
 
 # prints on screen the calculated Pielou values along with their pH
 cat("\n#----------------------------------------------------------------------#\n")
-cat("\npH and Pielou index calculated are:\n")
+cat("\npH and dataset diversity calculated are:\n")
 print(pielou_data_01)
 # cat("\nColumn number of pielou_data_01 is:", ncol(pielou_data_01), "\n")
 # cat("\nRow number of pielou_data_01 is:", nrow(pielou_data_01), "\n")
@@ -184,7 +184,7 @@ for (i in seq_along(ph_values)) {
     n_groups = 10, seed = 42
   )
   
-  # compute its Pielou index and store it alongside the pH value
+  # compute its dataset diversity and store it alongside the pH value
   pielou_list_02[[i]] <- data.frame(
     ph = ph_sim,
     pielou_02 = round(pielou_ind(sim_02$sim_counts), 2)
@@ -194,12 +194,12 @@ for (i in seq_along(ph_values)) {
 # combine all rows into a single dataframe
 pielou_data_02 <- bind_rows(pielou_list_02)
 
-# plot Pielou index as a function of pH, as a bar chart
+# plot dataset diversity as a function of pH, as a bar chart
 p_02 <- ggplot(pielou_data_02, aes(x = ph, y = pielou_02)) +
   geom_col(fill = "steelblue") +
-  ggtitle("Pielou Index variation with pH (tolerance 0.5 - 0.6)") +
+  ggtitle("Within dataset diversity variation with pH (tolerance 0.5 - 0.6)") +
   xlab("pH") +
-  ylab("Pielou Index") +
+  ylab("dataset diversity") +
   coord_cartesian(xlim = c(3.0, 11.0), ylim = c(0, 1)) +
   theme_minimal() +
   theme(
@@ -212,7 +212,7 @@ print(p_02)
 
 # prints on screen the calculated Pielou values along with their pH
 cat("\n#----------------------------------------------------------------------#\n")
-cat("\npH and Pielou index calculated are:\n")
+cat("\npH and dataset diversity calculated are:\n")
 print(pielou_data_02)
 # cat("\nColumn number of pielou_data_02 is:", ncol(pielou_data_02), "\n")
 # cat("\nRow number of pielou_data_02 is:", nrow(pielou_data_02), "\n")
@@ -235,7 +235,7 @@ for (i in seq_along(ph_values)) {
     n_groups = 10, seed = 42
   )
   
-  # compute its Pielou index and store it alongside the pH value
+  # compute its dataset diversity and store it alongside the pH value
   pielou_list_03[[i]] <- data.frame(
     ph = ph_sim,
     pielou_03 = round(pielou_ind(sim_03$sim_counts), 2)
@@ -245,12 +245,12 @@ for (i in seq_along(ph_values)) {
 # combine all rows into a single dataframe
 pielou_data_03 <- bind_rows(pielou_list_03)
 
-# plot Pielou index as a function of pH, as a bar chart
+# plot dataset diversity as a function of pH, as a bar chart
 p_03 <- ggplot(pielou_data_03, aes(x = ph, y = pielou_03)) +
   geom_col(fill = "steelblue") +
-  ggtitle("Pielou Index variation with pH (tolerance 0.7 - 0.8)") +
+  ggtitle("Within dataset diversity variation with pH (tolerance 0.7 - 0.8)") +
   xlab("pH") +
-  ylab("Pielou Index") +
+  ylab("dataset diversity") +
   coord_cartesian(xlim = c(3.0, 11.0), ylim = c(0, 1)) +
   theme_minimal() +
   theme(
@@ -263,7 +263,7 @@ print(p_03)
 
 # prints on screen the calculated Pielou values along with their pH
 cat("\n#----------------------------------------------------------------------#\n")
-cat("\npH and Pielou index calculated are:\n")
+cat("\npH and dataset diversity calculated are:\n")
 print(pielou_data_03)
 # cat("\nColumn number of pielou_data_03 is:", ncol(pielou_data_03), "\n")
 # cat("\nRow number of pielou_data_03 is:", nrow(pielou_data_03), "\n")
@@ -286,7 +286,7 @@ for (i in seq_along(ph_values)) {
     n_groups = 10, seed = 42
   )
   
-  # compute its Pielou index and store it alongside the pH value
+  # compute its dataset diversity and store it alongside the pH value
   pielou_list_04[[i]] <- data.frame(
     ph = ph_sim,
     pielou_04 = round(pielou_ind(sim_04$sim_counts), 2)
@@ -296,12 +296,12 @@ for (i in seq_along(ph_values)) {
 # combine all rows into a single dataframe
 pielou_data_04 <- bind_rows(pielou_list_04)
 
-# plot Pielou index as a function of pH, as a bar chart
+# plot dataset diversity as a function of pH, as a bar chart
 p_04 <- ggplot(pielou_data_04, aes(x = ph, y = pielou_04)) +
   geom_col(fill = "steelblue") +
-  ggtitle("Pielou Index variation with pH (tolerance 0.9 - 1.0)") +
+  ggtitle("Within dataset diversity variation with pH (tolerance 0.9 - 1.0)") +
   xlab("pH") +
-  ylab("Pielou Index") +
+  ylab("dataset diversity") +
   coord_cartesian(xlim = c(3.0, 11.0), ylim = c(0, 1)) +
   theme_minimal() +
   theme(
@@ -314,7 +314,7 @@ print(p_04)
 
 # prints on screen the calculated Pielou values along with their pH
 cat("\n#----------------------------------------------------------------------#\n")
-cat("\npH and Pielou index calculated are:\n")
+cat("\npH and dataset diversity calculated are:\n")
 print(pielou_data_04)
 # cat("\nColumn number of pielou_data_04 is:", ncol(pielou_data_04), "\n")
 # cat("\nRow number of pielou_data_04 is:", nrow(pielou_data_04), "\n")
@@ -328,16 +328,16 @@ cat("\n#----------------------------------------------------------------------#\
 # build a simple text panel for the last (6th) cell of the grid
 caption_panel <- textGrob(
   paste(
-    "This shows how the Pielou index varies",
+    "This shows how the dataset diversity varies",
     "as a function of taxa's pH tolerance:",
     "",
     "- low tolerance means taxa live in a",
-    "  narrow ecological niche, so evenness",
-    "  tends to be low",
+    "  narrow ecological niche, so species",
+    "  diversity tends to be low",
     "",
     "- high tolerance means taxa can live",
-    "  across a wider pH range, so evenness",
-    "  tends to be high",
+    "  across a wider pH range, so species",
+    "  diversity tends to be high",
     sep = "\n"
   ),
   gp = gpar(fontsize = 15),
@@ -346,7 +346,7 @@ caption_panel <- textGrob(
 
 # generate the final plot in the "Plots" folder
 png(
-  filename = here("Plots", "ph_pielou_confrontation.png"),
+  filename = here("Plots", "ph_dataset diversity_confrontation.png"),
   width = 4500, height = 3000, res = 300
 )
 
