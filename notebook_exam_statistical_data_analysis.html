@@ -73,6 +73,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="notebook_exam_statistical_data_analysis_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="notebook_exam_statistical_data_analysis_files/libs/bootstrap/bootstrap-efbb37e9afcc02144ebbc7afd12a776f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -103,7 +132,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="introduction" class="level1">
 <h1>Introduction</h1>
-<p>The aim of this notebook is to explain the scripts found in the folder <code>02_new_script2/</code>.<br>
+<p>The aim of this notebook is to explain the scripts found in the folder <code>02_new_script/</code>.<br>
 Scripts can be divided into three categories:</p>
 <ul>
 <li><p><strong>base functions</strong>: small scripts that generate simple functions (a wise man once said: “if you have to do it more than once, instead write a script!”).<br>
@@ -166,12 +195,13 @@ The summary includes:</p>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co"># generate a matrix that will be used as example</span></span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>example_matrix <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">22</span>, <span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">7</span>, <span class="dv">9</span>, <span class="dv">10</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>),</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>                         <span class="at">nrow =</span> <span class="dv">3</span>,</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>                         <span class="at">ncol =</span> <span class="dv">3</span>,</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>                         <span class="at">dimnames =</span> <span class="fu">list</span>(<span class="cn">NULL</span>, <span class="fu">c</span>(<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>)))</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co"># print the matrix for confrontation</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(example_matrix)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">nrow =</span> <span class="dv">3</span>,</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">ncol =</span> <span class="dv">3</span>,</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">dimnames =</span> <span class="fu">list</span>(<span class="cn">NULL</span>, <span class="fu">c</span>(<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>))</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co"># print the matrix for confrontation</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(example_matrix)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      A  B C
 [1,] 22  7 0
@@ -218,50 +248,158 @@ If the user enters an invalid value, the script prints a friendly warning and as
 </ul></li>
 </ul>
 <p>The function can be used both interactively (default, with prompt) and non-interactively (passing <code>prevalence_threshold</code> as an argument), which is useful for sensitivity analyses over a range of thresholds.</p>
+<p><em>Note:</em> due to the interactive nature of filt_data.R script, the following data has been generated with the script <code>for_notebook.R</code> and then loaded here.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># brings the filt_data script into scope</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">path =</span> <span class="fu">here</span>(),</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">"^filt_data</span><span class="sc">\\</span><span class="st">.R$"</span>,</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">recursive =</span> <span class="cn">TRUE</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+#-----------------------------------------------------------------------#</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+The following data were generated witht the script 'data_sim_ph_driven.R':</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     OTU_1 OTU_2 OTU_3 OTU_4 OTU_5 OTU_6 OTU_7 OTU_8 OTU_9
+[1,]    17     0    23     0     0     0     0     9    23
+[2,]     8     0     0     0     0     0     0    25     0
+[3,]    30     0     0     0     0     0     0    21     0
+[4,]    16     0     0     0    23     0    23    19     0
+[5,]     0     0    13    23     0    23     0    15    13
+[6,]     0     0     0     0    29     0    29    16     0
+[7,]     0    18     0     0     0     0     0    28     0
+[8,]     0     0     0    18     0    18     0    22     0</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+These were the infiltered data.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Now we will apply the filt_data() function with a threshold of 0.3, obtaining the
+    folowwing data:</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     OTU_1 OTU_8
+[1,]    17     9
+[2,]     8    25
+[3,]    30    21
+[4,]    16    19
+[5,]     0    15
+[6,]     0    16
+[7,]     0    28
+[8,]     0    22</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+#-----------------------------------------------------------------------#</code></pre>
+</div>
 </div>
 </section>
 <section id="pseudocount.r" class="level3">
 <h3 class="anchored" data-anchor-id="pseudocount.r">pseudocount.R</h3>
-<p><em>What it does:</em></p>
-<p><em>Why is it here:</em></p>
+<p><em>What it does:</em> defines the function <code>pseudocount()</code>, which converts count data to row-wise proportions and replaces zeroes with row-specific pseudocounts computed from a user-defined threshold.</p>
+<p><em>Why is it here:</em> before applying the Centered Log-Ratio (CLR) transformation, it is necessary to substitute the zeroes in the dataset with pseudocounts (log(0) gives −inf as a result, <em>kinda</em> difficult to use for statistical analysis).</p>
 <p><em>How it works:</em></p>
+<ul>
+<li><p>the script first asks the user for a number between 0 and 1 (if the user does not provide a valid one, the script keeps asking for it), that will be used as threshold;</p></li>
+<li><p>it computes the detection limit as 1 / (the sum of the values in the row);</p></li>
+<li><p>the pseudocount is computed as the detection limit times the threshold provided by the user;</p></li>
+<li><p>it converts every row’s counts into proportions;</p></li>
+<li><p>it substitutes every zero found in a row with the pseudocount for that row.</p></li>
+</ul>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># brings the pseudocount script into scope</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">path =</span> <span class="fu">here</span>(),</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">"^pseudocount</span><span class="sc">\\</span><span class="st">.R$"</span>,</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">recursive =</span> <span class="cn">TRUE</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+#-----------------------------------------------------------------------#</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Now we will print the example_matrix that we used before:</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      A  B C
+[1,] 22  7 0
+[2,]  3  9 0
+[3,]  5 10 1</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+After using the pseudocount() function with 0.5 as threshold,
+    the following matrix is obtained:</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>          A      B      C
+[1,] 0.7590 0.2500 0.3120
+[2,] 0.2410 0.7500 0.6250
+[3,] 0.0172 0.0417 0.0625</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+#-----------------------------------------------------------------------#</code></pre>
+</div>
 </div>
 </section>
 <section id="generate_matrix_factors.r" class="level3">
 <h3 class="anchored" data-anchor-id="generate_matrix_factors.r">generate_matrix_factors.R</h3>
-<p><em>What it does:</em></p>
-<p><em>Why is it here:</em></p>
-<p><em>How it works:</em></p>
+<p><em>What it does:</em> defines the function <code>generate_matrix_factors()</code>, which builds a valid correlation matrix (symmetric, unit diagonal, positive semi-definite) with an exact, controlled zero pattern, by splitting taxa into <code>n_groups</code> latent groups.</p>
+<p><em>Why is it here:</em> in the data_sim_ph_driven.R script is used the function “rmvnorm” (“Random MultiVariateNORMal”) which allows to generate random multivariate normal distributions.<br>
+One of the input for this function is the correlation matrix.<br>
+Since I wanted to control as as possible the output of the data generation, I opted to write this script that allowed me to have a randomly generated correlation matrix.</p>
+<p><em>How it works:</em> <code>generate_matrix_factors(n, n_groups, ...)</code>:</p>
+<ul>
+<li>randomly assigns each of the <code>n</code> taxa to one of <code>n_groups</code> groups;</li>
+<li>builds a loadings matrix <span class="math inline">\(\Lambda\)</span> where each taxon has a random value only in the column of its own group;</li>
+<li>computes <span class="math inline">\(\Sigma = \Lambda\Lambda'\)</span> (always PSD, whatever <span class="math inline">\(\Lambda\)</span> is);</li>
+<li>rescales it to a proper correlation matrix (unit diagonal);</li>
+<li>returns the matrix, the group assignment, and the exact number of zero pairs (taxa in different groups end up with correlation exactly 0).</li>
+</ul>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># brings the generate_matrix_factors script into scope</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">path =</span> <span class="fu">here</span>(),</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">"^generate_matrix_factors</span><span class="sc">\\</span><span class="st">.R$"</span>,</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">recursive =</span> <span class="cn">TRUE</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># brings the generate_matrix_factors script into scope</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">path =</span> <span class="fu">here</span>(),</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">"^generate_matrix_factors</span><span class="sc">\\</span><span class="st">.R$"</span>,</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">recursive =</span> <span class="cn">TRUE</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="co"># generate a demostrative matrix with n = 10, n_groups = 2, seed = 42</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>corr_mat_notebook <span class="ot">&lt;-</span> <span class="fu">generate_matrix_factors</span>(<span class="at">n =</span> <span class="dv">10</span>,<span class="at">n_groups =</span> <span class="dv">3</span>, <span class="at">seed =</span> <span class="dv">42</span>)</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a><span class="co"># print the actual matrix</span></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(corr_mat_notebook<span class="sc">$</span>mat)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+ [1,]    1    0    1    0    0   -1    0    0    1     0
+ [2,]    0    1    0    1    1    0    0    0    0     0
+ [3,]    1    0    1    0    0   -1    0    0    1     0
+ [4,]    0    1    0    1    1    0    0    0    0     0
+ [5,]    0    1    0    1    1    0    0    0    0     0
+ [6,]   -1    0   -1    0    0    1    0    0   -1     0
+ [7,]    0    0    0    0    0    0    1    1    0     1
+ [8,]    0    0    0    0    0    0    1    1    0     1
+ [9,]    1    0    1    0    0   -1    0    0    1     0
+[10,]    0    0    0    0    0    0    1    1    0     1</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># print a correlation matrix with no OTU correlated</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>not_corr_mat_notebook <span class="ot">&lt;-</span> <span class="fu">generate_matrix_factors</span>(<span class="at">n =</span> <span class="dv">10</span>,<span class="at">n_groups =</span> <span class="dv">10</span>, <span class="at">seed =</span> <span class="dv">42</span>)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="co"># print the non-correlation matrix</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(not_corr_mat_notebook<span class="sc">$</span>mat)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+ [1,]    1    0    0    0    0    0    0    0    0     0
+ [2,]    0    1    0    0    0    0    0    0    0     0
+ [3,]    0    0    1    0    0    0    0    0    0     0
+ [4,]    0    0    0    1    0    0    0    0    0     0
+ [5,]    0    0    0    0    1    0    0    0    0     0
+ [6,]    0    0    0    0    0    1    0    0    0     0
+ [7,]    0    0    0    0    0    0    1    0    0     0
+ [8,]    0    0    0    0    0    0    0    1    0     0
+ [9,]    0    0    0    0    0    0    0    0    1     0
+[10,]    0    0    0    0    0    0    0    0    0     1</code></pre>
+</div>
 </div>
 </section>
 <section id="pielou_ind.r" class="level3">
@@ -270,15 +408,15 @@ If the user enters an invalid value, the script prints a friendly warning and as
 <p><em>Why is it here:</em></p>
 <p><em>How it works:</em></p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># brings the pielou_ind script into scope</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">path =</span> <span class="fu">here</span>(),</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">"^pielou_ind</span><span class="sc">\\</span><span class="st">.R$"</span>,</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">recursive =</span> <span class="cn">TRUE</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># brings the pielou_ind script into scope</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">path =</span> <span class="fu">here</span>(),</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">"^pielou_ind</span><span class="sc">\\</span><span class="st">.R$"</span>,</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">recursive =</span> <span class="cn">TRUE</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 </section>
@@ -291,15 +429,15 @@ If the user enters an invalid value, the script prints a friendly warning and as
 <p><em>Why is it here:</em></p>
 <p><em>How it works:</em></p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># brings the clr_pearson script into scope</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">path =</span> <span class="fu">here</span>(),</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">"^clr_pearson</span><span class="sc">\\</span><span class="st">.R$"</span>,</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">recursive =</span> <span class="cn">TRUE</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># brings the clr_pearson script into scope</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">path =</span> <span class="fu">here</span>(),</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">"^clr_pearson</span><span class="sc">\\</span><span class="st">.R$"</span>,</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">recursive =</span> <span class="cn">TRUE</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="norta_simulation.r" class="level3">
@@ -308,15 +446,15 @@ If the user enters an invalid value, the script prints a friendly warning and as
 <p><em>Why is it here:</em></p>
 <p><em>How it works:</em></p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># brings the NorTa_simulation script into scope</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">path =</span> <span class="fu">here</span>(),</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">"^NorTa_simulation</span><span class="sc">\\</span><span class="st">.R$"</span>,</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">recursive =</span> <span class="cn">TRUE</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># brings the NorTa_simulation script into scope</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">path =</span> <span class="fu">here</span>(),</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">"^NorTa_simulation</span><span class="sc">\\</span><span class="st">.R$"</span>,</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">recursive =</span> <span class="cn">TRUE</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Caricamento del pacchetto richiesto: stats4</code></pre>
 </div>
@@ -331,15 +469,15 @@ If the user enters an invalid value, the script prints a friendly warning and as
 <p><em>Why is it here:</em></p>
 <p><em>How it works:</em></p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># brings the data_sim_ph_driven script into scope</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">path =</span> <span class="fu">here</span>(),</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">"^data_sim_ph_driven</span><span class="sc">\\</span><span class="st">.R$"</span>,</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">recursive =</span> <span class="cn">TRUE</span></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># brings the data_sim_ph_driven script into scope</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">path =</span> <span class="fu">here</span>(),</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">"^data_sim_ph_driven</span><span class="sc">\\</span><span class="st">.R$"</span>,</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">recursive =</span> <span class="cn">TRUE</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 </section>
@@ -352,15 +490,15 @@ If the user enters an invalid value, the script prints a friendly warning and as
 <p><em>Why is it here:</em></p>
 <p><em>How it works:</em></p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># brings the compositional_bias_D_P script into scope</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">path =</span> <span class="fu">here</span>(),</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">"^compositional_bias_D_P</span><span class="sc">\\</span><span class="st">.R$"</span>,</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">recursive =</span> <span class="cn">TRUE</span></span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># brings the compositional_bias_D_P script into scope</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">path =</span> <span class="fu">here</span>(),</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">"^compositional_bias_D_P</span><span class="sc">\\</span><span class="st">.R$"</span>,</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">recursive =</span> <span class="cn">TRUE</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Running compositional bias analysis over a 15 x 15 grid (D x P), N = 5000 samples per dataset.
 This replicates a reduced version of Section 3.1 in Fuschi et al. (2025).
@@ -390,19 +528,19 @@ Results saved to outputs/compositional_bias_results.rds ( 225 rows ).</code></pr
 </section>
 <section id="ph_pielou_confrontation.r" class="level3">
 <h3 class="anchored" data-anchor-id="ph_pielou_confrontation.r">ph_pielou_confrontation.R</h3>
-<p><em>What it does:</em></p>
-<p><em>Why is it here:</em></p>
-<p><em>How it works:</em></p>
+<p><em>What it does:</em> uses <code>data_sim_ph_driven()</code> across a pH gradient, at five different levels of pH tolerance, and tracks how the Pielou index changes, showing that narrow-tolerance (“specialist”) communities produce noisier, lower evenness, while wide-tolerance (“generalist”) communities stay stable and high.</p>
+<p><em>Why is it here:</em> This is the final exame of this project. I needed something that could test how data_sim_ph_driven.R could have been employed (in this case to simulate how generalists vs specialists bacteria behave at the same pH).</p>
+<p><em>How it works:</em> loops over a pH gradient for five tolerance scenarios, computes <code>pielou_ind()</code> at each point, plots the five curves, and combines them into a single figure.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># brings the ph_pielou_confrontation script into scope</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">path =</span> <span class="fu">here</span>(),</span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">"^ph_dataset_diversity_confrontation</span><span class="sc">\\</span><span class="st">.R$"</span>,</span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">recursive =</span> <span class="cn">TRUE</span></span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># brings the ph_pielou_confrontation script into scope</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">path =</span> <span class="fu">here</span>(),</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">"^ph_dataset_diversity_confrontation</span><span class="sc">\\</span><span class="st">.R$"</span>,</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">recursive =</span> <span class="cn">TRUE</span></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>
 Caricamento pacchetto: 'gridExtra'</code></pre>

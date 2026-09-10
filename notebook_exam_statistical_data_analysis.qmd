@@ -8,15 +8,14 @@ editor: visual
 #| label: setup
 #| include: false
 
-# load important libraries 
+# load important libraries
 library(here)
 library(tidyverse)
-
 ```
 
 # Introduction
 
-The aim of this notebook is to explain the scripts found in the folder `02_new_script2/`.\
+The aim of this notebook is to explain the scripts found in the folder `02_new_script/`.\
 Scripts can be divided into three categories:
 
 - **base functions**: small scripts that generate simple functions (a wise man once said: "if you have to do it more than once, instead write a script!").\
@@ -66,17 +65,17 @@ The summary includes:
 *Why is it here:* during the project I felt the need for a quick, consistent way to inspect matrices and tables (a wise man once said: "if you have to do it more than once, instead write a script about it").\
 `datasum()` centralises these checks in a single reusable function, which is particularly handy for compositional and metagenomic data, where zeroes and matrix properties matter for statistical analyses.
 
-*How it works:* the function `datasum()`:  
+*How it works:* the function `datasum()`:
 
-- checks if `x` is a square numeric matrix and, if so and if there are no `NA`/infinite values, computes the determinant and minimum eigenvalue; 
+- checks if `x` is a square numeric matrix and, if so and if there are no `NA`/infinite values, computes the determinant and minimum eigenvalue;
 
-- coerces the input to a tibble (converting lists to data frames if needed);  
+- coerces the input to a tibble (converting lists to data frames if needed);
 
-- computes min, max, mean, median, standard deviation, and skewness (third standardized moment);  
+- computes min, max, mean, median, standard deviation, and skewness (third standardized moment);
 
-- counts zeroes and their percentage;  
+- counts zeroes and their percentage;
 
-- prints all these quantities with a short label derived from the object name;  
+- prints all these quantities with a short label derived from the object name;
 
 - returns them invisibly as a named list, so they can be reused programmatically.
 
@@ -93,16 +92,16 @@ source(
 
 # generate a matrix that will be used as example
 example_matrix <- matrix(c(22, 3, 5, 7, 9, 10, 0, 0, 1),
-                         nrow = 3,
-                         ncol = 3,
-                         dimnames = list(NULL, c("A", "B", "C")))
+  nrow = 3,
+  ncol = 3,
+  dimnames = list(NULL, c("A", "B", "C"))
+)
 
 # print the matrix for confrontation
 print(example_matrix)
 
 # apply the datasum function from the scoped script
 datasum(example_matrix)
-
 ```
 
 ### filt_data.R
@@ -126,7 +125,11 @@ Before any downstream analysis, it is important to remove rare and low-abundance
 
 The function can be used both interactively (default, with prompt) and non-interactively (passing `prevalence_threshold` as an argument), which is useful for sensitivity analyses over a range of thresholds.
 
+*Note:* due to the interactive nature of filt_data.R script, the following data has been generated with the script `for_notebook.R` and then loaded here.
+
 ```{r}
+#| echo: false
+
 # brings the filt_data script into scope
 source(
   list.files(
@@ -138,37 +141,120 @@ source(
 )
 
 
-```
+# -------- show non-filtered data --------
 
-### pseudocount.R
+# spacing bar
+cat("\n#-----------------------------------------------------------------------#\n")
 
-*What it does:*
+# tell the user that the following are non-filtered data
+cat("\nThe following data were generated witht the script 'data_sim_ph_driven.R':\n")
 
-*Why is it here:*
-
-*How it works:*
-
-```{r}
-# brings the pseudocount script into scope
-source(
+# brings into scope pre-generated data
+not_filt_data <- readRDS(
   list.files(
     path = here(),
-    pattern = "^pseudocount\\.R$",
+    pattern = "^data_for_notebook_count\\.rds$",
     full.names = TRUE,
     recursive = TRUE
   )
 )
 
 
+# print the pre-generated data
+print(not_filt_data)
+
+
+# -------- show filtered data --------
+
+# brings into scope pre-generated and then filtered data
+filtered_data <- readRDS(
+  list.files(
+    path = here(),
+    pattern = "^filtered_data_for_notebook_count\\.rds$",
+    full.names = TRUE,
+    recursive = TRUE
+  )
+)
+
+cat("\nThese were the unfiltered data.\n")
+cat("\nNow we will apply the filt_data() function with a threshold of 0.3, obtaining the
+    folowwing data:\n")
+
+# print the generated and filtered data
+print(filtered_data)
+
+# spacing bar
+cat("\n#-----------------------------------------------------------------------#\n")
+
+
+```
+
+### pseudocount.R
+
+*What it does:* defines the function `pseudocount()`, which converts count data to row-wise proportions and replaces zeroes with row-specific pseudocounts computed from a user-defined threshold.
+
+*Why is it here:* before applying the Centered Log-Ratio (CLR) transformation, it is necessary to substitute the zeroes in the dataset with pseudocounts (log(0) gives −inf as a result, *kinda* difficult to use for statistical analysis).
+
+*How it works:*
+
+- the script first asks the user for a number between 0 and 1 (if the user does not provide a valid one, the script keeps asking for it), that will be used as threshold;
+
+- it computes the detection limit as 1 / (the sum of the values in the row);
+
+- the pseudocount is computed as the detection limit times the threshold provided by the user;
+
+- it converts every row's counts into proportions;
+
+- it substitutes every zero found in a row with the pseudocount for that row.
+
+```{r}
+#| echo: false
+
+# spacing bar
+cat("\n#-----------------------------------------------------------------------#\n")
+
+# tell the user that the example matrix used before will be printed again
+cat("\nNow we will print the example_matrix that we used before:\n")
+
+# print the example matrix
+print(example_matrix)
+
+# tell the user that the matrix passed thorugh the pseudocount() function will be printed
+cat("\nAfter using the pseudocount() function with 0.5 as threshold,
+    the following matrix is obtained:\n")
+
+# this matrix was computed outside the notebook and then hardcoded here to avoid
+# to launch the pseudcocunt.R script that might have caused the chunk to freeze
+pseudocounted_matrix <- matrix(
+  c(0.759, 0.241, 0.0172, 0.25, 0.75, 0.0417, 0.312, 0.625, 0.0625),
+  nrow = 3, ncol = 3,
+  dimnames = list(NULL, c("A", "B", "C"))
+)
+# print the pseudocounted matrix
+print(pseudocounted_matrix)
+
+# spacing bar
+cat("\n#-----------------------------------------------------------------------#\n")
 ```
 
 ### generate_matrix_factors.R
 
-*What it does:*
+*What it does:* defines the function `generate_matrix_factors()`, which builds a valid correlation matrix (symmetric, unit diagonal, positive semi-definite) with an exact, controlled zero pattern, by splitting taxa into `n_groups` latent groups.
 
-*Why is it here:*
+*Why is it here:* in the data_sim_ph_driven.R script is used the function "rmvnorm"
+("Random MultiVariateNORMal") which allows to generate random multivariate normal
+distributions.  
+One of the input for this function is the correlation matrix.  
+Since I wanted to control as as possible the output of the data generation, I opted 
+to write this script that allowed me to have a randomly generated correlation matrix.  
 
-*How it works:*
+*How it works:* `generate_matrix_factors(n, n_groups, ...)`:
+
+- randomly assigns each of the `n` taxa to one of `n_groups` groups;
+- builds a loadings matrix $\Lambda$ where each taxon has a random value only in the column of its own group;
+- computes $\Sigma = \Lambda\Lambda'$ (always PSD, whatever $\Lambda$ is);
+- rescales it to a proper correlation matrix (unit diagonal);
+- returns the matrix, the group assignment, and the exact number of zero pairs (taxa in different groups end up with correlation exactly 0).
 
 ```{r}
 # brings the generate_matrix_factors script into scope
@@ -180,6 +266,19 @@ source(
     recursive = TRUE
   )
 )
+
+# generate a demostrative matrix with n = 10, n_groups = 2, seed = 42
+corr_mat_notebook <- generate_matrix_factors(n = 10, n_groups = 3, seed = 42)
+
+# print the actual matrix
+print(corr_mat_notebook$mat)
+
+# print a correlation matrix with no OTU correlated
+not_corr_mat_notebook <- generate_matrix_factors(n = 10,n_groups = 10, seed = 42)
+
+# print the non-correlation matrix
+print(not_corr_mat_notebook$mat)
+
 
 ```
 
@@ -201,8 +300,6 @@ source(
     recursive = TRUE
   )
 )
-
-
 ```
 
 ## Orchestrators
@@ -227,8 +324,6 @@ source(
     recursive = TRUE
   )
 )
-
-
 ```
 
 ### NorTa_simulation.R
@@ -249,8 +344,6 @@ source(
     recursive = TRUE
   )
 )
-
-
 ```
 
 ### data_sim_ph_driven.R
@@ -271,8 +364,6 @@ source(
     recursive = TRUE
   )
 )
-
-
 ```
 
 ## Standalone analysis
@@ -297,17 +388,17 @@ source(
     recursive = TRUE
   )
 )
-
-
 ```
 
 ### ph_pielou_confrontation.R
 
-*What it does:*
+*What it does:* uses `data_sim_ph_driven()` across a pH gradient, at five different levels of pH tolerance, and tracks how the Pielou index changes, showing that narrow-tolerance ("specialist") communities produce noisier, lower evenness, while wide-tolerance ("generalist") communities stay stable and high.
 
-*Why is it here:*
+*Why is it here:* This is the final exame of this project. I needed something that could
+test how data_sim_ph_driven.R could have been employed (in this case to simulate how
+generalists vs specialists bacteria behave at the same pH).
 
-*How it works:*
+*How it works:* loops over a pH gradient for five tolerance scenarios, computes `pielou_ind()` at each point, plots the five curves, and combines them into a single figure.
 
 ```{r}
 # brings the ph_pielou_confrontation script into scope
@@ -319,6 +410,4 @@ source(
     recursive = TRUE
   )
 )
-
-
 ```

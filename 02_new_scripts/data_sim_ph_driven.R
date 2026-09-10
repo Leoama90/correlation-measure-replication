@@ -21,12 +21,12 @@
 #
 # Inputs:
 #   - No external files required. All inputs are defined inline:
-#     * n <- 40
-#     * N <- 200
+#     * n_taxa <- 40
+#     * N_sample <- 200
 #     * ph <- 6.5
 #
 # Outputs:
-#   - a list with: mat (the n x n correlation matrix used for the
+#   - a list with: mat (the n_taxa x n_taxa correlation matrix used for the
 #     underlying correlated structure, from generate_matrix_factors()),
 #     groups (the latent group assignment from generate_matrix_factors()),
 #     ph_optima (each taxon's optimal pH), phi_per_taxon (each taxon's
@@ -79,8 +79,8 @@ source(
 #' simulated via the NorTA approach (as in NorTa_simulation.R), but with
 #' a per-taxon zero-inflation vector instead of a single shared phi.
 #'
-#' @param n integer. Number of simulated taxa.
-#' @param N integer. Number of samples to simulate.
+#' @param n_taxa integer. Number of simulated taxa.
+#' @param N_sample integer. Number of samples to simulate.
 #' @param ph numeric. The environmental pH of the simulated community
 #'   (a single value, shared by all samples in this dataset).
 #' @param n_groups integer. Number of latent correlation groups, passed
@@ -115,39 +115,37 @@ source(
 #'
 #' @examples
 #' # a community well within the typical colon pH range
-#' data_sim_ph_driven(n = 40, N = 200, ph = 6.5, n_groups = 5, seed = 42)
+#' data_sim_ph_driven(n_taxa = 40, N_sample = 200, ph = 6.5, n_groups = 5, seed = 42)
 #'
 #' # a more acidic environment: taxa with high-pH optima become sparser
-#' data_sim_ph_driven(n = 40, N = 200, ph = 5.6, n_groups = 5, seed = 42)
+#' data_sim_ph_driven(n_taxa = 40, N_sample = 200, ph = 5.6, n_groups = 5, seed = 42)
 #'
 #' @export
 
 
 # -------- body of the function --------
 
-data_sim_ph_driven <- function(n, N, ph, n_groups, ph_min = 5.5, ph_max = 7.5,
+data_sim_ph_driven <- function(n_taxa, N_sample, ph, n_groups, ph_min = 5.5, ph_max = 7.5,
                                sigma_min = 0.3, sigma_max = 0.8,
                                phi_max = 0.7, mu = 20, size = 30,
                                seed = NULL) {
   # if a seed is provided, fix it for reproducible random numbers
   if (!is.null(seed)) set.seed(seed)
-
-
-  # -------- correlation structure (reused from generate_matrix_factors) --------
-
-  factors_result <- generate_matrix_factors(n = n, n_groups = n_groups, seed = seed)
-  R_true <- factors_result$mat
   
-  # groups <- factors_result$groups <----- I don't remember why I put it, so 
-  # instead of deleting it, I preferred to keep it here as a comment
-
-
+  
+  # -------- correlation structure (reused from generate_matrix_factors) --------
+  
+  factors_result <- generate_matrix_factors(n = n_taxa, n_groups = n_groups, seed = seed)
+  R_true <- factors_result$mat
+  groups <- factors_result$groups
+  
+  
   # -------- per-taxon pH niche and resulting zero-inflation --------
-
+  
   # each taxon gets a random optimal pH and a random tolerance (niche width)
-  ph_optima <- runif(n, min = ph_min, max = ph_max)
-  ph_tolerance <- runif(n, min = sigma_min, max = sigma_max)
-
+  ph_optima <- runif(n_taxa, min = ph_min, max = ph_max)
+  ph_tolerance <- runif(n_taxa, min = sigma_min, max = sigma_max)
+  
   # zero-inflation probability per taxon: 0 when the community pH exactly
   # matches the taxon's optimum, approaching phi_max as the mismatch grows,
   # following a Gaussian suitability curve (same functional form used for
@@ -155,55 +153,56 @@ data_sim_ph_driven <- function(n, N, ph, n_groups, ph_min = 5.5, ph_max = 7.5,
   # instead of correlation)
   suitability <- exp(-(ph - ph_optima)^2 / (2 * ph_tolerance^2))
   phi_per_taxon <- phi_max * (1 - suitability)
-
-
+  
+  
   # -------- NorTA step 1: simulate correlated normal data --------
-
-  sim_data <- mvtnorm::rmvnorm(n = N, mean = rep(0, n), sigma = R_true)
-
-
+  
+  sim_data <- mvtnorm::rmvnorm(n = N_sample, mean = rep(0, n_taxa), sigma = R_true)
+  
+  
   # -------- NorTA step 2: map normal data to sparse ZINB counts --------
-
+  
   # convert each standard normal value to its rank/percentile (uniform
   # on [0,1]) via the normal CDF; this step preserves the correlation
   # structure, since pnorm() is a monotonic transformation
   sim_unif <- pnorm(sim_data)
-
-  # expand phi_per_taxon (length n, one value per taxon/column) to match
-  # sim_unif's column-major flattened layout: sim_unif is N x n, so its
-  # flattened form lists all N values of column 1, then all N values of
-  # column 2, and so on. rep(phi_per_taxon, each = N) produces exactly
-  # that pattern - each taxon's phi repeated N times in a row - so every
+  
+  # expand phi_per_taxon (length n_taxa, one value per taxon/column) to
+  # match sim_unif's column-major flattened layout: sim_unif is
+  # N_sample x n_taxa, so its flattened form lists all N_sample values
+  # of column 1, then all N_sample values of column 2, and so on.
+  # rep(phi_per_taxon, each = N_sample) produces exactly that pattern -
+  # each taxon's phi repeated N_sample times in a row - so every
   # element gets the zero-inflation probability of its own taxon/column,
   # regardless of which sample/row it belongs to
-  phi_expanded <- rep(phi_per_taxon, each = N)
-
+  phi_expanded <- rep(phi_per_taxon, each = N_sample)
+  
   # apply the ZINB quantile function with a per-element (per-taxon)
   # zero-inflation probability, instead of the single shared phi used
   # in NorTa_simulation.R
   sim_counts <- VGAM::qzinegbin(sim_unif, size = size, munb = mu, pstr0 = phi_expanded)
-
+  
   # restore the original matrix shape (qzinegbin flattens its input)
   dim(sim_counts) <- dim(sim_data)
-
-
+  
+  
   # -------- assign OTU names --------
-
+  
   # zero-padded names (OTU_01, OTU_02, ...), width chosen automatically
-  # based on n, so column order stays numerically correct even when
+  # based on n_taxa, so column order stays numerically correct even when
   # sorted alphabetically (e.g. "OTU_02" before "OTU_10")
-  otu_names <- sprintf(paste0("OTU_%0", nchar(n), "d"), seq_len(n))
+  otu_names <- sprintf(paste0("OTU_%0", nchar(n_taxa), "d"), seq_len(n_taxa))
   colnames(sim_data) <- otu_names
   colnames(sim_counts) <- otu_names
-
-
+  
+  
   # -------- summarize achieved sparsity --------
-
+  
   total_zero_rate <- mean(sim_counts == 0)
-
-
+  
+  
   # -------- return the invisible values --------
-
+  
   invisible(list(
     mat = R_true,
     groups = groups,

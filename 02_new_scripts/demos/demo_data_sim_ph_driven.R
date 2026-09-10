@@ -55,8 +55,8 @@ cat("\n#------------------------------------------------------------------#\n")
 
 cat("\nHere is a brief explanation of the parameters needed to run the data simulation.\n
       The first parameters we need are:\n
-            - n = number of simulated taxa (this will give the number of columns);\n
-            - N = number of samples to simulate (this will give the number of rows);\n
+            - n_taxa = number of simulated taxa (this will give the number of columns);\n
+            - N_sample = number of samples to simulate (this will give the number of rows);\n
             - ph = the pH value shared by all the taxa;\n
             - n_groups = number of groups which contain correlated taxa.\n")
 cat("\nThere are other parameters with default values, which are:\n
@@ -80,20 +80,20 @@ cat("\nThere are other parameters with default values, which are:\n
 
 cat("\n#------------------------------------------------------------------#\n")
 cat("\nFor a simple data generation we will use:
-            - n = 20,
-            - N = 50,
+            - n_taxa = 20,
+            - N_sample = 50,
             - ph = 6.5,
             - n_groups = 5,
             - seed = 42.\n")
 
 # generate the demonstrative data using the values mentioned above
-demo_data <- data_sim_ph_driven(n = 20, N = 50, ph = 6.5, n_groups = 5, seed = 42)
+demo_data <- data_sim_ph_driven(n_taxa = 20, N_sample = 50, ph = 6.5, n_groups = 5, seed = 42)
 
 cat(
   "\nDataset generated.
 Dimensions of sim_counts:\n",
-  "- number of rows:", nrow(demo_data$sim_counts), "\n",
-  "- number of columns:", ncol(demo_data$sim_counts), "\n",
+  "- number of rows (N_sample):", nrow(demo_data$sim_counts), "\n",
+  "- number of columns (n_taxa):", ncol(demo_data$sim_counts), "\n",
   "\n"
 )
 

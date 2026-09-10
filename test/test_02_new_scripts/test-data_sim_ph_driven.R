@@ -37,7 +37,7 @@ source(
 # -------- test 1: correlation matrix is valid --------
 
 test_that("mat is symmetric, has a unit diagonal, and is positive semi-definite", {
-  result <- data_sim_ph_driven(n = 20, N = 100, ph = 6.5, n_groups = 4, seed = 42)
+  result <- data_sim_ph_driven(n_taxa = 20, N_sample = 100, ph = 6.5, n_groups = 4, seed = 42)
   mat <- result$mat
   
   expect_equal(mat, t(mat), tolerance = 1e-8)
@@ -51,7 +51,7 @@ test_that("mat is symmetric, has a unit diagonal, and is positive semi-definite"
 # -------- test 2: a well-matched taxon gets near-zero zero-inflation --------
 
 test_that("a taxon whose optimum equals the community pH gets phi close to 0", {
-  result <- data_sim_ph_driven(n = 20, N = 100, ph = 6.5, n_groups = 4, seed = 42)
+  result <- data_sim_ph_driven(n_taxa = 20, N_sample = 100, ph = 6.5, n_groups = 4, seed = 42)
   
   # force the first taxon's optimum to exactly match the community pH,
   # and recompute its zero-inflation probability the same way the
@@ -84,7 +84,7 @@ test_that("a taxon whose optimum is very far from the community pH approaches ph
 # -------- test 4: OTU names are assigned correctly, with zero-padding --------
 
 test_that("sim_data and sim_counts get zero-padded OTU column names", {
-  result <- data_sim_ph_driven(n = 15, N = 50, ph = 6.5, n_groups = 3, seed = 42)
+  result <- data_sim_ph_driven(n_taxa = 15, N_sample = 50, ph = 6.5, n_groups = 3, seed = 42)
   
   expect_equal(colnames(result$sim_data), sprintf("OTU_%02d", 1:15))
   expect_equal(colnames(result$sim_counts), sprintf("OTU_%02d", 1:15))
@@ -94,7 +94,7 @@ test_that("sim_data and sim_counts get zero-padded OTU column names", {
 # -------- test 5: total_zero_rate matches sim_counts --------
 
 test_that("total_zero_rate matches the actual fraction of zeroes in sim_counts", {
-  result <- data_sim_ph_driven(n = 20, N = 100, ph = 6.5, n_groups = 4, seed = 42)
+  result <- data_sim_ph_driven(n_taxa = 20, N_sample = 100, ph = 6.5, n_groups = 4, seed = 42)
   
   expect_equal(result$total_zero_rate, mean(result$sim_counts == 0))
 })
@@ -103,8 +103,8 @@ test_that("total_zero_rate matches the actual fraction of zeroes in sim_counts",
 # -------- test 6: seed makes the output reproducible --------
 
 test_that("using the same seed produces identical output", {
-  result_a <- data_sim_ph_driven(n = 15, N = 50, ph = 6.0, n_groups = 3, seed = 123)
-  result_b <- data_sim_ph_driven(n = 15, N = 50, ph = 6.0, n_groups = 3, seed = 123)
+  result_a <- data_sim_ph_driven(n_taxa = 15, N_sample = 50, ph = 6.0, n_groups = 3, seed = 123)
+  result_b <- data_sim_ph_driven(n_taxa = 15, N_sample = 50, ph = 6.0, n_groups = 3, seed = 123)
   
   expect_equal(result_a$sim_counts, result_b$sim_counts)
   expect_equal(result_a$ph_optima, result_b$ph_optima)
@@ -114,7 +114,7 @@ test_that("using the same seed produces identical output", {
 # -------- test 7: output dimensions match n and N --------
 
 test_that("sim_data and sim_counts have the expected dimensions", {
-  result <- data_sim_ph_driven(n = 12, N = 80, ph = 6.5, n_groups = 3, seed = 42)
+  result <- data_sim_ph_driven(n_taxa = 12, N_sample = 80, ph = 6.5, n_groups = 3, seed = 42)
   
   expect_equal(dim(result$sim_data), c(80, 12))
   expect_equal(dim(result$sim_counts), c(80, 12))
