@@ -71,10 +71,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="notebook_exam_statistical_data_analysis_files/libs/quarto-html/tippy.umd.min.js"></script>
 <script src="notebook_exam_statistical_data_analysis_files/libs/quarto-html/anchor.min.js"></script>
 <link href="notebook_exam_statistical_data_analysis_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="notebook_exam_statistical_data_analysis_files/libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="notebook_exam_statistical_data_analysis_files/libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="notebook_exam_statistical_data_analysis_files/libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="notebook_exam_statistical_data_analysis_files/libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="notebook_exam_statistical_data_analysis_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="notebook_exam_statistical_data_analysis_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="notebook_exam_statistical_data_analysis_files/libs/bootstrap/bootstrap-215b371544c282197b31c8aa00ce3677.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="notebook_exam_statistical_data_analysis_files/libs/bootstrap/bootstrap-8fd0a66505689c34dc5b7c06239434da.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="notebook_exam_statistical_data_analysis_files/libs/bootstrap/bootstrap-dark-65a9ced8f92a8dd03898fd51d5651c73.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="notebook_exam_statistical_data_analysis_files/libs/bootstrap/bootstrap-8fd0a66505689c34dc5b7c06239434da.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
@@ -108,11 +112,174 @@ window.Quarto = {
 
 </head>
 
-<body class="fullcontent quarto-light">
+<body class="fullcontent quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
 
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
 
 <main class="content" id="quarto-document-content">
+
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
@@ -133,8 +300,8 @@ window.Quarto = {
 </header>
 
 
-<section id="introduction" class="level1">
-<h1>Introduction</h1>
+<section id="introduction" class="level1" style="color:orange">
+<h1 style="color:orange">Introduction</h1>
 <p>The aim of this notebook is to explain the scripts found in the folder <code>02_new_script/</code>.<br>
 Scripts can be divided into three categories:</p>
 <ul>
@@ -162,7 +329,7 @@ The orchestrators are:</p>
 </ul>
 <p>Let’s start by looking at the <strong>base functions</strong> scripts:</p>
 <section id="base-functions" class="level2">
-<h2 class="anchored" data-anchor-id="base-functions">Base functions</h2>
+<h2 class="anchored" data-anchor-id="base-functions"><span style="color:green">Base functions</span></h2>
 <p>Base functions are the smallest building blocks of this project: each one does a single, well-defined job (summarizing data, filtering, replacing zeroes, generating a correlation matrix, or computing diversity), and gets reused by the more complex scripts (orchestrators and standalone analysis) described later.</p>
 <section id="datasummary.r" class="level3">
 <h3 class="anchored" data-anchor-id="datasummary.r">datasummary.R</h3>
@@ -468,13 +635,14 @@ we obtain again the within dataset diversity parameter:</code></pre>
 </section>
 </section>
 <section id="orchestrators" class="level2">
-<h2 class="anchored" data-anchor-id="orchestrators">Orchestrators</h2>
+<h2 class="anchored" data-anchor-id="orchestrators"><span style="color:orange">Orchestrators</span></h2>
 <p>Orchestrators are the next level of base functions: instead of doing a single small job, they combine several base functions together into a full step of the analysis (filtering + pseudocount + CLR + correlation, or building a correlation matrix + simulating data from it).</p>
 <section id="clr_pearson.r" class="level3">
 <h3 class="anchored" data-anchor-id="clr_pearson.r">clr_pearson.R</h3>
-<p><span style="color:green"><em>What it does:</em></span></p>
+<p><span style="color:green"><em>What it does:</em></span> defines the function <code>clr_on_data()</code>, which runs the full pipeline on an OTU table: - filters it (<code>filt_data()</code>), - replaces zeroes with pseudocounts (<code>pseudocount()</code>), - applies the CLR transformation, - computes the OTU x OTU Pearson correlation matrix.</p>
 <p><span style="color:green"><em>Why is it here:</em></span></p>
-<p><span style="color:green"><em>How it works:</em></span></p>
+<p><span style="color:green"><em>How it works:</em></span> <code>clr_on_data(x)</code> runs the four steps above in sequence and returns (invisibly) a list with <code>samp_filt</code> (the filtered table), <code>y_clr</code> (the CLR-transformed table), and <code>cor_matrix</code> (the resulting correlation matrix).</p>
+<p><span style="color:red"><em>Note:</em> due to the interactive nature of the clr_pearson.R script (the script uses both filt_data() and pseudcount() functions which they both ask for a user input) , the following data has been generated with the script <code>for_notebook.R</code>, then loaded here.</span></p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># brings the clr_pearson script into scope</span></span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(</span>
@@ -529,7 +697,7 @@ we obtain again the within dataset diversity parameter:</code></pre>
 </section>
 </section>
 <section id="standalone-analysis" class="level2">
-<h2 class="anchored" data-anchor-id="standalone-analysis">Standalone analysis</h2>
+<h2 class="anchored" data-anchor-id="standalone-analysis"><span style="color:orange">Standalone analysis</span></h2>
 <p>The final level of complexity of all the project.<br>
 The scripts presented in this section perform the main statistical analyses of the project.<br>
 Each analysis is designed to investigate a specific issue identified in the original paper and to assess its potential implications for the results.</p>
@@ -783,6 +951,19 @@ The final plot has been saved in the &lt;Plots&gt; folder
 <!-- /main column -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
     const icon = "";
     const anchorJS = new window.AnchorJS();
     anchorJS.options = {

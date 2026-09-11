@@ -1,6 +1,9 @@
 ---
 title: "notebook_exam_statistical_data_analysis"
 format: html
+theme:
+  light: flatly
+  dark: darkly
 editor: visual
 ---
 
@@ -13,7 +16,7 @@ library(here)
 library(tidyverse)
 ```
 
-# Introduction
+# Introduction{style="color:orange"}
 
 The aim of this notebook is to explain the scripts found in the folder `02_new_script/`.\
 Scripts can be divided into three categories:
@@ -48,7 +51,7 @@ Scripts can be divided into three categories:
 
 Let's start by looking at the **base functions** scripts:
 
-## Base functions
+## [Base functions]{style="color:green"}
 
 Base functions are the smallest building blocks of this project: each one does a single, well-defined job (summarizing data, filtering, replacing zeroes, generating a correlation matrix, or computing diversity), and gets reused by the more complex scripts (orchestrators and standalone analysis) described later.
 
@@ -225,7 +228,7 @@ cat("\nAfter using the pseudocount() function with 0.5 as threshold,
     the following matrix is obtained:\n")
 
 # this matrix was computed outside the notebook and then hardcoded here to avoid
-# to launch the pseudcocunt.R script that might have caused the chunk to freeze
+# to launch the pseudcocunt.R script that might cause the chunk to freeze
 pseudocounted_matrix <- matrix(
   c(0.759, 0.241, 0.0172, 0.25, 0.75, 0.0417, 0.312, 0.625, 0.0625),
   nrow = 3, ncol = 3,
@@ -358,19 +361,27 @@ print(round(mean(pi_ind_vect), 2))
 cat("\n#-----------------------------------------------------------------------#\n")
 ```
 
-## Orchestrators
+## [Orchestrators]{style="color:orange"}
 
 Orchestrators are the next level of base functions: instead of doing a single small job, they combine several base functions together into a full step of the analysis (filtering + pseudocount + CLR + correlation, or building a correlation matrix + simulating data from it).
 
 ### clr_pearson.R
 
-[*What it does:*]{style="color:green"}
+[*What it does:*]{style="color:green"} defines the function `clr_on_data()`, which runs the full pipeline on an OTU table: 
+  - filters it (`filt_data()`), 
+  - replaces zeroes with pseudocounts (`pseudocount()`), 
+  - applies the CLR transformation, 
+  - computes the OTU x OTU Pearson correlation matrix.
 
-[*Why is it here:*]{style="color:green"}
 
-[*How it works:*]{style="color:green"}
+[*Why is it here:*]{style="color:green"} 
+
+[*How it works:*]{style="color:green"} `clr_on_data(x)` runs the four steps above in sequence and returns (invisibly) a list with `samp_filt` (the filtered table), `y_clr` (the CLR-transformed table), and `cor_matrix` (the resulting correlation matrix).
+
+[*Note:* due to the interactive nature of the clr_pearson.R script (the script uses both filt_data() and pseudcount() functions which they both ask for a user input) , the following data has been generated with the script `for_notebook.R`, then loaded here.]{style="color:red"}
 
 ```{r}
+
 # brings the clr_pearson script into scope
 source(
   list.files(
@@ -380,6 +391,7 @@ source(
     recursive = TRUE
   )
 )
+
 ```
 
 ### NorTa_simulation.R
@@ -422,7 +434,7 @@ source(
 )
 ```
 
-## Standalone analysis
+## [Standalone analysis]{style="color:orange"}
 
 The final level of complexity of all the project.  
 The scripts presented in this section perform the main statistical analyses of the project.   
