@@ -364,7 +364,7 @@ Each demo shows one of the functions above in action, with explanatory `cat()` o
 ## Versions
 
 Programming language used was [R](https://www.r-project.org/), updated at the version 4.6.1.  
-The Integrated Development Environment (IDE) used to write the scripts was [RStudio](https://posit.co/products/open-source/rstudio), updated at its version 2026.08.2 + 200.  
+The Integrated Development Environment (IDE) used to write the scripts was [RStudio](https://posit.co/products/open-source/rstudio), updated at its version 2026.09.0 + 174.  
 To write and edit the README.md was used [Visual Studio code](https://code.visualstudio.com/), updated at its latest version (1.136.0).
 
 ## Syntax

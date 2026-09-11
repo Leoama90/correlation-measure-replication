@@ -31,80 +31,80 @@
 # https://cran.r-project.org/web/packages/here/index.html
 library(here)
 
-# # brings into scope the data_sim_ph_driven.R (the only one dummy data generator)
-# source(
-#   list.files(
-#     path = here(),
-#     pattern = "^data_sim_ph_driven\\.R$",
-#     full.names = TRUE,
-#     recursive = TRUE
-#   )
-# )
-# 
-# 
-# # -------- filt_data.R chunk --------
-# 
-# # brings into scope the filt_data.R script
-# source(
-#   list.files(
-#     path = here(),
-#     pattern = "^filt_data\\.R$",
-#     full.names = TRUE,
-#     recursive = TRUE
-#   )
-# )
-# 
-# # generate data for the filt_data.R explanation code chunk for the notebook
-# data_for_notebook <- data_sim_ph_driven(n_taxa = 9, 
-#                                         N_sample = 8, 
-#                                         n_groups = 3, 
-#                                         ph = 5.6, 
-#                                         sigma_min = 0.01, 
-#                                         sigma_max = 0.2, 
-#                                         seed = 42)
-# 
-# # take the simulated data from the list and put it into another variable
-# data_for_notebook_count <- data_for_notebook$sim_counts
-# 
-# # show the generated data
-# print(data_for_notebook_count)
-# 
-# # separation line
-# cat("\n#---------------------------------------------------------------------------#")
-# 
-# # show and impervious message to the user to remember that this is the filt_data chunk
-# cat("\nTHIS IS FOR THE FILT_DATA CHUNK! READ MEEEEEEE!\n")
-# 
-# # apply the filt_data() function
-# filtered_data_for_notebook_count <- filt_data(data_for_notebook_count)
-# 
-# # show the newly filtered data
-# print(filtered_data_for_notebook_count)
-# 
-# # show and impervious message to the user to remember that this is the end of the filt_data chunk
-# cat("\nTHIS. IS. THE. END. OF THE FILT_DATA CHUNK!!\n")
-# 
-# # write Data in .rds file format
-# saveRDS(as.matrix(data_for_notebook_count), here("notebook_exam_statistical_data_analysis_files", "data_for_notebook_count.rds"))
-# saveRDS(as.matrix(filtered_data_for_notebook_count$samp_filt), here("notebook_exam_statistical_data_analysis_files", "filtered_data_for_notebook_count.rds"))
-# # separation line
-# cat("\n#---------------------------------------------------------------------------#")
-
-
-# -------- generate_matrix_factor.R code chunk --------
-
-# brings into scope the filt_data.R script
+# brings into scope the data_sim_ph_driven.R (the only one dummy data generator)
 source(
   list.files(
     path = here(),
-    pattern = "^generate_matrix_factors\\.R$",
+    pattern = "^data_sim_ph_driven\\.R$",
     full.names = TRUE,
     recursive = TRUE
   )
 )
 
-# generate a dummy matrix with n = 10, n_groups = 2, seed = 42
-corr_mat_notebook <- generate_matrix_factors(10, 3, seed = 42)
 
-# print the actual matrix
-print(corr_mat_notebook$mat)
+# -------- filt_data.R chunk --------
+
+# brings into scope the filt_data.R script
+source(
+  list.files(
+    path = here(),
+    pattern = "^filt_data\\.R$",
+    full.names = TRUE,
+    recursive = TRUE
+  )
+)
+
+# generate data for the filt_data.R explanation code chunk for the notebook
+data_for_notebook <- data_sim_ph_driven(n_taxa = 9,
+                                        N_sample = 8,
+                                        n_groups = 3,
+                                        ph = 5.6,
+                                        sigma_min = 0.01,
+                                        sigma_max = 0.2,
+                                        seed = 42)
+
+# take the simulated data from the list and put it into another variable
+data_for_notebook_count <- data_for_notebook$sim_counts
+
+# show the generated data
+print(data_for_notebook_count)
+
+# separation line
+cat("\n#---------------------------------------------------------------------------#")
+
+# show and impervious message to the user to remember that this is the filt_data chunk
+cat("\nTHIS IS FOR THE FILT_DATA CHUNK! READ MEEEEEEE!\n")
+
+# apply the filt_data() function
+filtered_data_for_notebook_count <- filt_data(data_for_notebook_count)
+
+# show the newly filtered data
+print(filtered_data_for_notebook_count)
+
+# show and impervious message to the user to remember that this is the end of the filt_data chunk
+cat("\nTHIS. IS. THE. END. OF THE FILT_DATA CHUNK!!\n")
+
+# write Data in .rds file format
+saveRDS(as.matrix(data_for_notebook_count), here("notebook_exam_statistical_data_analysis_files", "data_for_notebook_count.rds"))
+saveRDS(as.matrix(filtered_data_for_notebook_count$samp_filt), here("notebook_exam_statistical_data_analysis_files", "filtered_data_for_notebook_count.rds"))
+# separation line
+cat("\n#---------------------------------------------------------------------------#")
+
+
+# -------- generate_matrix_factor.R code chunk --------
+
+# # brings into scope the filt_data.R script
+# source(
+#   list.files(
+#     path = here(),
+#     pattern = "^generate_matrix_factors\\.R$",
+#     full.names = TRUE,
+#     recursive = TRUE
+#   )
+# )
+# 
+# # generate a dummy matrix with n = 10, n_groups = 2, seed = 42
+# corr_mat_notebook <- generate_matrix_factors(10, 3, seed = 42)
+# 
+# # print the actual matrix
+# print(corr_mat_notebook$mat)
