@@ -78,7 +78,7 @@ for (i in seq_along(ph_values)) {
 
   # generate the simulated dataset for this pH
   sim <- data_sim_ph_driven(
-    n = 100, N = 120,
+    n_taxa = 100, N_sample = 120,
     ph = ph_sim, ph_min = 3.5, ph_max = 10.5,
     n_groups = 10, sigma_min = 0.1, sigma_max = 0.2,
     phi_max = 0.9, seed = 42
@@ -128,7 +128,7 @@ for (i in seq_along(ph_values)) {
 
   # generate the simulated dataset for this pH, with different parameters from the previous simulation
   sim_01 <- data_sim_ph_driven(
-    n = 100, N = 120,
+    n_taxa = 100, N_sample = 120,
     ph = ph_sim, ph_min = 3.5, ph_max = 10.5,
     sigma_min = 0.3, sigma_max = 0.4, phi_max = 0.9,
     n_groups = 10, seed = 42
@@ -179,7 +179,7 @@ for (i in seq_along(ph_values)) {
   
   # generate the simulated dataset for this pH, with different parameters from the previous simulation
   sim_02 <- data_sim_ph_driven(
-    n = 100, N = 120,
+    n_taxa = 100, N_sample = 120,
     ph = ph_sim, ph_min = 3.5, ph_max = 10.5,
     sigma_min = 0.5, sigma_max = 0.6, phi_max = 0.9,
     n_groups = 10, seed = 42
@@ -230,7 +230,7 @@ for (i in seq_along(ph_values)) {
   
   # generate the simulated dataset for this pH, with different parameters from the previous simulation
   sim_03 <- data_sim_ph_driven(
-    n = 100, N = 120,
+    n_taxa = 100, N_sample = 120,
     ph = ph_sim, ph_min = 3.5, ph_max = 10.5,
     sigma_min = 0.7, sigma_max = 0.8, phi_max = 0.9,
     n_groups = 10, seed = 42
@@ -281,7 +281,7 @@ for (i in seq_along(ph_values)) {
   
   # generate the simulated dataset for this pH, with different parameters from the previous simulation
   sim_04 <- data_sim_ph_driven(
-    n = 100, N = 120,
+    n_taxa = 100, N_sample = 120,
     ph = ph_sim, ph_min = 3.5, ph_max = 10.5,
     sigma_min = 0.9, sigma_max = 1.0, phi_max = 0.9,
     n_groups = 10, seed = 42
