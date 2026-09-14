@@ -1,0 +1,37 @@
+---
+title: "literature_review"
+format: html
+theme:
+  light: flatly
+  dark: darkly
+editor: visual
+---
+
+# Introduction
+
+Let's start from the begin: microbiology, what is it?  
+The word itself is composed by three parts coming from ancient greek:
+
+- μῑκρος (mīkros) 'small', 
+- βίος (bíos) 'life',
+- λογία (-logía) 'study of',
+
+which can be summarized in 'the study of small life forms' or in a more modern way
+'the study of microorganisms'.  
+The existence of microorganisms was theorized by scientists even in the 6th century
+Before Christ ([microbiology](https://en.wikipedia.org/wiki/Microbiology) wikipedia link for reference), but the acknowledged father of this science was Antoine Van Leeuwenhoek.  
+Van Leeuwenhoek (1632 – 1723) was the first man able to observe microorganisms thanks to a single lens microscope built by himself ([Van Leeuwenhoek](https://en.wikipedia.org/wiki/Antonie_van_Leeuwenhoek) wikipedia link for reference).  
+
+
+
+# The problem (metagenomic data) {style="color:orange"}
+
+# Compositional data
+
+# Correlation estimation and compositional bias
+
+# Transformations for compositional data
+
+# Dimensionality, diversity and sparsity
+
+# Synthetic data and the research question

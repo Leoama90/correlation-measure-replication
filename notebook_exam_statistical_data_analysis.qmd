@@ -16,12 +16,23 @@ library(here)
 library(tidyverse)
 ```
 
-# Introduction{style="color:orange"}
+# Introduction {style="color:orange"}
 
-The aim of this notebook is to explain the scripts found in the folder `02_new_script/`.\
+The aim of this notebook is to explain the scripts found in the folder `02_new_scripts/`.\
+Some scripts require the user to provide an input so, instead of sourcing and
+running them in this notebook, some results have been generated outside this script
+(using the script `for_notebook.R`) and then pasted in their relative code chunks.  
+To separate the code chunks from the plain text, spacing bars like this
+
+```{r}
+#| echo: false
+# spacing bar
+cat("\n#-----------------------------------------------------------------------#\n")
+```
+were put at the begin and at the end of the code chunks that they need to separe.   
 Scripts can be divided into three categories:
 
-- **base functions**: small scripts that generate simple functions (a wise man once said: "if you have to do it more than once, instead write a script!").\
+- [**base functions**]{style="color:violet"}: small scripts that generate simple functions (a wise man once said: "if you have to do it more than once, instead write a script!").\
   The base functions are:
 
   - `datasummary.R`
@@ -34,7 +45,7 @@ Scripts can be divided into three categories:
 
   - `pielou_ind.R`
 
-- **orchestrators**: these are slightly more complex scripts than the base functions; their job is to use base functions to generate something more complex.\
+- [**orchestrators**]{style="color:violet"}: these are slightly more complex scripts than the base functions; their job is to use base functions to generate something more complex.\
   The orchestrators are:
 
   - `clr_pearson.R`
@@ -43,22 +54,21 @@ Scripts can be divided into three categories:
 
   - `data_sim_ph_driven.R`
 
-- **standalone analysis**: using the previous functions, these scripts generate the analyses that are important for this project. The standalone analyses are:
+- [**standalone analysis**]{style="color:violet"}: using the previous functions, these scripts generate the analyses that are important for this project. The standalone analyses are:
 
   - `compositional_bias_D_P.R`
 
-  - `ph_pielou_confrontation.R`
+  - `ph_dataset_diversity_confrontation.R`
 
 Let's start by looking at the **base functions** scripts:
 
-## [Base functions]{style="color:green"}
+## [Base functions]{style="color:violet"}
 
 Base functions are the smallest building blocks of this project: each one does a single, well-defined job (summarizing data, filtering, replacing zeroes, generating a correlation matrix, or computing diversity), and gets reused by the more complex scripts (orchestrators and standalone analysis) described later.
 
+### [datasummary.R]{style="color:cyan"}
 
-### datasummary.R
-
-[*What it does:*]{style="color:green"} defines the function `datasum()`, which prints a compact summary of any numeric dataset (tibble, data.frame, list, or matrix).\
+[*What it does:*]{style="color:lime"} defines the function `datasum()`, which prints a compact summary of any numeric dataset (tibble, data.frame, list, or matrix).\
 The summary includes:
 
 - dimensions (rows, columns);
@@ -66,10 +76,10 @@ The summary includes:
 - zero structure: total number of zeroes and their percentage;
 - for square numeric matrices only: determinant and minimum eigenvalue (useful to check properties of correlation/covariance matrices).
 
-[*Why is it here:*]{style="color:green"} during the project I felt the need for a quick, consistent way to inspect matrices and tables.\
+[*Why is it here:*]{style="color:lime"} during the project, a quick and consistent way to inspect matrices and tables was needed.\
 `datasum()` centralises these checks in a single reusable function, which is particularly handy for compositional and metagenomic data, where zeroes and matrix properties matter for statistical analyses.
 
-[*How it works:*]{style="color:green"} the function `datasum()`:
+[*How it works:*]{style="color:lime"} the function `datasum()`:
 
 - checks if `x` is a square numeric matrix and, if so and if there are no `NA`/infinite values, computes the determinant and minimum eigenvalue;
 
@@ -108,14 +118,14 @@ print(example_matrix)
 datasum(example_matrix)
 ```
 
-### filt_data.R
+### [filt_data.R]{style="color:cyan"}
 
-[*What it does:*]{style="color:green"} filters a metagenomic OTU count table (samples × OTUs) by prevalence and abundance, and shows a before/after summary using `datasum()`.
+[*What it does:*]{style="color:lime"} filters a metagenomic OTU count table (samples × OTUs) by prevalence and abundance, and shows a before/after summary using `datasum()`.
 
-[*Why is it here:*]{style="color:green"} metagenomic data (like HMP2 used for this project) are compositional and very sparse.\
+[*Why is it here:*]{style="color:lime"} metagenomic data (like HMP2 used in the original paper and for this project) are compositional and very sparse.\
 Before any downstream analysis, it is important to remove rare and low-abundance OTUs that mostly add noise and can distort statistical results.
 
-[*How it works:*]{style="color:green"} the script defines the function `filt_data()`, which:
+[*How it works:*]{style="color:lime"} the script defines the function `filt_data()`, which:
 
 - prints a summary of the data **before** filtering using `datasum()`;
 - asks the user for a **prevalence threshold** (a number between 0 and 1), i.e. the minimum fraction of samples in which an OTU must be present (non-zero) to be kept.\
@@ -129,7 +139,7 @@ Before any downstream analysis, it is important to remove rare and low-abundance
 
 The function can be used both interactively (default, with prompt) and non-interactively (passing `prevalence_threshold` as an argument), which is useful for sensitivity analyses over a range of thresholds.
 
-[*Note:* due to the interactive nature of the filt_data.R script (the script asks the user for a number between 0 and 1 which is used as threshold to set the filter) , the following data has been generated with the script `for_notebook.R`, then loaded here.]{style="color:red"}
+[*Note:* due to the interactive nature of the filt_data.R script (the script asks the user for a number between 0 and 1 which is used as threshold to set the filter), the following data has been generated with the script `for_notebook.R`, then loaded here.]{style="color:red"}
 
 ```{r}
 #| echo: false
@@ -151,7 +161,7 @@ source(
 cat("\n#-----------------------------------------------------------------------#\n")
 
 # tell the user that the following are non-filtered data
-cat("\nThe following data were generated witht the script 'data_sim_ph_driven.R':\n")
+cat("\nThe following data were generated with the script 'data_sim_ph_driven.R':\n")
 
 # brings into scope pre-generated data
 not_filt_data <- readRDS(
@@ -191,13 +201,13 @@ print(filtered_data)
 cat("\n#-----------------------------------------------------------------------#\n")
 ```
 
-### pseudocount.R
+### [pseudocount.R]{style="color:cyan"}
 
-[*What it does:*]{style="color:green"} defines the function `pseudocount()`, which converts count data to row-wise proportions and replaces zeroes with row-specific pseudocounts computed from a user-defined threshold.
+[*What it does:*]{style="color:lime"} defines the function `pseudocount()`, which converts count data to row-wise proportions and replaces zeroes with row-specific pseudocounts computed from a user-defined threshold.
 
-[*Why is it here:*]{style="color:green"} before applying the Centered Log-Ratio (CLR) transformation, it is necessary to substitute the zeroes in the dataset with pseudocounts (log(0) gives −inf as a result, *kinda* difficult to use for statistical analysis).
+[*Why is it here:*]{style="color:lime"} before applying the Centered Log-Ratio (CLR) transformation, the zeroes in the dataset need to be replaced with pseudocounts, since `log(0)` returns `-Inf`, which is not usable in statistical analysis.
 
-[*How it works:*]{style="color:green"}
+[*How it works:*]{style="color:lime"}
 
 - the script first asks the user for a number between 0 and 1 (if the user does not provide a valid one, the script keeps asking for it), that will be used as threshold;
 
@@ -209,7 +219,7 @@ cat("\n#-----------------------------------------------------------------------#
 
 - it substitutes every zero found in a row with the pseudocount for that row.
 
-[*Note:* due to the interactive nature of the pseudocount.R script (the script asks the user for a number between 0 and 1 which is used as threshold to set the filter) , the following data has been generated with the script `for_notebook.R`, then loaded here.]{style="color:red"}
+[*Note:* due to the interactive nature of the pseudocount.R script (the script asks the user for a number between 0 and 1 which is used as threshold to set the filter), the following data has been generated with the script `for_notebook.R`, then loaded here.]{style="color:red"}
 
 ```{r}
 #| echo: false
@@ -223,34 +233,32 @@ cat("\nNow we will print the example_matrix that we used before:\n")
 # print the example matrix
 print(example_matrix)
 
-# tell the user that the matrix passed thorugh the pseudocount() function will be printed
+# tell the user that the matrix passed through the pseudocount() function will be printed
 cat("\nAfter using the pseudocount() function with 0.5 as threshold,
     the following matrix is obtained:\n")
 
-# this matrix was computed outside the notebook and then hardcoded here to avoid
-# to launch the pseudcocunt.R script that might cause the chunk to freeze
+# this matrix was computed outside the notebook and then hardcoded here to
+# avoid launching the pseudocount.R script, which might cause the chunk to freeze
 pseudocounted_matrix <- matrix(
   c(0.759, 0.241, 0.0172, 0.25, 0.75, 0.0417, 0.312, 0.625, 0.0625),
   nrow = 3, ncol = 3,
   dimnames = list(c("alfa", "beta", "gamma"), c("A", "B", "C"))
 )
 # print the pseudocounted matrix
-print(pseudocounted_matrix)
+print(round(pseudocounted_matrix, 2))
 
 # spacing bar
 cat("\n#-----------------------------------------------------------------------#\n")
 ```
 
-### generate_matrix_factors.R
+### [generate_matrix_factors.R]{style="color:cyan"}
 
-[*What it does:*]{style="color:green"} defines the function `generate_matrix_factors()`, which builds a valid correlation matrix (symmetric, unit diagonal, positive semi-definite, values from -1 to +1) with an exact, controlled zero pattern, by splitting taxa into `n_groups` latent groups.
+[*What it does:*]{style="color:lime"} defines the function `generate_matrix_factors()`, which builds a valid `nxn` correlation matrix (symmetric, unit diagonal, positive semi-definite, values from -1 to +1) with an exact, controlled zero pattern, by splitting taxa into `n_groups` latent groups.
 
-[*Why is it here:*]{style="color:green"} in the data_sim_ph_driven.R script is used the function "rmvnorm" ("Random MultiVariateNORMal") which allows to generate random multivariate normal distributions.\
-One of the input of the "rmvnorm" function is the correlation matrix.
-Utilizing this script allows to have a controlled (and yet partially randomized)
-correlation matrix.
+[*Why is it here:*]{style="color:lime"} in the data_sim_ph_driven.R script, the function "rmvnorm" ("Random MultiVariateNORMal") is used, which makes it possible to generate random multivariate normal distributions.\
+One of the inputs of the "rmvnorm" function is the correlation matrix. Using this script makes it possible to obtain a controlled (and yet partially randomized) correlation matrix.
 
-[*How it works:*]{style="color:green"} `generate_matrix_factors(n, n_groups, ...)`:
+[*How it works:*]{style="color:lime"} `generate_matrix_factors(n, n_groups, ...)`:
 
 - randomly assigns each of the `n` taxa to one of `n_groups` groups;
 - builds a loadings matrix $\Lambda$ where each taxon has a random value only in the column of its own group;
@@ -269,7 +277,7 @@ source(
   )
 )
 
-# generate a demostrative matrix with n = 10, n_groups = 2, seed = 42
+# generate a demonstrative matrix with taxa = n = 10, number of groups = n_groups = 3, seed = 42
 corr_mat_notebook <- generate_matrix_factors(n = 10, n_groups = 3, seed = 42)
 
 # print the actual matrix
@@ -282,14 +290,14 @@ not_corr_mat_notebook <- generate_matrix_factors(n = 10, n_groups = 10, seed = 4
 print(not_corr_mat_notebook$mat)
 ```
 
-### pielou_ind.R
+### [pielou_ind.R]{style="color:cyan"}
 
-[*What it does:*]{style="color:green"} defines the function `pielou_ind()`, which computes the dataset diversity as the mean of the pielou indexes of all the samples in the dataset.
+[*What it does:*]{style="color:lime"} defines the function `pielou_ind()`, which computes the dataset diversity as the mean of the pielou indexes of all the samples in the dataset.
 
-[*Why is it here:*]{style="color:green"} it is a good parameter (used also in the original paper) that allows to quantify the species diversity of the sample.\
-It is needed for the final analysis
+[*Why is it here:*]{style="color:lime"} it is a good parameter (also used in the original paper) that makes it possible to quantify the species diversity of a sample.\
+It is needed for the final analysis.
 
-[*How it works:*]{style="color:green"} `pielou_ind(x, per_sample = FALSE)`:
+[*How it works:*]{style="color:lime"} `pielou_ind(x, per_sample = FALSE)`:
 
 - computes each sample's relative abundances and Shannon entropy, handling zeroes with the standard convention $0 \cdot \ln(0) = 0$, so it works directly on sparse real data, no pseudocounts needed;
 - normalizes by $\ln(D)$ (D = number of taxa), so the index stays comparable across datasets of different size;
@@ -331,7 +339,7 @@ print(data_for_notebook_count)
 # explain the user what's happening
 cat("\nApplying the pielou_ind() function to the dataset
 (using per_sample = FALSE),
-we obtain the within dataset diversity:\n")
+we obtain the within dataset diversity parameter:\n")
 
 # apply the pielou_ind() function to the sourced data (per_sample = FALSE will
 # give the within dataset diversity parameter):
@@ -340,14 +348,14 @@ round(pielou_ind(data_for_notebook_count, per_sample = FALSE), 2)
 # explain the user what's happening
 cat("\nNow, if we use the same function with per_sample = TRUE,
 we obtain a vector with all of the pielou indexes of the
-data (data has 8 sample, which means 8 rows, so we will
+data (data has 8 samples, which means 8 rows, so we will
 obtain 8 indexes):\n")
 
 # apply the pielou_ind() function to the sourced data using per_sample = TRUE
 pi_ind_vect <- pielou_ind(data_for_notebook_count, per_sample = TRUE)
 
-# show the various pielou index comouted from the dummy dataset
-print(pi_ind_vect)
+# show the various pielou indexes computed from the dummy dataset
+print(pi_ind_vect, digits = 2)
 
 # explain the user what's happening
 cat("\nIf we compute the mean of the previously generated vector,
@@ -361,49 +369,134 @@ print(round(mean(pi_ind_vect), 2))
 cat("\n#-----------------------------------------------------------------------#\n")
 ```
 
-## [Orchestrators]{style="color:orange"}
+## [Orchestrators]{style="color:violet"}
 
 Orchestrators are the next level of base functions: instead of doing a single small job, they combine several base functions together into a full step of the analysis (filtering + pseudocount + CLR + correlation, or building a correlation matrix + simulating data from it).
 
-### clr_pearson.R
+### [clr_pearson.R]{style="color:cyan"}
 
-[*What it does:*]{style="color:green"} defines the function `clr_on_data()`, which runs the full pipeline on an OTU table: 
-  - filters it (`filt_data()`), 
-  - replaces zeroes with pseudocounts (`pseudocount()`), 
-  - applies the CLR transformation, 
-  - computes the OTU x OTU Pearson correlation matrix.
+[*What it does:*]{style="color:lime"} defines the function `clr_on_data()`, which runs the full pipeline on an OTU table: - filters it (`filt_data()`), - replaces zeroes with pseudocounts (`pseudocount()`), - applies the CLR transformation, - computes the OTU x OTU Pearson correlation matrix.
 
+[*Why is it here:*]{style="color:lime"} one of the main takeaways of the original paper is that the "blessing of dimensionality" makes the use of the centered log-ratio transformation in combination with Pearson's correlation coefficient (from now on, clr+Pearson) a reliable tool for analyzing correlations between taxa. Moreover, clr+Pearson is used as a benchmark to evaluate how other methods behave in a high-dimensional setting (dimensionality = D = number of taxa \> 100). Given the importance of this aspect, the method was replicated here, with the added possibility of choosing which filters to apply to the data.
 
-[*Why is it here:*]{style="color:green"} 
+[*How it works:*]{style="color:lime"} `clr_on_data(x)` runs the four steps above in sequence and returns (invisibly) a list with `samp_filt` (the filtered table), `y_clr` (the CLR-transformed table), and `cor_matrix` (the resulting correlation matrix).
 
-[*How it works:*]{style="color:green"} `clr_on_data(x)` runs the four steps above in sequence and returns (invisibly) a list with `samp_filt` (the filtered table), `y_clr` (the CLR-transformed table), and `cor_matrix` (the resulting correlation matrix).
-
-[*Note:* due to the interactive nature of the clr_pearson.R script (the script uses both filt_data() and pseudcount() functions which they both ask for a user input) , the following data has been generated with the script `for_notebook.R`, then loaded here.]{style="color:red"}
+[*Note:* due to the interactive nature of the clr_pearson.R script (it uses both filt_data() and pseudocount(), which both ask for user input), the source() call below is commented out, and the following data has been generated with the script `for_notebook.R`, then loaded here.]{style="color:red"}
 
 ```{r}
+#| echo: false
+
+# spacing bar
+cat("\n#-----------------------------------------------------------------------#\n")
 
 # brings the clr_pearson script into scope
-source(
+# source(
+#   list.files(
+#     path = here(),
+#     pattern = "^clr_pearson\\.R$",
+#     full.names = TRUE,
+#     recursive = TRUE
+#   )
+# )
+
+# brings the pre-generated dummy data into scope
+data_for_notebook_count <- readRDS(
   list.files(
     path = here(),
-    pattern = "^clr_pearson\\.R$",
+    pattern = "^data_for_notebook_count\\.rds$",
     full.names = TRUE,
     recursive = TRUE
   )
 )
 
+# cat to tell the user that we will re-print some data
+cat("\nNow we will re-print some data that we already used:\n")
+# print the pre-generated data
+print(data_for_notebook_count)
+
+# tell the user the parameters used in the clr_on_data() processing
+cat("\nWe will now apply the clr_on_data() function to the previous data, 
+using 0.33 as prevalence threshold for the filt_data() 
+part and 0.5 for the pseudocount() part.\n")
+
+# introduce the user to the results
+cat("\nThe results of the pipeline are the following:\n")
+
+
+# -------- brings the three separate elements of the list generated by the clr_on_data() function and print them --------
+
+# brings the filtered sample into scope
+processed_data_samp_filt <- readRDS(
+  list.files(
+    path = here(),
+    pattern = "^processed_data_samp_filt\\.rds$",
+    full.names = TRUE,
+    recursive = TRUE
+  )
+)
+
+# brings the log-transformed data into scope
+processed_data_y_clr <- readRDS(
+  list.files(
+    path = here(),
+    pattern = "^processed_data_y_clr\\.rds$",
+    full.names = TRUE,
+    recursive = TRUE
+  )
+)
+
+# brings the correlation matrix of the transformed data into scope
+processed_data_cor_mat <- readRDS(
+  list.files(
+    path = here(),
+    pattern = "^processed_data_cor_matrix\\.rds$",
+    full.names = TRUE,
+    recursive = TRUE
+  )
+)
+
+# title of the filtered sample
+cat("\nFiltered sample\n")
+# prints the filtered sample
+print(processed_data_samp_filt)
+
+# title of the log transformed data
+cat("\nLog transformed data\n")
+# prints the log transformed data
+print(round(processed_data_y_clr, 2))
+
+# title of the printed correlation matrix
+cat("\nCorrelation matrix\n")
+# print the correlation matrix
+print(processed_data_cor_mat)
+
+# spacing bar
+cat("\n#-----------------------------------------------------------------------#\n")
+
 ```
 
-### NorTa_simulation.R
+### [NorTa_simulation.R]{style="color:cyan"}
 
-[*What it does:*]{style="color:green"}
+[*What it does:*]{style="color:lime"} defines the function `norta_simulation()`, which builds a correlation matrix with `generate_matrix_factors()` and then simulates a sparse count dataset from it, following the NorTA ("Normal To Anything") approach: correlated normal data are converted to uniform percentiles and then mapped through the quantile function of a Zero-Inflated Negative Binomial (ZINB) distribution.
 
-[*Why is it here:*]{style="color:green"}
+[*Why is it here:*]{style="color:lime"} the genesis of this script was part of the work that lead me to obtain `data_sim_ph_driven.R`.\
+I needed a script that allowed me to generate compositional data.  
+Why though? Because to validate a correlation-estimation method, it is useful to have simulated data with a known correlation structure.\
+This was part of the work in the original paper and I wanted to try to create my version for it.
 
-[*How it works:*]{style="color:green"}
+[*How it works:*]{style="color:lime"} `norta_simulation(n, n_groups, N, mu, size, phi, seed)`:
+
+- builds the correlation matrix and simulates `N` correlated normal samples from it;
+- converts the normal data to uniform percentiles via `pnorm()` (a monotonic transformation, so rank correlation is preserved);
+- maps the percentiles through the ZINB quantile function, using a single `phi` (zero-inflation probability) shared by all taxa.
 
 ```{r}
-# brings the NorTa_simulation script into scope
+#| echo: false
+
+# spacing bar
+cat("\n#-----------------------------------------------------------------------#\n")
+
+# brings into scope the NorTa_simulation.R script
 source(
   list.files(
     path = here(),
@@ -412,15 +505,78 @@ source(
     recursive = TRUE
   )
 )
+
+# explain the user how the datas are generated with which parameters
+cat("\nThe following data are generated with the norta_simulation()
+function defined in the NorTa_simulation.R script, using the
+following parameters:
+      - n = 9;\n
+      - n_groups = 3;\n
+      - N = 11;\n
+      - seed = 42;\n")
+
+# additional space 
+cat("\n")
+
+# generate data with n = 9, n_groups = 3, N = 11, seed = 42
+norta_data_01 <- norta_simulation(n = 9, n_groups = 3, N = 11, seed = 42) 
+
+# title of the data
+cat("\nData generated with n_groups = 3 and n = 9\n")
+# print generated data sim_counts
+print(norta_data_01$sim_counts)
+
+# title of the first correlation matrix
+cat("\nCorrelation matrix with n_groups = 3 and n = 9\n")
+# print generated data sim_counts
+print(norta_data_01$R_true)
+
+# explain the user how the datas are generated with which parameters
+cat("\nThe following data are generated with the norta_simulation()
+function defined in the NorTa_simulation.R script, using the
+following parameters:
+      - n = 10;\n
+      - n_groups = 10;\n
+      - N = 10;\n
+      - seed = 42;\n
+With a number of groups (n_groups) equal to the number of taxa 
+(number of taxa is the parameter n), it will resolve in having
+zero taxa correlated to each other, leading to a unitary correlation matrix.\n")
+
+# additional space 
+cat("\n")
+
+# generate data with n = 10, n_groups = 10, N = 10, seed = 42 (gives an identity matrix)
+norta_data_02 <- norta_simulation(n = 10, n_groups = 10, N = 10, seed = 42) 
+
+# title of the data
+cat("\nData generated with n_groups = n\n")
+# print generated data sim_counts
+print(norta_data_02$sim_counts)
+
+# title of the second correlation matrix
+cat("\nCorrelation matrix with n_groups = n\n")
+# print generated data sim_counts
+print(norta_data_02$R_true)
+
+
+# spacing bar
+cat("\n#-----------------------------------------------------------------------#\n")
+
 ```
 
-### data_sim_ph_driven.R
+### [data_sim_ph_driven.R]{style="color:cyan"}
 
-[*What it does:*]{style="color:green"}
+[*What it does:*]{style="color:lime"} follows the same NorTA approach as `NorTa_simulation.R`, but sparsity is no longer a single value shared by all taxa: each taxon is given its own zero-inflation probability, based on the distance between the environmental pH and that taxon's own pH optimum.
 
-[*Why is it here:*]{style="color:green"}
+[*Why is it here:*]{style="color:lime"} this script represents the main extension proposed in this project.  
+Rather than treating sparsity as an arbitrary simulation parameter, it derives it from a biological ambiental parameter (pH), so that the resulting sparsity pattern has an ecological interpretation.
 
-[*How it works:*]{style="color:green"}
+[*How it works:*]{style="color:lime"} `data_sim_ph_driven(n_taxa, N_sample, ph, n_groups, ...)`:
+
+- assigns each taxon a random pH optimum and tolerance (niche width);
+- computes each taxon's zero-inflation probability from a Gaussian "suitability" curve centred on its own optimum: well-matched taxa get a low zero-inflation probability, poorly-matched taxa get a high one;
+- runs the same NorTA steps as `NorTa_simulation.R`, using this per-taxon zero-inflation vector instead of a single shared value.
 
 ```{r}
 # brings the data_sim_ph_driven script into scope
@@ -434,19 +590,24 @@ source(
 )
 ```
 
-## [Standalone analysis]{style="color:orange"}
+## [Standalone analysis]{style="color:violet"}
 
-The final level of complexity of all the project.  
-The scripts presented in this section perform the main statistical analyses of the project.   
+The final level of complexity of all the project.\
+The scripts presented in this section perform the main statistical analyses of the project.\
 Each analysis is designed to investigate a specific issue identified in the original paper and to assess its potential implications for the results.
 
-### compositional_bias_D_P.R
+### [compositional_bias_D_P.R]{style="color:cyan"}
 
-[*What it does:*]{style="color:green"}
+[*What it does:*]{style="color:lime"} replicates Section 3.1 of the original paper: it quantifies how much the L1 and CLR normalizations distort correlation estimates, as dimensionality (D) and within-dataset diversity (P) vary.\
+The ground truth used is a fully uncorrelated dataset (true correlation exactly zero everywhere), so that any non-zero correlation observed after normalization can be attributed entirely to the normalization method itself.
 
-[*Why is it here:*]{style="color:green"}
+[*Why is it here:*]{style="color:lime"} it provides a direct, quantitative answer to whether CLR actually outperforms L1, and by how much, depending on dimensionality and diversity, rather than relying on a purely qualitative claim.
 
-[*How it works:*]{style="color:green"}
+[*How it works:*]{style="color:lime"} for each (D, P) combination on a 15x15 grid (a reduced version of the paper's 40x39 grid, using N = 5,000 samples instead of 10,000, for time constraints):
+
+- generates uncorrelated Gaussian data and tunes its diversity to the target P (via `pielou_ind()` and a numerical root search);
+- applies the L1 and CLR normalizations and computes the resulting correlation matrices;
+- records the mean absolute error of each method against the true (zero) correlation.
 
 ```{r}
 # brings the compositional_bias_D_P script into scope
@@ -458,18 +619,29 @@ source(
     recursive = TRUE
   )
 )
+
+# display the heatmap previously generated by compositional_bias_D_P.R
+knitr::include_graphics(
+  list.files(
+    path = here(),
+    pattern = "^compositional_bias_heatmap\\.png$",
+    full.names = TRUE,
+    recursive = TRUE
+  )
+)
+
 ```
 
-### ph_pielou_confrontation.R
+### [ph_dataset_diversity_confrontation.R]{style="color:cyan"}
 
-[*What it does:*]{style="color:green"} uses `data_sim_ph_driven()` across a pH gradient, at five different levels of pH tolerance, and tracks how the Pielou index changes, showing that narrow-tolerance ("specialist") communities produce noisier, lower evenness, while wide-tolerance ("generalist") communities stay stable and high.
+[*What it does:*]{style="color:lime"} uses `data_sim_ph_driven()` across a pH gradient, at five different levels of pH tolerance, and tracks how the within dataset diversity parameter changes, showing that narrow-tolerance ("specialist") communities produce noisier, lower evenness, while wide-tolerance ("generalist") communities stay stable and high.
 
-[*Why is it here:*]{style="color:green"} This is the final exame of this project. I needed something that could test how data_sim_ph_driven.R could have been employed (in this case to simulate how generalists vs specialists bacteria behave at the same pH).
+[*Why is it here:*]{style="color:lime"} this is the final example presented in this project, illustrating a concrete use case for `data_sim_ph_driven.R`: simulating how generalist and specialist bacteria respond differently to the same environmental pH.
 
-[*How it works:*]{style="color:green"} loops over a pH gradient for five tolerance scenarios, computes `pielou_ind()` at each point, plots the five curves, and combines them into a single figure.
+[*How it works:*]{style="color:lime"} loops over a pH gradient for five tolerance scenarios, computes `pielou_ind()` at each point, plots the five curves, and combines them into a single figure.
 
 ```{r}
-# brings the ph_pielou_confrontation script into scope
+# brings the ph_dataset_diversity_confrontation script into scope
 source(
   list.files(
     path = here(),
@@ -479,3 +651,5 @@ source(
   )
 )
 ```
+
+## [Conclusions]{style="color:cyan"}

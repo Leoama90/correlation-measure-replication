@@ -27,6 +27,8 @@
 # Rstudio can turn code lines into comments by pressing ctrl + shift + c.
 # Every code chunk was run by commenting the others.
 
+# -------- library & sourced data_sim_ph_driven code area --------
+
 # here: builds file paths relative to the project root
 # https://cran.r-project.org/web/packages/here/index.html
 library(here)
@@ -40,6 +42,8 @@ source(
     recursive = TRUE
   )
 )
+
+
 
 
 # -------- filt_data.R chunk --------
@@ -91,6 +95,9 @@ source(
 # cat("\n#---------------------------------------------------------------------------#")
 
 
+
+
+
 # -------- generate_matrix_factor.R code chunk --------
 
 # # brings into scope the filt_data.R script
@@ -109,36 +116,154 @@ source(
 # # print the actual matrix
 # print(corr_mat_notebook$mat)
 
-# --------- clr_pearson.R code chunk ---------
 
-# brings into scope the clr_pearson.R (the only one dummy data generator)
+
+
+# -------- clr_pearson.R code chunk -------- ---------
+
+# # brings into scope the clr_pearson.R (the only one dummy data generator)
+# source(
+#   list.files(
+#     path = here(),
+#     pattern = "^clr_pearson\\.R$",
+#     full.names = TRUE,
+#     recursive = TRUE
+#   )
+# )
+# 
+# # brings the pre-generated dummy data into scope
+# data_for_notebook_count <- readRDS(
+#   list.files(
+#     path = here(),
+#     pattern = "^data_for_notebook_count\\.rds$",
+#     full.names = TRUE,
+#     recursive = TRUE
+#   )
+# )
+# 
+# # print the pre-generated data
+# print(data_for_notebook_count)
+# 
+# # apply the clr_on_data() function
+# processed_data <- clr_on_data(data_for_notebook_count)
+# 
+# # separation line
+# cat("\n#-----------------------------------------------#\n")
+# 
+# # print the filtered samples
+# print(processed_data$samp_filt)
+# 
+# # separation line
+# cat("\n#-----------------------------------------------#\n")
+# 
+# # points out the transformed matrix
+# cat("\nThis is the centered-log transformed matrix:\n")
+# 
+# # print the log of every value
+# print(processed_data$y_clr, digits = 1)
+# 
+# # point down the rowsums
+# cat("\n...................................................\n")
+# 
+# print(rowSums(processed_data$y_clr), digits = 2)
+# 
+# # point the row sums
+# cat("\n^^^^^^^^^^^^^^^^^^^^^^rowSums^^^^^^^^^^^^^^^^^^^^^^\n")
+# 
+# # separation line
+# cat("\n#-----------------------------------------------#\n")
+# 
+# # cat to indicate correlation matrix
+# cat("\nThis is the correlation matrix:\n")
+# 
+# # print correlation matrix
+# print(processed_data$cor_matrix, digits = 2)
+# 
+# # runs a datasum check to find eigenvalues
+# datasum(processed_data$cor_matrix)
+# 
+# # --- save clr_on_data outputs in .rds ---
+# 
+# # save the filtered data as .rds file
+# saveRDS(as.matrix(processed_data$samp_filt), here("notebook_exam_statistical_data_analysis_files", "clr_on_data_output", "processed_data_samp_filt.rds"))
+# # save the transformed data as .rds file
+# saveRDS(as.matrix(processed_data$y_clr), here("notebook_exam_statistical_data_analysis_files", "clr_on_data_output", "processed_data_y_clr.rds"))
+# # save the correlation matrix as .rds file
+# saveRDS(as.matrix(processed_data$cor_matrix), here("notebook_exam_statistical_data_analysis_files", "clr_on_data_output", "processed_data_cor_matrix.rds"))
+
+
+
+# -------- NorTa_simulation.R code chunk --------
+
+# brings into scope the NorTa_simulation.R script
 source(
   list.files(
     path = here(),
-    pattern = "^clr_pearson\\.R$",
+    pattern = "^NorTa_simulation\\.R$",
     full.names = TRUE,
     recursive = TRUE
   )
 )
 
-# brings the dummy pre-generated data into scope
-data_for_notebook_count <- readRDS(
-  list.files(
-    path = here(),
-    pattern = "^data_for_notebook_count\\.rds$",
-    full.names = TRUE,
-    recursive = TRUE
-  )
-)
+# explain the user how the datas are generated with which parameters
+cat("\nThe following data are generated with the norta_simulation()
+function defined in the NorTa_simulation.R script, using the
+following parameters:
+      - n = 9;\n
+      - n_groups = 3;\n
+      - N = 11;\n
+      - seed = 42;\n")
 
-# apply the clr_on_data() function
-processed_data <- clr_on_data(data_for_notebook_count)
+# additional space 
+cat("\n")
 
-# print the filtered samples
-print(processed_data$samp_filt)
+# generate data with n = 9, n_groups = 3, N = 11, seed = 42
+norta_data_01 <- norta_simulation(n = 9, n_groups = 3, N = 11, seed = 42) 
 
-# print the log of every value
-print(processed_data$y_clr)
+# title of the data
+cat("\nData generated with n_groups = 3 and n = 9\n")
+# print generated data sim_counts
+print(norta_data_01$sim_counts)
 
-# print correlation matrix
-print(processed_data$cor_matrix)
+# title of the first correlation matrix
+cat("\nCorrelation matrix with n_groups = 3 and n = 9\n")
+# print generated data sim_counts
+print(norta_data_01$R_true)
+
+# explain the user how the datas are generated with which parameters
+cat("\nThe following data are generated with the norta_simulation()
+function defined in the NorTa_simulation.R script, using the
+following parameters:
+      - n = 10;\n
+      - n_groups = 10;\n
+      - N = 10;\n
+      - seed = 42;\n
+With a number of groups (n_groups) equal to the number of taxa 
+(number of taxa is the parameter n), it will resolve in having
+zero taxa correlated to each other, leading to a unitary correlation matrix.\n")
+
+# additional space 
+cat("\n")
+
+# generate data with n = 10, n_groups = 10, N = 10, seed = 42 (gives an identity matrix)
+norta_data_02 <- norta_simulation(n = 10, n_groups = 10, N = 10, seed = 42) 
+
+# title of the data
+cat("\nData generated with n_groups = n\n")
+# print generated data sim_counts
+print(norta_data_02$sim_counts)
+
+# title of the second correlation matrix
+cat("\nCorrelation matrix with n_groups = n\n")
+# print generated data sim_counts
+print(norta_data_02$R_true)
+
+
+# # write Data in .rds file format
+# saveRDS(as.matrix(norta_data$sim_counts), here("notebook_exam_statistical_data_analysis_files", "norta_data_counts.rds"))
+
+# -------- data_sim_ph_driven.R code chunk --------
+
+
+
+

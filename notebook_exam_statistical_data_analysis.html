@@ -302,10 +302,19 @@ window.Quarto = {
 
 <section id="introduction" class="level1" style="color:orange">
 <h1 style="color:orange">Introduction</h1>
-<p>The aim of this notebook is to explain the scripts found in the folder <code>02_new_script/</code>.<br>
+<p>The aim of this notebook is to explain the scripts found in the folder <code>02_new_scripts/</code>.<br>
+Some scripts require the user to provide an input so, instead of sourcing and running them in this notebook, some results have been generated outside this script (using the script <code>for_notebook.R</code>) and then pasted in their relative code chunks.<br>
+To separate the code chunks from the plain text, spacing bars like this</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+#-----------------------------------------------------------------------#</code></pre>
+</div>
+</div>
+<p>were put at the begin and at the end of the code chunks that they need to separe.<br>
 Scripts can be divided into three categories:</p>
 <ul>
-<li><p><strong>base functions</strong>: small scripts that generate simple functions (a wise man once said: “if you have to do it more than once, instead write a script!”).<br>
+<li><p><span style="color:violet"><strong>base functions</strong></span>: small scripts that generate simple functions (a wise man once said: “if you have to do it more than once, instead write a script!”).<br>
 The base functions are:</p>
 <ul>
 <li><p><code>datasummary.R</code></p></li>
@@ -314,26 +323,26 @@ The base functions are:</p>
 <li><p><code>generate_matrix_factors.R</code></p></li>
 <li><p><code>pielou_ind.R</code></p></li>
 </ul></li>
-<li><p><strong>orchestrators</strong>: these are slightly more complex scripts than the base functions; their job is to use base functions to generate something more complex.<br>
+<li><p><span style="color:violet"><strong>orchestrators</strong></span>: these are slightly more complex scripts than the base functions; their job is to use base functions to generate something more complex.<br>
 The orchestrators are:</p>
 <ul>
 <li><p><code>clr_pearson.R</code></p></li>
 <li><p><code>NorTa_simulation.R</code></p></li>
 <li><p><code>data_sim_ph_driven.R</code></p></li>
 </ul></li>
-<li><p><strong>standalone analysis</strong>: using the previous functions, these scripts generate the analyses that are important for this project. The standalone analyses are:</p>
+<li><p><span style="color:violet"><strong>standalone analysis</strong></span>: using the previous functions, these scripts generate the analyses that are important for this project. The standalone analyses are:</p>
 <ul>
 <li><p><code>compositional_bias_D_P.R</code></p></li>
-<li><p><code>ph_pielou_confrontation.R</code></p></li>
+<li><p><code>ph_dataset_diversity_confrontation.R</code></p></li>
 </ul></li>
 </ul>
 <p>Let’s start by looking at the <strong>base functions</strong> scripts:</p>
 <section id="base-functions" class="level2">
-<h2 class="anchored" data-anchor-id="base-functions"><span style="color:green">Base functions</span></h2>
+<h2 class="anchored" data-anchor-id="base-functions"><span style="color:violet">Base functions</span></h2>
 <p>Base functions are the smallest building blocks of this project: each one does a single, well-defined job (summarizing data, filtering, replacing zeroes, generating a correlation matrix, or computing diversity), and gets reused by the more complex scripts (orchestrators and standalone analysis) described later.</p>
 <section id="datasummary.r" class="level3">
-<h3 class="anchored" data-anchor-id="datasummary.r">datasummary.R</h3>
-<p><span style="color:green"><em>What it does:</em></span> defines the function <code>datasum()</code>, which prints a compact summary of any numeric dataset (tibble, data.frame, list, or matrix).<br>
+<h3 class="anchored" data-anchor-id="datasummary.r"><span style="color:cyan">datasummary.R</span></h3>
+<p><span style="color:lime"><em>What it does:</em></span> defines the function <code>datasum()</code>, which prints a compact summary of any numeric dataset (tibble, data.frame, list, or matrix).<br>
 The summary includes:</p>
 <ul>
 <li>dimensions (rows, columns);</li>
@@ -341,9 +350,9 @@ The summary includes:</p>
 <li>zero structure: total number of zeroes and their percentage;</li>
 <li>for square numeric matrices only: determinant and minimum eigenvalue (useful to check properties of correlation/covariance matrices).</li>
 </ul>
-<p><span style="color:green"><em>Why is it here:</em></span> during the project I felt the need for a quick, consistent way to inspect matrices and tables.<br>
+<p><span style="color:lime"><em>Why is it here:</em></span> during the project, a quick and consistent way to inspect matrices and tables was needed.<br>
 <code>datasum()</code> centralises these checks in a single reusable function, which is particularly handy for compositional and metagenomic data, where zeroes and matrix properties matter for statistical analyses.</p>
-<p><span style="color:green"><em>How it works:</em></span> the function <code>datasum()</code>:</p>
+<p><span style="color:lime"><em>How it works:</em></span> the function <code>datasum()</code>:</p>
 <ul>
 <li><p>checks if <code>x</code> is a square numeric matrix and, if so and if there are no <code>NA</code>/infinite values, computes the determinant and minimum eigenvalue;</p></li>
 <li><p>coerces the input to a tibble (converting lists to data frames if needed);</p></li>
@@ -353,33 +362,33 @@ The summary includes:</p>
 <li><p>returns them invisibly as a named list, so they can be reused programmatically.</p></li>
 </ul>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># brings the datasummary script into scope</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">path =</span> <span class="fu">here</span>(),</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">"^datasummary</span><span class="sc">\\</span><span class="st">.R$"</span>,</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">recursive =</span> <span class="cn">TRUE</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co"># generate an example matrix</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>example_matrix <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">22</span>, <span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">7</span>, <span class="dv">9</span>, <span class="dv">10</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>),</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">nrow =</span> <span class="dv">3</span>,</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">ncol =</span> <span class="dv">3</span>,</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">dimnames =</span> <span class="fu">list</span>(<span class="fu">c</span>(<span class="st">"alfa"</span>, <span class="st">"beta"</span>, <span class="st">"gamma"</span>), <span class="fu">c</span>(<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>))</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co"># print the example matrix</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(example_matrix)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># brings the datasummary script into scope</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">path =</span> <span class="fu">here</span>(),</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">"^datasummary</span><span class="sc">\\</span><span class="st">.R$"</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">recursive =</span> <span class="cn">TRUE</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co"># generate an example matrix</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>example_matrix <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">22</span>, <span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">7</span>, <span class="dv">9</span>, <span class="dv">10</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>),</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">nrow =</span> <span class="dv">3</span>,</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">ncol =</span> <span class="dv">3</span>,</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">dimnames =</span> <span class="fu">list</span>(<span class="fu">c</span>(<span class="st">"alfa"</span>, <span class="st">"beta"</span>, <span class="st">"gamma"</span>), <span class="fu">c</span>(<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>))</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co"># print the example matrix</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(example_matrix)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>       A  B C
 alfa  22  7 0
 beta   3  9 0
 gamma  5 10 1</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># apply the datasum function from the scoped script</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">datasum</span>(example_matrix)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># apply the datasum function from the scoped script</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">datasum</span>(example_matrix)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>The type of dataset before becoming a tibble was double
 --- exam ---
@@ -399,11 +408,11 @@ the percentage of zeroes in exam is: 22.22 %</code></pre>
 </div>
 </section>
 <section id="filt_data.r" class="level3">
-<h3 class="anchored" data-anchor-id="filt_data.r">filt_data.R</h3>
-<p><span style="color:green"><em>What it does:</em></span> filters a metagenomic OTU count table (samples × OTUs) by prevalence and abundance, and shows a before/after summary using <code>datasum()</code>.</p>
-<p><span style="color:green"><em>Why is it here:</em></span> metagenomic data (like HMP2 used for this project) are compositional and very sparse.<br>
+<h3 class="anchored" data-anchor-id="filt_data.r"><span style="color:cyan">filt_data.R</span></h3>
+<p><span style="color:lime"><em>What it does:</em></span> filters a metagenomic OTU count table (samples × OTUs) by prevalence and abundance, and shows a before/after summary using <code>datasum()</code>.</p>
+<p><span style="color:lime"><em>Why is it here:</em></span> metagenomic data (like HMP2 used in the original paper and for this project) are compositional and very sparse.<br>
 Before any downstream analysis, it is important to remove rare and low-abundance OTUs that mostly add noise and can distort statistical results.</p>
-<p><span style="color:green"><em>How it works:</em></span> the script defines the function <code>filt_data()</code>, which:</p>
+<p><span style="color:lime"><em>How it works:</em></span> the script defines the function <code>filt_data()</code>, which:</p>
 <ul>
 <li>prints a summary of the data <strong>before</strong> filtering using <code>datasum()</code>;</li>
 <li>asks the user for a <strong>prevalence threshold</strong> (a number between 0 and 1), i.e.&nbsp;the minimum fraction of samples in which an OTU must be present (non-zero) to be kept.<br>
@@ -418,7 +427,7 @@ If the user enters an invalid value, the script prints a friendly warning and as
 </ul></li>
 </ul>
 <p>The function can be used both interactively (default, with prompt) and non-interactively (passing <code>prevalence_threshold</code> as an argument), which is useful for sensitivity analyses over a range of thresholds.</p>
-<p><span style="color:red"><em>Note:</em> due to the interactive nature of the filt_data.R script (the script asks the user for a number between 0 and 1 which is used as threshold to set the filter) , the following data has been generated with the script <code>for_notebook.R</code>, then loaded here.</span></p>
+<p><span style="color:red"><em>Note:</em> due to the interactive nature of the filt_data.R script (the script asks the user for a number between 0 and 1 which is used as threshold to set the filter), the following data has been generated with the script <code>for_notebook.R</code>, then loaded here.</span></p>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -426,7 +435,7 @@ If the user enters an invalid value, the script prints a friendly warning and as
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
-The following data were generated witht the script 'data_sim_ph_driven.R':</code></pre>
+The following data were generated with the script 'data_sim_ph_driven.R':</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     OTU_1 OTU_2 OTU_3 OTU_4 OTU_5 OTU_6 OTU_7 OTU_8 OTU_9
@@ -466,10 +475,10 @@ Now we will apply the filt_data() function with a threshold of 0.3, obtaining th
 </div>
 </section>
 <section id="pseudocount.r" class="level3">
-<h3 class="anchored" data-anchor-id="pseudocount.r">pseudocount.R</h3>
-<p><span style="color:green"><em>What it does:</em></span> defines the function <code>pseudocount()</code>, which converts count data to row-wise proportions and replaces zeroes with row-specific pseudocounts computed from a user-defined threshold.</p>
-<p><span style="color:green"><em>Why is it here:</em></span> before applying the Centered Log-Ratio (CLR) transformation, it is necessary to substitute the zeroes in the dataset with pseudocounts (log(0) gives −inf as a result, <em>kinda</em> difficult to use for statistical analysis).</p>
-<p><span style="color:green"><em>How it works:</em></span></p>
+<h3 class="anchored" data-anchor-id="pseudocount.r"><span style="color:cyan">pseudocount.R</span></h3>
+<p><span style="color:lime"><em>What it does:</em></span> defines the function <code>pseudocount()</code>, which converts count data to row-wise proportions and replaces zeroes with row-specific pseudocounts computed from a user-defined threshold.</p>
+<p><span style="color:lime"><em>Why is it here:</em></span> before applying the Centered Log-Ratio (CLR) transformation, the zeroes in the dataset need to be replaced with pseudocounts, since <code>log(0)</code> returns <code>-Inf</code>, which is not usable in statistical analysis.</p>
+<p><span style="color:lime"><em>How it works:</em></span></p>
 <ul>
 <li><p>the script first asks the user for a number between 0 and 1 (if the user does not provide a valid one, the script keeps asking for it), that will be used as threshold;</p></li>
 <li><p>it computes the detection limit as 1 / (the sum of the values in the row);</p></li>
@@ -477,7 +486,7 @@ Now we will apply the filt_data() function with a threshold of 0.3, obtaining th
 <li><p>it converts every row’s counts into proportions;</p></li>
 <li><p>it substitutes every zero found in a row with the pseudocount for that row.</p></li>
 </ul>
-<p><span style="color:red"><em>Note:</em> due to the interactive nature of the pseudocount.R script (the script asks the user for a number between 0 and 1 which is used as threshold to set the filter) , the following data has been generated with the script <code>for_notebook.R</code>, then loaded here.</span></p>
+<p><span style="color:red"><em>Note:</em> due to the interactive nature of the pseudocount.R script (the script asks the user for a number between 0 and 1 which is used as threshold to set the filter), the following data has been generated with the script <code>for_notebook.R</code>, then loaded here.</span></p>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -499,10 +508,10 @@ After using the pseudocount() function with 0.5 as threshold,
     the following matrix is obtained:</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>           A      B      C
-alfa  0.7590 0.2500 0.3120
-beta  0.2410 0.7500 0.6250
-gamma 0.0172 0.0417 0.0625</code></pre>
+<pre><code>         A    B    C
+alfa  0.76 0.25 0.31
+beta  0.24 0.75 0.62
+gamma 0.02 0.04 0.06</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -511,11 +520,11 @@ gamma 0.0172 0.0417 0.0625</code></pre>
 </div>
 </section>
 <section id="generate_matrix_factors.r" class="level3">
-<h3 class="anchored" data-anchor-id="generate_matrix_factors.r">generate_matrix_factors.R</h3>
-<p><span style="color:green"><em>What it does:</em></span> defines the function <code>generate_matrix_factors()</code>, which builds a valid correlation matrix (symmetric, unit diagonal, positive semi-definite, values from -1 to +1) with an exact, controlled zero pattern, by splitting taxa into <code>n_groups</code> latent groups.</p>
-<p><span style="color:green"><em>Why is it here:</em></span> in the data_sim_ph_driven.R script is used the function “rmvnorm” (“Random MultiVariateNORMal”) which allows to generate random multivariate normal distributions.<br>
-One of the input of the “rmvnorm” function is the correlation matrix. Utilizing this script allows to have a controlled (and yet partially randomized) correlation matrix.</p>
-<p><span style="color:green"><em>How it works:</em></span> <code>generate_matrix_factors(n, n_groups, ...)</code>:</p>
+<h3 class="anchored" data-anchor-id="generate_matrix_factors.r"><span style="color:cyan">generate_matrix_factors.R</span></h3>
+<p><span style="color:lime"><em>What it does:</em></span> defines the function <code>generate_matrix_factors()</code>, which builds a valid <code>nxn</code> correlation matrix (symmetric, unit diagonal, positive semi-definite, values from -1 to +1) with an exact, controlled zero pattern, by splitting taxa into <code>n_groups</code> latent groups.</p>
+<p><span style="color:lime"><em>Why is it here:</em></span> in the data_sim_ph_driven.R script, the function “rmvnorm” (“Random MultiVariateNORMal”) is used, which makes it possible to generate random multivariate normal distributions.<br>
+One of the inputs of the “rmvnorm” function is the correlation matrix. Using this script makes it possible to obtain a controlled (and yet partially randomized) correlation matrix.</p>
+<p><span style="color:lime"><em>How it works:</em></span> <code>generate_matrix_factors(n, n_groups, ...)</code>:</p>
 <ul>
 <li>randomly assigns each of the <code>n</code> taxa to one of <code>n_groups</code> groups;</li>
 <li>builds a loadings matrix <span class="math inline">\(\Lambda\)</span> where each taxon has a random value only in the column of its own group;</li>
@@ -524,21 +533,21 @@ One of the input of the “rmvnorm” function is the correlation matrix. Utiliz
 <li>returns the matrix, the group assignment, and the exact number of zero pairs (taxa in different groups end up with correlation exactly 0).</li>
 </ul>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># brings the generate_matrix_factors script into scope</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">path =</span> <span class="fu">here</span>(),</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">"^generate_matrix_factors</span><span class="sc">\\</span><span class="st">.R$"</span>,</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">recursive =</span> <span class="cn">TRUE</span></span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="co"># generate a demostrative matrix with n = 10, n_groups = 2, seed = 42</span></span>
-<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>corr_mat_notebook <span class="ot">&lt;-</span> <span class="fu">generate_matrix_factors</span>(<span class="at">n =</span> <span class="dv">10</span>, <span class="at">n_groups =</span> <span class="dv">3</span>, <span class="at">seed =</span> <span class="dv">42</span>)</span>
-<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a><span class="co"># print the actual matrix</span></span>
-<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(corr_mat_notebook<span class="sc">$</span>mat)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># brings the generate_matrix_factors script into scope</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">path =</span> <span class="fu">here</span>(),</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">"^generate_matrix_factors</span><span class="sc">\\</span><span class="st">.R$"</span>,</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">recursive =</span> <span class="cn">TRUE</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="co"># generate a demonstrative matrix with taxa = n = 10, number of groups = n_groups = 3, seed = 42</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>corr_mat_notebook <span class="ot">&lt;-</span> <span class="fu">generate_matrix_factors</span>(<span class="at">n =</span> <span class="dv">10</span>, <span class="at">n_groups =</span> <span class="dv">3</span>, <span class="at">seed =</span> <span class="dv">42</span>)</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a><span class="co"># print the actual matrix</span></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(corr_mat_notebook<span class="sc">$</span>mat)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
  [1,]    1    0    1    0    0   -1    0    0    1     0
@@ -552,11 +561,11 @@ One of the input of the “rmvnorm” function is the correlation matrix. Utiliz
  [9,]    1    0    1    0    0   -1    0    0    1     0
 [10,]    0    0    0    0    0    0    1    1    0     1</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># print a correlation matrix with no OTU correlated</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>not_corr_mat_notebook <span class="ot">&lt;-</span> <span class="fu">generate_matrix_factors</span>(<span class="at">n =</span> <span class="dv">10</span>, <span class="at">n_groups =</span> <span class="dv">10</span>, <span class="at">seed =</span> <span class="dv">42</span>)</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="co"># print the non-correlation matrix</span></span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(not_corr_mat_notebook<span class="sc">$</span>mat)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># print a correlation matrix with no OTU correlated</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>not_corr_mat_notebook <span class="ot">&lt;-</span> <span class="fu">generate_matrix_factors</span>(<span class="at">n =</span> <span class="dv">10</span>, <span class="at">n_groups =</span> <span class="dv">10</span>, <span class="at">seed =</span> <span class="dv">42</span>)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co"># print the non-correlation matrix</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(not_corr_mat_notebook<span class="sc">$</span>mat)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
  [1,]    1    0    0    0    0    0    0    0    0     0
@@ -573,11 +582,11 @@ One of the input of the “rmvnorm” function is the correlation matrix. Utiliz
 </div>
 </section>
 <section id="pielou_ind.r" class="level3">
-<h3 class="anchored" data-anchor-id="pielou_ind.r">pielou_ind.R</h3>
-<p><span style="color:green"><em>What it does:</em></span> defines the function <code>pielou_ind()</code>, which computes the dataset diversity as the mean of the pielou indexes of all the samples in the dataset.</p>
-<p><span style="color:green"><em>Why is it here:</em></span> it is a good parameter (used also in the original paper) that allows to quantify the species diversity of the sample.<br>
-It is needed for the final analysis</p>
-<p><span style="color:green"><em>How it works:</em></span> <code>pielou_ind(x, per_sample = FALSE)</code>:</p>
+<h3 class="anchored" data-anchor-id="pielou_ind.r"><span style="color:cyan">pielou_ind.R</span></h3>
+<p><span style="color:lime"><em>What it does:</em></span> defines the function <code>pielou_ind()</code>, which computes the dataset diversity as the mean of the pielou indexes of all the samples in the dataset.</p>
+<p><span style="color:lime"><em>Why is it here:</em></span> it is a good parameter (also used in the original paper) that makes it possible to quantify the species diversity of a sample.<br>
+It is needed for the final analysis.</p>
+<p><span style="color:lime"><em>How it works:</em></span> <code>pielou_ind(x, per_sample = FALSE)</code>:</p>
 <ul>
 <li>computes each sample’s relative abundances and Shannon entropy, handling zeroes with the standard convention <span class="math inline">\(0 \cdot \ln(0) = 0\)</span>, so it works directly on sparse real data, no pseudocounts needed;</li>
 <li>normalizes by <span class="math inline">\(\ln(D)\)</span> (D = number of taxa), so the index stays comparable across datasets of different size;</li>
@@ -603,7 +612,7 @@ It is needed for the final analysis</p>
 <pre><code>
 Applying the pielou_ind() function to the dataset
 (using per_sample = FALSE),
-we obtain the within dataset diversity:</code></pre>
+we obtain the within dataset diversity parameter:</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.47</code></pre>
@@ -612,12 +621,11 @@ we obtain the within dataset diversity:</code></pre>
 <pre><code>
 Now, if we use the same function with per_sample = TRUE,
 we obtain a vector with all of the pielou indexes of the
-data (data has 8 sample, which means 8 rows, so we will
+data (data has 8 samples, which means 8 rows, so we will
 obtain 8 indexes):</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.6052306 0.2520717 0.3083410 0.6259967 0.7166399 0.4848638 0.3046243
-[8] 0.4978803</code></pre>
+<pre><code>[1] 0.61 0.25 0.31 0.63 0.72 0.48 0.30 0.50</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -635,87 +643,275 @@ we obtain again the within dataset diversity parameter:</code></pre>
 </section>
 </section>
 <section id="orchestrators" class="level2">
-<h2 class="anchored" data-anchor-id="orchestrators"><span style="color:orange">Orchestrators</span></h2>
+<h2 class="anchored" data-anchor-id="orchestrators"><span style="color:violet">Orchestrators</span></h2>
 <p>Orchestrators are the next level of base functions: instead of doing a single small job, they combine several base functions together into a full step of the analysis (filtering + pseudocount + CLR + correlation, or building a correlation matrix + simulating data from it).</p>
 <section id="clr_pearson.r" class="level3">
-<h3 class="anchored" data-anchor-id="clr_pearson.r">clr_pearson.R</h3>
-<p><span style="color:green"><em>What it does:</em></span> defines the function <code>clr_on_data()</code>, which runs the full pipeline on an OTU table: - filters it (<code>filt_data()</code>), - replaces zeroes with pseudocounts (<code>pseudocount()</code>), - applies the CLR transformation, - computes the OTU x OTU Pearson correlation matrix.</p>
-<p><span style="color:green"><em>Why is it here:</em></span></p>
-<p><span style="color:green"><em>How it works:</em></span> <code>clr_on_data(x)</code> runs the four steps above in sequence and returns (invisibly) a list with <code>samp_filt</code> (the filtered table), <code>y_clr</code> (the CLR-transformed table), and <code>cor_matrix</code> (the resulting correlation matrix).</p>
-<p><span style="color:red"><em>Note:</em> due to the interactive nature of the clr_pearson.R script (the script uses both filt_data() and pseudcount() functions which they both ask for a user input) , the following data has been generated with the script <code>for_notebook.R</code>, then loaded here.</span></p>
+<h3 class="anchored" data-anchor-id="clr_pearson.r"><span style="color:cyan">clr_pearson.R</span></h3>
+<p><span style="color:lime"><em>What it does:</em></span> defines the function <code>clr_on_data()</code>, which runs the full pipeline on an OTU table: - filters it (<code>filt_data()</code>), - replaces zeroes with pseudocounts (<code>pseudocount()</code>), - applies the CLR transformation, - computes the OTU x OTU Pearson correlation matrix.</p>
+<p><span style="color:lime"><em>Why is it here:</em></span> one of the main takeaways of the original paper is that the “blessing of dimensionality” makes the use of the centered log-ratio transformation in combination with Pearson’s correlation coefficient (from now on, clr+Pearson) a reliable tool for analyzing correlations between taxa. Moreover, clr+Pearson is used as a benchmark to evaluate how other methods behave in a high-dimensional setting (dimensionality = D = number of taxa &gt; 100). Given the importance of this aspect, the method was replicated here, with the added possibility of choosing which filters to apply to the data.</p>
+<p><span style="color:lime"><em>How it works:</em></span> <code>clr_on_data(x)</code> runs the four steps above in sequence and returns (invisibly) a list with <code>samp_filt</code> (the filtered table), <code>y_clr</code> (the CLR-transformed table), and <code>cor_matrix</code> (the resulting correlation matrix).</p>
+<p><span style="color:red"><em>Note:</em> due to the interactive nature of the clr_pearson.R script (it uses both filt_data() and pseudocount(), which both ask for user input), the source() call below is commented out, and the following data has been generated with the script <code>for_notebook.R</code>, then loaded here.</span></p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># brings the clr_pearson script into scope</span></span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(</span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">path =</span> <span class="fu">here</span>(),</span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">"^clr_pearson</span><span class="sc">\\</span><span class="st">.R$"</span>,</span>
-<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">recursive =</span> <span class="cn">TRUE</span></span>
-<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+#-----------------------------------------------------------------------#</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Now we will re-print some data that we already used:</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     OTU_1 OTU_2 OTU_3 OTU_4 OTU_5 OTU_6 OTU_7 OTU_8 OTU_9
+[1,]    17     0    23     0     0     0     0     9    23
+[2,]     8     0     0     0     0     0     0    25     0
+[3,]    30     0     0     0     0     0     0    21     0
+[4,]    16     0     0     0    23     0    23    19     0
+[5,]     0     0    13    23     0    23     0    15    13
+[6,]     0     0     0     0    29     0    29    16     0
+[7,]     0    18     0     0     0     0     0    28     0
+[8,]     0     0     0    18     0    18     0    22     0</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+We will now apply the clr_on_data() function to the previous data, 
+using 0.33 as prevalence threshold for the filt_data() 
+part and 0.5 for the pseudocount() part.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+The results of the pipeline are the following:</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Filtered sample</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     OTU_1 OTU_8
+[1,]    17     9
+[2,]     8    25
+[3,]    30    21
+[4,]    16    19
+[5,]     0    15
+[6,]     0    16
+[7,]     0    28
+[8,]     0    22</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Log transformed data</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     OTU_1 OTU_8
+[1,]  0.32 -0.32
+[2,] -0.57  0.57
+[3,]  0.18 -0.18
+[4,] -0.09  0.09
+[5,] -1.70  1.70
+[6,] -1.73  1.73
+[7,] -2.01  2.01
+[8,] -1.89  1.89</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Correlation matrix</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      OTU_1 OTU_8
+OTU_1     1    -1
+OTU_8    -1     1</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+#-----------------------------------------------------------------------#</code></pre>
+</div>
 </div>
 </section>
 <section id="norta_simulation.r" class="level3">
-<h3 class="anchored" data-anchor-id="norta_simulation.r">NorTa_simulation.R</h3>
-<p><span style="color:green"><em>What it does:</em></span></p>
-<p><span style="color:green"><em>Why is it here:</em></span></p>
-<p><span style="color:green"><em>How it works:</em></span></p>
+<h3 class="anchored" data-anchor-id="norta_simulation.r"><span style="color:cyan">NorTa_simulation.R</span></h3>
+<p><span style="color:lime"><em>What it does:</em></span> defines the function <code>norta_simulation()</code>, which builds a correlation matrix with <code>generate_matrix_factors()</code> and then simulates a sparse count dataset from it, following the NorTA (“Normal To Anything”) approach: correlated normal data are converted to uniform percentiles and then mapped through the quantile function of a Zero-Inflated Negative Binomial (ZINB) distribution.</p>
+<p><span style="color:lime"><em>Why is it here:</em></span> the genesis of this script was part of the work that lead me to obtain <code>data_sim_ph_driven.R</code>.<br>
+I needed a script that allowed me to generate compositional data.<br>
+Why though? Because to validate a correlation-estimation method, it is useful to have simulated data with a known correlation structure.<br>
+This was part of the work in the original paper and I wanted to try to create my version for it.</p>
+<p><span style="color:lime"><em>How it works:</em></span> <code>norta_simulation(n, n_groups, N, mu, size, phi, seed)</code>:</p>
+<ul>
+<li>builds the correlation matrix and simulates <code>N</code> correlated normal samples from it;</li>
+<li>converts the normal data to uniform percentiles via <code>pnorm()</code> (a monotonic transformation, so rank correlation is preserved);</li>
+<li>maps the percentiles through the ZINB quantile function, using a single <code>phi</code> (zero-inflation probability) shared by all taxa.</li>
+</ul>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># brings the NorTa_simulation script into scope</span></span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(</span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
-<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">path =</span> <span class="fu">here</span>(),</span>
-<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">"^NorTa_simulation</span><span class="sc">\\</span><span class="st">.R$"</span>,</span>
-<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">recursive =</span> <span class="cn">TRUE</span></span>
-<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+#-----------------------------------------------------------------------#</code></pre>
+</div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Caricamento del pacchetto richiesto: stats4</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Caricamento del pacchetto richiesto: splines</code></pre>
 </div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+The following data are generated with the norta_simulation()
+function defined in the NorTa_simulation.R script, using the
+following parameters:
+      - n = 9;
+
+      - n_groups = 3;
+
+      - N = 11;
+
+      - seed = 42;</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Number of latent groups: 3 
+Zero pairs in R_true (exact, by construction): 54 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Data generated with n_groups = 3 and n = 9</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9]
+ [1,]   24   15   29    0   18    0   18    0   29
+ [2,]   23   19   27    0   13    0   13    0   27
+ [3,]   21   14    0    0   18    0   18   24    0
+ [4,]   33   13   14    0   19    0   19   19   14
+ [5,]   23    0   16    0   27    0   27   17   16
+ [6,]    0   19   21   27   12   27   12    0   21
+ [7,]   20    0   21   12   32   12   32    7   21
+ [8,]   17   23    0   16    0   16    0   27    0
+ [9,]    0   16    0   23   17   23   17   21    0
+[10,]   19   25    0   14    0   14    0   22    0
+[11,]   25    0   30    0   29    0   29    0   30</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Correlation matrix with n_groups = 3 and n = 9</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9]
+ [1,]    1    0    0   -1    0   -1    0    0    0
+ [2,]    0    1    0    0   -1    0   -1    0    0
+ [3,]    0    0    1    0    0    0    0   -1    1
+ [4,]   -1    0    0    1    0    1    0    0    0
+ [5,]    0   -1    0    0    1    0    1    0    0
+ [6,]   -1    0    0    1    0    1    0    0    0
+ [7,]    0   -1    0    0    1    0    1    0    0
+ [8,]    0    0   -1    0    0    0    0    1   -1
+ [9,]    0    0    1    0    0    0    0   -1    1</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+The following data are generated with the norta_simulation()
+function defined in the NorTa_simulation.R script, using the
+following parameters:
+      - n = 10;
+
+      - n_groups = 10;
+
+      - N = 10;
+
+      - seed = 42;
+
+With a number of groups (n_groups) equal to the number of taxa 
+(number of taxa is the parameter n), it will resolve in having
+zero taxa correlated to each other, leading to a unitary correlation matrix.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Number of latent groups: 10 
+Zero pairs in R_true (exact, by construction): 90 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Data generated with n_groups = n</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+ [1,]   21   14    0    0   26   13    0   15   26    31
+ [2,]   11   14    0   20    0   20   22   24    0    21
+ [3,]    0    0    0    0   17   18   12   22    0     0
+ [4,]   20    0   27   11   22   19    0   28   22    17
+ [5,]   19   22   17    0   19   12   18   21   27     0
+ [6,]   26   19   24   24   22    0   16   21    0     0
+ [7,]   21   22   20    0    0   28   19   17   15     0
+ [8,]   21   14   15   24   23   27   10   22   27     0
+ [9,]    0    0    0   17   22   26   24    0   30     0
+[10,]   17   11   15   18   18   16   17    9    8     0</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Correlation matrix with n_groups = n</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+ [1,]    1    0    0    0    0    0    0    0    0     0
+ [2,]    0    1    0    0    0    0    0    0    0     0
+ [3,]    0    0    1    0    0    0    0    0    0     0
+ [4,]    0    0    0    1    0    0    0    0    0     0
+ [5,]    0    0    0    0    1    0    0    0    0     0
+ [6,]    0    0    0    0    0    1    0    0    0     0
+ [7,]    0    0    0    0    0    0    1    0    0     0
+ [8,]    0    0    0    0    0    0    0    1    0     0
+ [9,]    0    0    0    0    0    0    0    0    1     0
+[10,]    0    0    0    0    0    0    0    0    0     1</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+#-----------------------------------------------------------------------#</code></pre>
+</div>
 </div>
 </section>
 <section id="data_sim_ph_driven.r" class="level3">
-<h3 class="anchored" data-anchor-id="data_sim_ph_driven.r">data_sim_ph_driven.R</h3>
-<p><span style="color:green"><em>What it does:</em></span></p>
-<p><span style="color:green"><em>Why is it here:</em></span></p>
-<p><span style="color:green"><em>How it works:</em></span></p>
+<h3 class="anchored" data-anchor-id="data_sim_ph_driven.r"><span style="color:cyan">data_sim_ph_driven.R</span></h3>
+<p><span style="color:lime"><em>What it does:</em></span> follows the same NorTA approach as <code>NorTa_simulation.R</code>, but sparsity is no longer a single value shared by all taxa: each taxon is given its own zero-inflation probability, based on the distance between the environmental pH and that taxon’s own pH optimum.</p>
+<p><span style="color:lime"><em>Why is it here:</em></span> this script represents the main extension proposed in this project.<br>
+Rather than treating sparsity as an arbitrary simulation parameter, it derives it from a biological ambiental parameter (pH), so that the resulting sparsity pattern has an ecological interpretation.</p>
+<p><span style="color:lime"><em>How it works:</em></span> <code>data_sim_ph_driven(n_taxa, N_sample, ph, n_groups, ...)</code>:</p>
+<ul>
+<li>assigns each taxon a random pH optimum and tolerance (niche width);</li>
+<li>computes each taxon’s zero-inflation probability from a Gaussian “suitability” curve centred on its own optimum: well-matched taxa get a low zero-inflation probability, poorly-matched taxa get a high one;</li>
+<li>runs the same NorTA steps as <code>NorTa_simulation.R</code>, using this per-taxon zero-inflation vector instead of a single shared value.</li>
+</ul>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># brings the data_sim_ph_driven script into scope</span></span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(</span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">path =</span> <span class="fu">here</span>(),</span>
-<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">"^data_sim_ph_driven</span><span class="sc">\\</span><span class="st">.R$"</span>,</span>
-<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">recursive =</span> <span class="cn">TRUE</span></span>
-<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="co"># brings the data_sim_ph_driven script into scope</span></span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(</span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
+<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">path =</span> <span class="fu">here</span>(),</span>
+<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">"^data_sim_ph_driven</span><span class="sc">\\</span><span class="st">.R$"</span>,</span>
+<span id="cb60-6"><a href="#cb60-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb60-7"><a href="#cb60-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">recursive =</span> <span class="cn">TRUE</span></span>
+<span id="cb60-8"><a href="#cb60-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb60-9"><a href="#cb60-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 </section>
 <section id="standalone-analysis" class="level2">
-<h2 class="anchored" data-anchor-id="standalone-analysis"><span style="color:orange">Standalone analysis</span></h2>
+<h2 class="anchored" data-anchor-id="standalone-analysis"><span style="color:violet">Standalone analysis</span></h2>
 <p>The final level of complexity of all the project.<br>
 The scripts presented in this section perform the main statistical analyses of the project.<br>
 Each analysis is designed to investigate a specific issue identified in the original paper and to assess its potential implications for the results.</p>
 <section id="compositional_bias_d_p.r" class="level3">
-<h3 class="anchored" data-anchor-id="compositional_bias_d_p.r">compositional_bias_D_P.R</h3>
-<p><span style="color:green"><em>What it does:</em></span></p>
-<p><span style="color:green"><em>Why is it here:</em></span></p>
-<p><span style="color:green"><em>How it works:</em></span></p>
+<h3 class="anchored" data-anchor-id="compositional_bias_d_p.r"><span style="color:cyan">compositional_bias_D_P.R</span></h3>
+<p><span style="color:lime"><em>What it does:</em></span> replicates Section 3.1 of the original paper: it quantifies how much the L1 and CLR normalizations distort correlation estimates, as dimensionality (D) and within-dataset diversity (P) vary.<br>
+The ground truth used is a fully uncorrelated dataset (true correlation exactly zero everywhere), so that any non-zero correlation observed after normalization can be attributed entirely to the normalization method itself.</p>
+<p><span style="color:lime"><em>Why is it here:</em></span> it provides a direct, quantitative answer to whether CLR actually outperforms L1, and by how much, depending on dimensionality and diversity, rather than relying on a purely qualitative claim.</p>
+<p><span style="color:lime"><em>How it works:</em></span> for each (D, P) combination on a 15x15 grid (a reduced version of the paper’s 40x39 grid, using N = 5,000 samples instead of 10,000, for time constraints):</p>
+<ul>
+<li>generates uncorrelated Gaussian data and tunes its diversity to the target P (via <code>pielou_ind()</code> and a numerical root search);</li>
+<li>applies the L1 and CLR normalizations and computes the resulting correlation matrices;</li>
+<li>records the mean absolute error of each method against the true (zero) correlation.</li>
+</ul>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># brings the compositional_bias_D_P script into scope</span></span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(</span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
-<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">path =</span> <span class="fu">here</span>(),</span>
-<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">"^compositional_bias_D_P</span><span class="sc">\\</span><span class="st">.R$"</span>,</span>
-<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">recursive =</span> <span class="cn">TRUE</span></span>
-<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="co"># brings the compositional_bias_D_P script into scope</span></span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(</span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">path =</span> <span class="fu">here</span>(),</span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">"^compositional_bias_D_P</span><span class="sc">\\</span><span class="st">.R$"</span>,</span>
+<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb61-7"><a href="#cb61-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">recursive =</span> <span class="cn">TRUE</span></span>
+<span id="cb61-8"><a href="#cb61-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb61-9"><a href="#cb61-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Running compositional bias analysis over a 15 x 15 grid (D x P), N = 5000 samples per dataset.
 This replicates a reduced version of Section 3.1 in Fuschi et al. (2025).
@@ -741,23 +937,39 @@ Results saved to outputs/compositional_bias_results.rds ( 225 rows ).</code></pr
 <div class="cell-output cell-output-stdout">
 <pre><code>Heatmap saved to outputs/compositional_bias_heatmap.png</code></pre>
 </div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="co"># display the heatmap previously generated by compositional_bias_D_P.R</span></span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(</span>
+<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
+<span id="cb64-4"><a href="#cb64-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">path =</span> <span class="fu">here</span>(),</span>
+<span id="cb64-5"><a href="#cb64-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">"^compositional_bias_heatmap</span><span class="sc">\\</span><span class="st">.png$"</span>,</span>
+<span id="cb64-6"><a href="#cb64-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb64-7"><a href="#cb64-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">recursive =</span> <span class="cn">TRUE</span></span>
+<span id="cb64-8"><a href="#cb64-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb64-9"><a href="#cb64-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="outputs/compositional_bias_heatmap.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
 </div>
 </section>
-<section id="ph_pielou_confrontation.r" class="level3">
-<h3 class="anchored" data-anchor-id="ph_pielou_confrontation.r">ph_pielou_confrontation.R</h3>
-<p><span style="color:green"><em>What it does:</em></span> uses <code>data_sim_ph_driven()</code> across a pH gradient, at five different levels of pH tolerance, and tracks how the Pielou index changes, showing that narrow-tolerance (“specialist”) communities produce noisier, lower evenness, while wide-tolerance (“generalist”) communities stay stable and high.</p>
-<p><span style="color:green"><em>Why is it here:</em></span> This is the final exame of this project. I needed something that could test how data_sim_ph_driven.R could have been employed (in this case to simulate how generalists vs specialists bacteria behave at the same pH).</p>
-<p><span style="color:green"><em>How it works:</em></span> loops over a pH gradient for five tolerance scenarios, computes <code>pielou_ind()</code> at each point, plots the five curves, and combines them into a single figure.</p>
+<section id="ph_dataset_diversity_confrontation.r" class="level3">
+<h3 class="anchored" data-anchor-id="ph_dataset_diversity_confrontation.r"><span style="color:cyan">ph_dataset_diversity_confrontation.R</span></h3>
+<p><span style="color:lime"><em>What it does:</em></span> uses <code>data_sim_ph_driven()</code> across a pH gradient, at five different levels of pH tolerance, and tracks how the within dataset diversity parameter changes, showing that narrow-tolerance (“specialist”) communities produce noisier, lower evenness, while wide-tolerance (“generalist”) communities stay stable and high.</p>
+<p><span style="color:lime"><em>Why is it here:</em></span> this is the final example presented in this project, illustrating a concrete use case for <code>data_sim_ph_driven.R</code>: simulating how generalist and specialist bacteria respond differently to the same environmental pH.</p>
+<p><span style="color:lime"><em>How it works:</em></span> loops over a pH gradient for five tolerance scenarios, computes <code>pielou_ind()</code> at each point, plots the five curves, and combines them into a single figure.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># brings the ph_pielou_confrontation script into scope</span></span>
-<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(</span>
-<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
-<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">path =</span> <span class="fu">here</span>(),</span>
-<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">"^ph_dataset_diversity_confrontation</span><span class="sc">\\</span><span class="st">.R$"</span>,</span>
-<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">recursive =</span> <span class="cn">TRUE</span></span>
-<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="co"># brings the ph_dataset_diversity_confrontation script into scope</span></span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(</span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">path =</span> <span class="fu">here</span>(),</span>
+<span id="cb65-5"><a href="#cb65-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">"^ph_dataset_diversity_confrontation</span><span class="sc">\\</span><span class="st">.R$"</span>,</span>
+<span id="cb65-6"><a href="#cb65-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb65-7"><a href="#cb65-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">recursive =</span> <span class="cn">TRUE</span></span>
+<span id="cb65-8"><a href="#cb65-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb65-9"><a href="#cb65-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>
 Caricamento pacchetto: 'gridExtra'</code></pre>
@@ -770,7 +982,7 @@ Caricamento pacchetto: 'gridExtra'</code></pre>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="notebook_exam_statistical_data_analysis_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="notebook_exam_statistical_data_analysis_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -804,7 +1016,7 @@ pH and within dataset diversity calculated are:
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="notebook_exam_statistical_data_analysis_files/figure-html/unnamed-chunk-10-2.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="notebook_exam_statistical_data_analysis_files/figure-html/unnamed-chunk-11-2.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -838,7 +1050,7 @@ pH and dataset diversity calculated are:
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="notebook_exam_statistical_data_analysis_files/figure-html/unnamed-chunk-10-3.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="notebook_exam_statistical_data_analysis_files/figure-html/unnamed-chunk-11-3.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -872,7 +1084,7 @@ pH and dataset diversity calculated are:
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="notebook_exam_statistical_data_analysis_files/figure-html/unnamed-chunk-10-4.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="notebook_exam_statistical_data_analysis_files/figure-html/unnamed-chunk-11-4.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -933,7 +1145,7 @@ pH and dataset diversity calculated are:
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="notebook_exam_statistical_data_analysis_files/figure-html/unnamed-chunk-10-5.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="notebook_exam_statistical_data_analysis_files/figure-html/unnamed-chunk-11-5.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -944,6 +1156,9 @@ The final plot has been saved in the &lt;Plots&gt; folder
 </div>
 </div>
 </section>
+</section>
+<section id="conclusions" class="level2">
+<h2 class="anchored" data-anchor-id="conclusions"><span style="color:cyan">Conclusions</span></h2>
 </section>
 </section>
 

@@ -1,4 +1,4 @@
-# ph_pielou_confrontation.R
+# ph_dataset_diversity_confrontation.R
 #
 # Purpose:
 #   Uses data_sim_ph_driven.R to generate five families of simulated
@@ -21,8 +21,9 @@
 # Outputs:
 #   - five bar charts printed to screen (one per tolerance scenario),
 #     each showing dataset diversity vs pH
-#   - Plots/ph_pielou_confrontation.png: the five charts combined into
-#     a single 3x2 figure, with a caption panel in the last cell
+#   - Plots/ph_dataset_diversity_confrontation.png: the five charts
+#     combined into a single 3x2 figure, with a caption panel in the
+#     last cell
 
 # gridExtra: arrange multiple plots (ggplot or grob) in a grid
 # https://cran.r-project.org/web/packages/gridExtra/index.html
@@ -346,7 +347,7 @@ caption_panel <- textGrob(
 
 # generate the final plot in the "Plots" folder
 png(
-  filename = here("Plots", "ph_dataset diversity_confrontation.png"),
+  filename = here("Plots", "ph_dataset_diversity_confrontation.png"),
   width = 4500, height = 3000, res = 300
 )
 
