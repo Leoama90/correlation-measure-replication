@@ -1,6 +1,11 @@
 ---
 title: "notebook_exam_statistical_data_analysis"
-format: html
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    toc-title: "Indice"
+    toc-location: left
 theme:
   light: flatly
   dark: darkly
@@ -19,9 +24,7 @@ library(tidyverse)
 # Introduction {style="color:orange"}
 
 The aim of this notebook is to explain the scripts found in the folder `02_new_scripts/`.\
-Some scripts require the user to provide an input so, instead of sourcing and
-running them in this notebook, some results have been generated outside this script
-(using the script `for_notebook.R`) and then pasted in their relative code chunks.  
+Some scripts require the user to provide an input so, instead of sourcing and running them in this notebook, some results have been generated outside this script (using the script `for_notebook.R`) and then pasted in their relative code chunks.\
 To separate the code chunks from the plain text, spacing bars like this
 
 ```{r}
@@ -29,7 +32,8 @@ To separate the code chunks from the plain text, spacing bars like this
 # spacing bar
 cat("\n#-----------------------------------------------------------------------#\n")
 ```
-were put at the begin and at the end of the code chunks that they need to separe.   
+
+were put at the begin and at the end of the code chunks that they need to separe.\
 Scripts can be divided into three categories:
 
 - [**base functions**]{style="color:violet"}: small scripts that generate simple functions (a wise man once said: "if you have to do it more than once, instead write a script!").\
@@ -480,7 +484,7 @@ cat("\n#-----------------------------------------------------------------------#
 [*What it does:*]{style="color:lime"} defines the function `norta_simulation()`, which builds a correlation matrix with `generate_matrix_factors()` and then simulates a sparse count dataset from it, following the NorTA ("Normal To Anything") approach: correlated normal data are converted to uniform percentiles and then mapped through the quantile function of a Zero-Inflated Negative Binomial (ZINB) distribution.
 
 [*Why is it here:*]{style="color:lime"} the genesis of this script was part of the work that lead me to obtain `data_sim_ph_driven.R`.\
-I needed a script that allowed me to generate compositional data.  
+I needed a script that allowed me to generate compositional data.\
 Why though? Because to validate a correlation-estimation method, it is useful to have simulated data with a known correlation structure.\
 This was part of the work in the original paper and I wanted to try to create my version for it.
 
@@ -569,7 +573,7 @@ cat("\n#-----------------------------------------------------------------------#
 
 [*What it does:*]{style="color:lime"} follows the same NorTA approach as `NorTa_simulation.R`, but sparsity is no longer a single value shared by all taxa: each taxon is given its own zero-inflation probability, based on the distance between the environmental pH and that taxon's own pH optimum.
 
-[*Why is it here:*]{style="color:lime"} this script represents the main extension proposed in this project.  
+[*Why is it here:*]{style="color:lime"} this script represents the main extension proposed in this project.\
 Rather than treating sparsity as an arbitrary simulation parameter, it derives it from a biological ambiental parameter (pH), so that the resulting sparsity pattern has an ecological interpretation.
 
 [*How it works:*]{style="color:lime"} `data_sim_ph_driven(n_taxa, N_sample, ph, n_groups, ...)`:
@@ -578,7 +582,16 @@ Rather than treating sparsity as an arbitrary simulation parameter, it derives i
 - computes each taxon's zero-inflation probability from a Gaussian "suitability" curve centred on its own optimum: well-matched taxa get a low zero-inflation probability, poorly-matched taxa get a high one;
 - runs the same NorTA steps as `NorTa_simulation.R`, using this per-taxon zero-inflation vector instead of a single shared value.
 
+Unlike `filt_data()`, `pseudocount()` and `clr_on_data()`, this function has **no interactive input**: every parameter (including `ph`, `sigma_min`/`sigma_max` and `phi_max`) is an explicit argument, so it can be sourced and run directly in this notebook, exactly like `NorTa_simulation.R`.
+
+To make the pH-driven mechanism visible, the same set of taxa (same `seed`, same pH optima/tolerances) is simulated twice, changing only the community's environmental `ph`: once close to the taxa's average optimum, and once shifted towards a more acidic environment. Comparing `phi_per_taxon` and `total_zero_rate` between the two runs shows the mechanism at work: taxa whose optimum is far from the community pH become sparser, without ever touching a fixed, shared zero-inflation parameter.
+
 ```{r}
+#| echo: false
+
+# spacing bar
+cat("\n#-----------------------------------------------------------------------#\n")
+
 # brings the data_sim_ph_driven script into scope
 source(
   list.files(
@@ -588,6 +601,73 @@ source(
     recursive = TRUE
   )
 )
+
+# explain the user how the data are generated and with which parameters
+cat("\nThe following data are generated with the data_sim_ph_driven()
+function defined in the data_sim_ph_driven.R script, using the
+following parameters:
+      - n_taxa = 6;\n
+      - N_sample = 8;\n
+      - n_groups = 2;\n
+      - ph = 6.5 (close to the middle of the default niche range);\n
+      - seed = 42;\n")
+
+# additional space
+cat("\n")
+
+# generate the dataset for a community with pH = 6.5
+sim_ph_mid <- data_sim_ph_driven(
+  n_taxa = 6, N_sample = 8, ph = 6.5, n_groups = 2, seed = 42
+)
+
+# title of the per-taxon pH optima
+cat("\npH optimum assigned to each taxon (same for both simulations below,
+since the same seed is used):\n")
+# print the pH optimum of every taxon
+print(round(sim_ph_mid$ph_optima, 2))
+
+# title of the resulting zero-inflation probabilities
+cat("\nZero-inflation probability per taxon, with community pH = 6.5:\n")
+# print the zero-inflation probability of every taxon
+print(round(sim_ph_mid$phi_per_taxon, 2))
+
+# title of the overall zero rate
+cat("\nOverall fraction of zeroes in the simulated counts (pH = 6.5):\n")
+# print the achieved overall zero rate
+print(round(sim_ph_mid$total_zero_rate, 2))
+
+# explain what is changing in the second simulation
+cat("\nWe now repeat the exact same simulation (same seed, same taxa,
+same pH optima and tolerances), changing only the community pH to 5.6
+(a more acidic environment):\n")
+
+# additional space
+cat("\n")
+
+# generate the dataset for a more acidic community, pH = 5.6
+sim_ph_acidic <- data_sim_ph_driven(
+  n_taxa = 6, N_sample = 8, ph = 5.6, n_groups = 2, seed = 42
+)
+
+# title of the resulting zero-inflation probabilities
+cat("\nZero-inflation probability per taxon, with community pH = 5.6:\n")
+# print the zero-inflation probability of every taxon
+print(round(sim_ph_acidic$phi_per_taxon, 2))
+
+# title of the overall zero rate
+cat("\nOverall fraction of zeroes in the simulated counts (pH = 5.6):\n")
+# print the achieved overall zero rate
+print(round(sim_ph_acidic$total_zero_rate, 2))
+
+# explain the comparison between the two simulations
+cat("\nComparing the two phi_per_taxon vectors, taxa with a pH optimum
+close to 5.6 now have a lower zero-inflation probability than before,
+while taxa optimized for higher pH values become sparser: the same
+taxon can go from 'common' to 'rare' purely because the environmental
+pH changed, without touching any shared/fixed sparsity parameter.\n")
+
+# spacing bar
+cat("\n#-----------------------------------------------------------------------#\n")
 ```
 
 ## [Standalone analysis]{style="color:violet"}
@@ -601,7 +681,8 @@ Each analysis is designed to investigate a specific issue identified in the orig
 [*What it does:*]{style="color:lime"} replicates Section 3.1 of the original paper: it quantifies how much the L1 and CLR normalizations distort correlation estimates, as dimensionality (D) and within-dataset diversity (P) vary.\
 The ground truth used is a fully uncorrelated dataset (true correlation exactly zero everywhere), so that any non-zero correlation observed after normalization can be attributed entirely to the normalization method itself.
 
-[*Why is it here:*]{style="color:lime"} it provides a direct, quantitative answer to whether CLR actually outperforms L1, and by how much, depending on dimensionality and diversity, rather than relying on a purely qualitative claim.
+[*Why is it here:*]{style="color:lime"} it provides a direct, quantitative answer to whether CLR actually outperforms L1, and by how much, depending on dimensionality and diversity, confirming the results obtained in the original paper.  
+This script exists, basically, because I wanted to replicate the paper's results myself, rather than taking them at face value. 
 
 [*How it works:*]{style="color:lime"} for each (D, P) combination on a 15x15 grid (a reduced version of the paper's 40x39 grid, using N = 5,000 samples instead of 10,000, for time constraints):
 
@@ -636,7 +717,7 @@ knitr::include_graphics(
 
 [*What it does:*]{style="color:lime"} uses `data_sim_ph_driven()` across a pH gradient, at five different levels of pH tolerance, and tracks how the within dataset diversity parameter changes, showing that narrow-tolerance ("specialist") communities produce noisier, lower evenness, while wide-tolerance ("generalist") communities stay stable and high.
 
-[*Why is it here:*]{style="color:lime"} this is the final example presented in this project, illustrating a concrete use case for `data_sim_ph_driven.R`: simulating how generalist and specialist bacteria respond differently to the same environmental pH.
+[*Why is it here:*]{style="color:lime"} this is the final script presented in this project. `data_sim_ph_driven.R` is, in my humble opinion, a good simulation tool, but a tool with no job to do is just a tool, so it needed to be put to work and see what it could actually produce. Rather than reaching for something overly elaborate, I chose to explore a result most people would already expect intuitively: specialist taxa tend to generate environments with lower diversity.
 
 [*How it works:*]{style="color:lime"} loops over a pH gradient for five tolerance scenarios, computes `pielou_ind()` at each point, plots the five curves, and combines them into a single figure.
 
@@ -651,5 +732,61 @@ source(
   )
 )
 ```
+
+## [Project explanation]{style="color:violet"}
+
+The previous sections documented each script *in isolation*: what it does, why it exists, and how it works, each with a small, self-contained example. This section instead follows the *actual logical path* of the project, from the initial research question to the final results, showing how the base functions and orchestrators are chained together into the two standalone analyses.  
+In short: earlier, we looked at the tools in the toolbox, now we look why and how
+we needed those tools.
+
+### [Starting point and research question]{style="color:cyan"}
+
+The project starts from a specific claim made in the original paper (Fuschi et al., 2025): that the CLR transformation, combined with Pearson's correlation, is a reliable way to estimate taxon-taxon correlations in high-dimensional, compositional metagenomic data, and that this reliability improves with dimensionality (the "blessing of dimensionality").  
+Two questions follow directly from this claim:
+
+1.  *How much* compositional bias does CLR actually remove compared to a simpler normalization (L1), and how does this depend on the number of taxa (D) and on how evenly abundances are distributed within a sample (P, the Pielou index)?
+2.  Can the sparsity patterns typically simulated to test this kind of method be made more biologically realistic, instead of relying on a single, arbitrary zero-inflation parameter shared by every taxon?
+
+These two questions map directly onto the two standalone analyses of the project.
+
+### [Building the tools, in the order they were needed]{style="color:cyan"}
+
+To answer question 1 (`compositional_bias_D_P.R`), three ingredients were needed first:
+
+- a way to measure within-dataset diversity for any simulated dataset → `pielou_ind()`;
+- a way to compute CLR (reused directly inside `compositional_bias_D_P.R`, following the same logic already implemented for real data in `clr_pearson.R`);
+- no correlation matrix generator was needed here, since the ground truth for this analysis is deliberately the identity matrix (zero true correlation everywhere), so that any correlation measured after normalization is attributable only to the compositional constraint.
+
+To answer question 2 (`data_sim_ph_driven.R`, used in `ph_dataset_diversity_confrontation.R`), a different chain of tools was needed:
+
+- a way to generate a controlled, valid correlation matrix for the simulated taxa → `generate_matrix_factors()`;
+- a way to turn that correlation matrix into a realistic, sparse count dataset → the NorTA approach, first implemented with a single shared zero-inflation parameter in `NorTa_simulation.R`;
+- the actual extension of the project: replacing that single shared parameter with a per-taxon, pH-driven zero-inflation probability → `data_sim_ph_driven.R`;
+- `pielou_ind()` again, this time to measure how the *pattern* of sparsity (not just its overall amount) affects within-dataset diversity along a pH gradient.
+
+In parallel, on the real-data side of the project, `datasummary.R`, `filt_data.R` and `pseudocount.R` were written to bring a real OTU table into a state where CLR is applicable (no zeroes, low-quality OTUs removed), and `clr_pearson.R` orchestrates them into the same CLR + Pearson pipeline that the simulation-based analyses are meant to stress-test.
+
+### [The full pipeline]{style="color:cyan"}
+
+Putting everything together, the analysis follows this order:
+
+1.  **Real-data pipeline** (`clr_pearson.R`, using `datasummary.R`, `filt_data.R`, `pseudocount.R`): a raw OTU table is summarized, filtered, pseudocounted and CLR-transformed, producing an OTU x OTU Pearson correlation matrix. This is the concrete instance of the method whose reliability the original paper discusses, and which the rest of the project investigates more systematically.
+
+2.  **Compositional bias analysis** (`compositional_bias_D_P.R`, using `pielou_ind()`): stepping back from any single real dataset, this analysis asks how much bias CLR (and, for comparison, L1) introduces *in general*, as a function of D (dimensionality) and P (within dataset diversity), using fully uncorrelated synthetic data as ground truth.  
+The output (the MAE heatmap) is a direct, quantitative confirm on the "blessing of dimensionality" claim.
+
+3.  **Realistic sparsity simulation** (`generate_matrix_factors.R` → `NorTa_simulation.R` → `data_sim_ph_driven.R`): moving from an arbitrary, single zero-inflation parameter to a per-taxon, ecologically motivated one, this chain produces simulated datasets whose sparsity pattern has a biological interpretation (pH niches), rather than being a free simulation knob.
+
+4.  **pH-driven diversity analysis** (`ph_dataset_diversity_confrontation.R`, using `data_sim_ph_driven()` and `pielou_ind()`): the pH-driven simulator is finally used to study how community evenness responds to an environmental gradient, contrasting specialist (narrow pH tolerance) and generalist (wide pH tolerance) taxa.
+
+Steps 1-2 and 3-4 can be run independently of each other: they answer the two separate research questions above, and neither depends on the other's output. What they share is the same underlying toolkit (`pielou_ind()`, and the CLR logic), which is why both are presented in the same project rather than as two unrelated scripts.
+
+### [How to reproduce it]{style="color:cyan"}
+
+To reproduce the whole analysis from scratch (as opposed to the pre-generated `.rds` files loaded above for the interactive scripts):
+
+- run `compositional_bias_D_P.R` on its own: it has no interactive input and, when sourced, regenerates `outputs/compositional_bias_results.rds` and `outputs/compositional_bias_heatmap.png` from scratch;
+- run `ph_dataset_diversity_confrontation.R` on its own: it also has no interactive input, and regenerates `Plots/ph_dataset_diversity_confrontation.png` from scratch;
+- for the real-data pipeline (`clr_pearson.R`), either supply `prevalence_threshold` explicitly to `filt_data()` and answer the `pseudocount()` prompt, or use `for_notebook.R` as a template for a non-interactive run with fixed thresholds, exactly as was done to produce the `.rds` files loaded in this notebook.
 
 ## [Conclusions]{style="color:cyan"}

@@ -45,6 +45,35 @@ ul.task-list li input[type="checkbox"] {
 <link href="literature_review_files/libs/bootstrap/bootstrap-dark-65a9ced8f92a8dd03898fd51d5651c73.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <link href="literature_review_files/libs/bootstrap/bootstrap-8fd0a66505689c34dc5b7c06239434da.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -250,8 +279,9 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="introduction" class="level1" style="color:orange">
-<h1 style="color:orange">Introduction</h1>
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<div style="color:orange">
 <p>Let’s start from the beginning: what is microbiology?</p>
 <p>The word itself is composed of three elements derived from Ancient Greek:</p>
 <ul>
@@ -261,37 +291,137 @@ ul.task-list li input[type="checkbox"] {
 </ul>
 <p>The term can therefore be understood as “the study of small life forms” or, more precisely, “the study of microorganisms” (<a href="https://en.wikipedia.org/wiki/Microbiology">microbiology</a> wikipedia link for reference). Although the existence of microorganisms had already been hypothesized in ancient times, the development of microscopy made their direct observation possible.<br>
 Antonie van Leeuwenhoek (1632–1723) is commonly regarded as one of the founders of microbiology and was the first person to describe microorganisms through observations made with microscopes that he constructed himself (<a href="https://en.wikipedia.org/wiki/Antonie_van_Leeuwenhoek">Van Leeuwenhoek</a> wikipedia link for reference). Since then, microbiology has evolved considerably.<br>
-In particular, the way in which the world of microorganisms was studied changed significantly with the advent of molecular biology. Classical microbiology mainly relied on the isolation and cultivation of microorganisms in the laboratory.<br>
-The development of molecular biology(<a href="https://en.wikipedia.org/wiki/Molecular_biology">molecular biology</a> Wikipedia page for reference) introduced culture-independent methods based on the analysis of nucleic acids. Instead of observing microorganisms only through their morphological characteristics or their growth on culture media, researchers could investigate their genetic material directly.<br>
+In particular, the way in which the world of microorganisms was studied changed significantly with the advent of molecular biology.<br>
+Classical microbiology mainly relied on the isolation and cultivation of microorganisms in the laboratory.<br>
+The development of molecular biology (<a href="https://en.wikipedia.org/wiki/Molecular_biology">molecular biology</a> Wikipedia page for reference) introduced culture-independent methods based on the analysis of nucleic acids. Instead of observing microorganisms only through their morphological characteristics or their growth on culture media, researchers could investigate their genetic material directly.<br>
 A major development in this context was the introduction of next-generation sequencing (<a href="https://en.wikipedia.org/wiki/Massively_parallel_sequencing">NGS</a>) technologies.<br>
 NGS comprises a group of high-throughput sequencing methods that allow a large number of DNA fragments to be sequenced simultaneously.<br>
-In microbiology, these techniques can be used to characterize microorganisms through their DNA, either by targeting specific genetic markers or by sequencing the genetic material present in a sample more broadly.</p>
+In microbiology, these techniques can be used to characterize microorganisms through their DNA, either by targeting specific genetic markers or by sequencing the genetic material present in a sample more broadly.<br>
+These techniques have made it possible to study natural microbial communities directly in their own environment, giving rise to research fields such as the study of the human microbiota, whose composition varies across different anatomical sites and between individuals, or the global surveillance of antimicrobial resistance (Fuschi et al., 2025, drawing on Huttenhower et al., 2012; Lloyd-Price et al., 2017; Hendriksen et al., 2019).</p>
+</div>
 </section>
 <section id="the-problem-metagenomic-data" class="level1">
 <h1>The problem (metagenomic data)</h1>
+<div style="color:orange">
 <p>Metagenomic studies leverage Next-Generation Sequencing (NGS) technologies, such as 16S rRNA gene amplicon sequencing, RNA-seq, or whole-genome shotgun sequencing to profile microbial communities directly from environmental or host-associated samples.<br>
 Regardless of the specific sequencing protocol employed, the raw output consists of an abundance matrix of read counts, where each cell represents the number of sequencing reads mapped to a specific microbial reference or Operational Taxonomic Unit (OTU) within a given sample.<br>
 Metagenomic count data present several statistical and computational challenges:</p>
 <ul>
-<li><p><strong>Variable sequencing depth:</strong> the total number of reads, or library size, varies between samples because of technical differences rather than biological variation.</p></li>
-<li><p><strong>High sparsity:</strong> metagenomic matrices contain many zero counts. These may represent true biological absence or taxa that were not detected because their abundance was too low.</p></li>
+<li><p><strong>Variable sequencing depth:</strong> the total number of reads, or library size, varies between samples because of technical differences rather than biological variation. To remove this effect, a sum constraint is usually imposed over all taxa in a sample (1 for a probability, 100 for a percentage, or 10<sup>6</sup> for parts per million); this normalization is known as L1 normalization, and it turns the data into proportions, referred to as compositional data (Fuschi et al., 2025).</p></li>
+<li><p><strong>High sparsity:</strong> metagenomic matrices contain many zero counts. These may represent true biological absence or taxa that were not detected because their abundance was too low; as noted by Fuschi et al.&nbsp;(2025), it is common to find datasets where more than 70-80% of species are undetected, and these unobserved species should be interpreted as missing information rather than as a confirmed absence.</p></li>
 <li><p><strong>Non-Gaussian distributions:</strong> read counts are discrete, skewed, and often overdispersed, making classical methods based on normality assumptions unsuitable.</p></li>
-<li><p><strong>High dimensionality:</strong> metagenomic datasets may contain hundreds or thousands of microbial taxa, genes, or other features (e.g.: the dataset HMP2 used in the original paper have more 1000 taxa).</p></li>
-<li><p><strong>Unequal sequencing depth:</strong> raw counts must be normalized to make samples comparable. A common approach is L1 normalization, which divides each count by the total number of reads in the corresponding sample.</p></li>
+<li><p><strong>High dimensionality:</strong> metagenomic datasets may contain hundreds or thousands of microbial taxa, genes, or other features (e.g., the HMP2 dataset used in the original paper has more than 1000 taxa).</p></li>
 </ul>
-<p>After L1 normalization, the entries of each sample represent relative abundances and sum to one. This fixed-sum constraint makes metagenomic data compositional and introduces dependencies between their components. Therefore, standard statistical methods cannot always be applied directly due to the constraint imposed by the compositional nature of data..</p>
+<p>After L1 normalization, the entries of each sample represent relative abundances and sum to one. This fixed-sum constraint makes metagenomic data compositional and introduces dependencies between their components. Therefore, standard statistical methods cannot always be applied directly due to the constraint imposed by the compositional nature of data. As already observed by Pearson at the end of the 19th century, compositional data of this kind can generate spurious correlations between measurements, since the data lie on a simplex rather than in a Euclidean space (Fuschi et al., 2025).</p>
+</div>
 </section>
 <section id="compositional-data" class="level1">
 <h1>Compositional data</h1>
+<div style="color:orange">
+<p>Data are said to be <strong>compositional</strong> when only the <em>relative</em> magnitudes of their components carry information, while their absolute magnitudes are an artifact of an arbitrary total (e.g., the total number of sequencing reads for a sample). This framework was formalized by Aitchison (1982), who showed that such data live on a <strong>simplex</strong> rather than in ordinary Euclidean space, and proposed a family of log-ratio transformations to analyze them correctly; the same point is echoed by Fuschi et al.&nbsp;(2025), who note that it is dangerous to apply Euclidean-based metrics, such as ordinary Pearson correlation, directly to data of this kind.</p>
+<p>A simple numeric example makes the idea concrete. Consider two samples, each profiled for four taxa (A, B, C, D), where sample 2 was simply sequenced twice as deeply as sample 1, but the underlying microbial community is otherwise identical:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: center;">Taxon</th>
+<th style="text-align: center;">Sample 1 (raw counts)</th>
+<th style="text-align: center;">Sample 2 (raw counts)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">A</td>
+<td style="text-align: center;">40</td>
+<td style="text-align: center;">80</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">B</td>
+<td style="text-align: center;">30</td>
+<td style="text-align: center;">60</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">C</td>
+<td style="text-align: center;">20</td>
+<td style="text-align: center;">40</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">D</td>
+<td style="text-align: center;">10</td>
+<td style="text-align: center;">20</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>Total</strong></td>
+<td style="text-align: center;"><strong>100</strong></td>
+<td style="text-align: center;"><strong>200</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Taken at face value, sample 2 has twice as many reads for every taxon, which could naively be (mis)read as “sample 2 has more bacteria of every kind”. Applying L1 normalization, i.e.&nbsp;dividing each entry by its sample’s total, removes this artifact of sequencing depth:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: center;">Taxon</th>
+<th style="text-align: center;">Sample 1 (proportions)</th>
+<th style="text-align: center;">Sample 2 (proportions)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">A</td>
+<td style="text-align: center;">0.40</td>
+<td style="text-align: center;">0.40</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">B</td>
+<td style="text-align: center;">0.30</td>
+<td style="text-align: center;">0.30</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">C</td>
+<td style="text-align: center;">0.20</td>
+<td style="text-align: center;">0.20</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">D</td>
+<td style="text-align: center;">0.10</td>
+<td style="text-align: center;">0.10</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>Total</strong></td>
+<td style="text-align: center;"><strong>1.00</strong></td>
+<td style="text-align: center;"><strong>1.00</strong></td>
+</tr>
+</tbody>
+</table>
+<p>After normalization, the two samples are identical: the only information that survived is the <em>relative</em> abundance of each taxon within its own sample, exactly as compositional data analysis predicts. This is also the reason why a fixed-sum constraint (here, every row summing to 1) is unavoidable once counts are converted to proportions, and why this constraint alone is enough to introduce spurious correlations between taxa if ordinary Pearson correlation is applied directly to the proportions (Fuschi et al., 2025), a point taken up in detail in the next section.</p>
+</div>
 </section>
 <section id="correlation-estimation-and-compositional-bias" class="level1">
 <h1>Correlation estimation and compositional bias</h1>
+<div style="color:orange">
+<p>Once metagenomic counts are turned into proportions, network reconstruction typically starts from marginal correlations between taxa, i.e.&nbsp;pairwise correlations computed without controlling for the other taxa in the community. Fuschi et al.&nbsp;(2025) motivate this choice explicitly: although partial correlations remove indirect associations and are a powerful tool in their own right, they make it harder to isolate and interpret the biases introduced by compositionality and sparsity, which are the focus of the present analysis, whereas marginal correlations keep this analysis straightforward, at the cost of also inheriting whatever bias the underlying transformation introduces.</p>
+<p>To quantify how much bias a normalization method introduces, Fuschi et al.&nbsp;(2025) compare the correlation matrix estimated after normalization, <span class="math inline">\(R^K\)</span> (with <span class="math inline">\(K\)</span> = L1 or CLR), against the true, known correlation matrix <span class="math inline">\(R\)</span> used to generate the synthetic data, via the mean absolute error (MAE):</p>
+<p><span class="math display">\[
+\text{MAE}_{D,P}(K) = \frac{\sum_{i=1}^{D^2} \left| R^K_i - R_i \right|}{D^2}, \qquad K = \text{L1 or CLR}
+\]</span></p>
+<p>with MAE ranging from 0 (perfect agreement with the true correlation) to a maximum of 2 (a correlation estimated as exactly the opposite sign and magnitude of the truth). Using a fully uncorrelated ground truth (every true correlation equal to zero) across a grid of 1560 simulated datasets spanning dimensionality <span class="math inline">\(D\)</span> from 5 to 200 and within-dataset diversity <span class="math inline">\(P\)</span> from 0.025 to 0.975, they find that the two normalizations fail in qualitatively different ways: L1-based correlations are biased mainly by within-dataset diversity, becoming worse as abundances concentrate in fewer taxa, largely independently of <span class="math inline">\(D\)</span>; CLR-based correlations, instead, are essentially independent of diversity but decay rapidly with dimensionality, falling below a MAE of 0.01 once <span class="math inline">\(D \geq 100\)</span>. This is precisely the mechanism that <code>compositional_bias_D_P.R</code> in this project is built to reproduce, using the same identity ground-truth matrix and the same MAE definition, on a reduced grid.</p>
+<p>Fuschi et al.&nbsp;(2025) further validate this simulation-based picture on real data, comparing Pearson + CLR against other compositionality-aware methods (Rho, SparCC) on the HMP2 dataset (see Section 4 below). At high dimensionality (OTU-level data, 171 taxa), Rho and SparCC nearly coincide with Pearson + CLR (<span class="math inline">\(R \approx 0.99\)</span>), while Pearson + L1 deviates substantially (<span class="math inline">\(R = 0.81\)</span>); at low dimensionality (phylum-level data, 7 taxa, average diversity around 0.5), the gap widens further, with Pearson + L1 essentially failing to recover any meaningful structure (<span class="math inline">\(R = 0.15\)</span>). This real-data confirmation is what gives the simulation-based MAE analysis its practical relevance: the same D-dependence observed on purely synthetic, uncorrelated data reappears on real, correlated microbiome data.</p>
+</div>
 </section>
 <section id="transformations-for-compositional-data" class="level1">
 <h1>Transformations for compositional data</h1>
+<div style="color:orange">
+<p>The two normalizations compared throughout this project, L1 and CLR, both remove the effect of variable sequencing depth, but do so in different ways and with different consequences for correlation estimation.</p>
+<p><strong>L1 normalization</strong> simply divides each taxon’s count by the sample’s total count (library size), so that every sample’s entries sum to 1 (or to 100 for a percentage, or <span class="math inline">\(10^6\)</span> for parts per million); this is the transformation used in the numeric example in the “Compositional data” section above, and it is what turns raw counts into the relative abundances every compositional data method starts from (Fuschi et al., 2025). Its simplicity is also its main weakness: it removes the sequencing-depth artifact, but does nothing about the sum-to-one constraint itself, which remains a source of spurious correlation, especially when diversity is low.</p>
+<p><strong>CLR (centered log-ratio) transformation</strong>, part of the family of log-ratio transformations introduced by Aitchison (1982), instead divides each element of a sample by the <em>geometric mean</em> of that sample, on a logarithmic scale, equivalently, it subtracts the mean of the log-counts from each log-count, exactly as implemented in <code>clr_on_data()</code> and in <code>clr_transform()</code> in <code>compositional_bias_D_P.R</code>. Fuschi et al.&nbsp;(2025) note that this operation is isomorphic and isometric, preserving distances between samples, but it still introduces a sum constraint of its own (each transformed sample sums to 0 instead of 1); unlike L1’s constraint, however, this one becomes negligible as dimensionality grows, which is the core empirical finding discussed in the previous section.</p>
+<p>Since the logarithm is undefined at zero, CLR cannot be applied directly to raw, sparse count data: zeroes must first be replaced with small positive pseudocounts. Fuschi et al.&nbsp;(2025) replace zeroes with 65% of each sample’s detection limit specifically to minimize distortion of the covariance structure, and additionally compare several zero-replacement strategies from the <code>zCompositions</code> package (Palarea-Albaladejo &amp; Martín-Fernández, 2015), finding that the differences between strategies are generally limited. This is the same problem that <code>pseudocount.R</code> addresses in this project, using a user-defined (or, in the non-interactive variant, explicitly passed) fraction of the row-specific detection limit as the pseudocount, the same logic as the paper’s approach, generalized to any threshold rather than a single fixed 65%.</p>
+</div>
 </section>
 <section id="dimensionality-diversity-and-sparsity" class="level1">
 <h1>Dimensionality, diversity and sparsity</h1>
+<div style="color:orange">
+<p>The within-dataset diversity used throughout this project, denoted P, follows the definition given by Fuschi et al.&nbsp;(2025): the mean, across all samples of a dataset, of the Pielou index (Pielou, 1966), itself the Shannon entropy of a sample’s relative abundances normalized by the logarithm of the number of taxa D. This is exactly the quantity implemented in <code>pielou_ind.R</code> and used throughout the simulation-based analyses of this project.</p>
+</div>
 </section>
 <section id="synthetic-data-and-the-research-question" class="level1">
 <h1>Synthetic data and the research question</h1>

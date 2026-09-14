@@ -112,7 +112,7 @@ window.Quarto = {
 
 </head>
 
-<body class="fullcontent quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+<body class="quarto-light"><script id="quarto-html-before-body" type="application/javascript">
     const toggleBodyColorMode = (bsSheetEl) => {
       const mode = bsSheetEl.getAttribute("data-mode");
       const bodyEl = window.document.querySelector("body");
@@ -276,8 +276,47 @@ window.Quarto = {
     }
   </script>
 
-<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
-
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Indice</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a>
+  <ul class="collapse">
+  <li><a href="#base-functions" id="toc-base-functions" class="nav-link" data-scroll-target="#base-functions"><span style="color:violet">Base functions</span></a>
+  <ul class="collapse">
+  <li><a href="#datasummary.r" id="toc-datasummary.r" class="nav-link" data-scroll-target="#datasummary.r"><span style="color:cyan">datasummary.R</span></a></li>
+  <li><a href="#filt_data.r" id="toc-filt_data.r" class="nav-link" data-scroll-target="#filt_data.r"><span style="color:cyan">filt_data.R</span></a></li>
+  <li><a href="#pseudocount.r" id="toc-pseudocount.r" class="nav-link" data-scroll-target="#pseudocount.r"><span style="color:cyan">pseudocount.R</span></a></li>
+  <li><a href="#generate_matrix_factors.r" id="toc-generate_matrix_factors.r" class="nav-link" data-scroll-target="#generate_matrix_factors.r"><span style="color:cyan">generate_matrix_factors.R</span></a></li>
+  <li><a href="#pielou_ind.r" id="toc-pielou_ind.r" class="nav-link" data-scroll-target="#pielou_ind.r"><span style="color:cyan">pielou_ind.R</span></a></li>
+  </ul></li>
+  <li><a href="#orchestrators" id="toc-orchestrators" class="nav-link" data-scroll-target="#orchestrators"><span style="color:violet">Orchestrators</span></a>
+  <ul class="collapse">
+  <li><a href="#clr_pearson.r" id="toc-clr_pearson.r" class="nav-link" data-scroll-target="#clr_pearson.r"><span style="color:cyan">clr_pearson.R</span></a></li>
+  <li><a href="#norta_simulation.r" id="toc-norta_simulation.r" class="nav-link" data-scroll-target="#norta_simulation.r"><span style="color:cyan">NorTa_simulation.R</span></a></li>
+  <li><a href="#data_sim_ph_driven.r" id="toc-data_sim_ph_driven.r" class="nav-link" data-scroll-target="#data_sim_ph_driven.r"><span style="color:cyan">data_sim_ph_driven.R</span></a></li>
+  </ul></li>
+  <li><a href="#standalone-analysis" id="toc-standalone-analysis" class="nav-link" data-scroll-target="#standalone-analysis"><span style="color:violet">Standalone analysis</span></a>
+  <ul class="collapse">
+  <li><a href="#compositional_bias_d_p.r" id="toc-compositional_bias_d_p.r" class="nav-link" data-scroll-target="#compositional_bias_d_p.r"><span style="color:cyan">compositional_bias_D_P.R</span></a></li>
+  <li><a href="#ph_dataset_diversity_confrontation.r" id="toc-ph_dataset_diversity_confrontation.r" class="nav-link" data-scroll-target="#ph_dataset_diversity_confrontation.r"><span style="color:cyan">ph_dataset_diversity_confrontation.R</span></a></li>
+  </ul></li>
+  <li><a href="#project-explanation" id="toc-project-explanation" class="nav-link" data-scroll-target="#project-explanation"><span style="color:violet">Project explanation</span></a>
+  <ul class="collapse">
+  <li><a href="#starting-point-and-research-question" id="toc-starting-point-and-research-question" class="nav-link" data-scroll-target="#starting-point-and-research-question"><span style="color:cyan">Starting point and research question</span></a></li>
+  <li><a href="#building-the-tools-in-the-order-they-were-needed" id="toc-building-the-tools-in-the-order-they-were-needed" class="nav-link" data-scroll-target="#building-the-tools-in-the-order-they-were-needed"><span style="color:cyan">Building the tools, in the order they were needed</span></a></li>
+  <li><a href="#the-full-pipeline" id="toc-the-full-pipeline" class="nav-link" data-scroll-target="#the-full-pipeline"><span style="color:cyan">The full pipeline</span></a></li>
+  <li><a href="#how-to-reproduce-it" id="toc-how-to-reproduce-it" class="nav-link" data-scroll-target="#how-to-reproduce-it"><span style="color:cyan">How to reproduce it</span></a></li>
+  </ul></li>
+  <li><a href="#conclusions" id="toc-conclusions" class="nav-link" data-scroll-target="#conclusions"><span style="color:cyan">Conclusions</span></a></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+</div>
 <main class="content" id="quarto-document-content">
 
 
@@ -873,16 +912,82 @@ Rather than treating sparsity as an arbitrary simulation parameter, it derives i
 <li>computes each taxon’s zero-inflation probability from a Gaussian “suitability” curve centred on its own optimum: well-matched taxa get a low zero-inflation probability, poorly-matched taxa get a high one;</li>
 <li>runs the same NorTA steps as <code>NorTa_simulation.R</code>, using this per-taxon zero-inflation vector instead of a single shared value.</li>
 </ul>
+<p>Unlike <code>filt_data()</code>, <code>pseudocount()</code> and <code>clr_on_data()</code>, this function has <strong>no interactive input</strong>: every parameter (including <code>ph</code>, <code>sigma_min</code>/<code>sigma_max</code> and <code>phi_max</code>) is an explicit argument, so it can be sourced and run directly in this notebook, exactly like <code>NorTa_simulation.R</code>.</p>
+<p>To make the pH-driven mechanism visible, the same set of taxa (same <code>seed</code>, same pH optima/tolerances) is simulated twice, changing only the community’s environmental <code>ph</code>: once close to the taxa’s average optimum, and once shifted towards a more acidic environment. Comparing <code>phi_per_taxon</code> and <code>total_zero_rate</code> between the two runs shows the mechanism at work: taxa whose optimum is far from the community pH become sparser, without ever touching a fixed, shared zero-inflation parameter.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="co"># brings the data_sim_ph_driven script into scope</span></span>
-<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(</span>
-<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
-<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">path =</span> <span class="fu">here</span>(),</span>
-<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">"^data_sim_ph_driven</span><span class="sc">\\</span><span class="st">.R$"</span>,</span>
-<span id="cb60-6"><a href="#cb60-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb60-7"><a href="#cb60-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">recursive =</span> <span class="cn">TRUE</span></span>
-<span id="cb60-8"><a href="#cb60-8" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb60-9"><a href="#cb60-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+#-----------------------------------------------------------------------#</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+The following data are generated with the data_sim_ph_driven()
+function defined in the data_sim_ph_driven.R script, using the
+following parameters:
+      - n_taxa = 6;
+
+      - N_sample = 8;
+
+      - n_groups = 2;
+
+      - ph = 6.5 (close to the middle of the default niche range);
+
+      - seed = 42;</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+pH optimum assigned to each taxon (same for both simulations below,
+since the same seed is used):</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 6.45 6.62 7.31 5.78 7.48 7.39</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Zero-inflation probability per taxon, with community pH = 6.5:</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.01 0.02 0.52 0.26 0.58 0.38</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Overall fraction of zeroes in the simulated counts (pH = 6.5):</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.33</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+We now repeat the exact same simulation (same seed, same taxa,
+same pH optima and tolerances), changing only the community pH to 5.6
+(a more acidic environment):</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Zero-inflation probability per taxon, with community pH = 5.6:</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.67 0.57 0.70 0.02 0.70 0.67</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Overall fraction of zeroes in the simulated counts (pH = 5.6):</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.54</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Comparing the two phi_per_taxon vectors, taxa with a pH optimum
+close to 5.6 now have a lower zero-inflation probability than before,
+while taxa optimized for higher pH values become sparser: the same
+taxon can go from 'common' to 'rare' purely because the environmental
+pH changed, without touching any shared/fixed sparsity parameter.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+#-----------------------------------------------------------------------#</code></pre>
+</div>
 </div>
 </section>
 </section>
@@ -895,7 +1000,8 @@ Each analysis is designed to investigate a specific issue identified in the orig
 <h3 class="anchored" data-anchor-id="compositional_bias_d_p.r"><span style="color:cyan">compositional_bias_D_P.R</span></h3>
 <p><span style="color:lime"><em>What it does:</em></span> replicates Section 3.1 of the original paper: it quantifies how much the L1 and CLR normalizations distort correlation estimates, as dimensionality (D) and within-dataset diversity (P) vary.<br>
 The ground truth used is a fully uncorrelated dataset (true correlation exactly zero everywhere), so that any non-zero correlation observed after normalization can be attributed entirely to the normalization method itself.</p>
-<p><span style="color:lime"><em>Why is it here:</em></span> it provides a direct, quantitative answer to whether CLR actually outperforms L1, and by how much, depending on dimensionality and diversity, rather than relying on a purely qualitative claim.</p>
+<p><span style="color:lime"><em>Why is it here:</em></span> it provides a direct, quantitative answer to whether CLR actually outperforms L1, and by how much, depending on dimensionality and diversity, confirming the results obtained in the original paper.<br>
+This script exists, basically, because I wanted to replicate the paper’s results myself, rather than taking them at face value.</p>
 <p><span style="color:lime"><em>How it works:</em></span> for each (D, P) combination on a 15x15 grid (a reduced version of the paper’s 40x39 grid, using N = 5,000 samples instead of 10,000, for time constraints):</p>
 <ul>
 <li>generates uncorrelated Gaussian data and tunes its diversity to the target P (via <code>pielou_ind()</code> and a numerical root search);</li>
@@ -903,15 +1009,15 @@ The ground truth used is a fully uncorrelated dataset (true correlation exactly 
 <li>records the mean absolute error of each method against the true (zero) correlation.</li>
 </ul>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="co"># brings the compositional_bias_D_P script into scope</span></span>
-<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(</span>
-<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
-<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">path =</span> <span class="fu">here</span>(),</span>
-<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">"^compositional_bias_D_P</span><span class="sc">\\</span><span class="st">.R$"</span>,</span>
-<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb61-7"><a href="#cb61-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">recursive =</span> <span class="cn">TRUE</span></span>
-<span id="cb61-8"><a href="#cb61-8" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb61-9"><a href="#cb61-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="co"># brings the compositional_bias_D_P script into scope</span></span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(</span>
+<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
+<span id="cb75-4"><a href="#cb75-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">path =</span> <span class="fu">here</span>(),</span>
+<span id="cb75-5"><a href="#cb75-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">"^compositional_bias_D_P</span><span class="sc">\\</span><span class="st">.R$"</span>,</span>
+<span id="cb75-6"><a href="#cb75-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb75-7"><a href="#cb75-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">recursive =</span> <span class="cn">TRUE</span></span>
+<span id="cb75-8"><a href="#cb75-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb75-9"><a href="#cb75-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Running compositional bias analysis over a 15 x 15 grid (D x P), N = 5000 samples per dataset.
 This replicates a reduced version of Section 3.1 in Fuschi et al. (2025).
@@ -937,15 +1043,15 @@ Results saved to outputs/compositional_bias_results.rds ( 225 rows ).</code></pr
 <div class="cell-output cell-output-stdout">
 <pre><code>Heatmap saved to outputs/compositional_bias_heatmap.png</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="co"># display the heatmap previously generated by compositional_bias_D_P.R</span></span>
-<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(</span>
-<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
-<span id="cb64-4"><a href="#cb64-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">path =</span> <span class="fu">here</span>(),</span>
-<span id="cb64-5"><a href="#cb64-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">"^compositional_bias_heatmap</span><span class="sc">\\</span><span class="st">.png$"</span>,</span>
-<span id="cb64-6"><a href="#cb64-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb64-7"><a href="#cb64-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">recursive =</span> <span class="cn">TRUE</span></span>
-<span id="cb64-8"><a href="#cb64-8" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb64-9"><a href="#cb64-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a><span class="co"># display the heatmap previously generated by compositional_bias_D_P.R</span></span>
+<span id="cb78-2"><a href="#cb78-2" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(</span>
+<span id="cb78-3"><a href="#cb78-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
+<span id="cb78-4"><a href="#cb78-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">path =</span> <span class="fu">here</span>(),</span>
+<span id="cb78-5"><a href="#cb78-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">"^compositional_bias_heatmap</span><span class="sc">\\</span><span class="st">.png$"</span>,</span>
+<span id="cb78-6"><a href="#cb78-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb78-7"><a href="#cb78-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">recursive =</span> <span class="cn">TRUE</span></span>
+<span id="cb78-8"><a href="#cb78-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb78-9"><a href="#cb78-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -958,18 +1064,18 @@ Results saved to outputs/compositional_bias_results.rds ( 225 rows ).</code></pr
 <section id="ph_dataset_diversity_confrontation.r" class="level3">
 <h3 class="anchored" data-anchor-id="ph_dataset_diversity_confrontation.r"><span style="color:cyan">ph_dataset_diversity_confrontation.R</span></h3>
 <p><span style="color:lime"><em>What it does:</em></span> uses <code>data_sim_ph_driven()</code> across a pH gradient, at five different levels of pH tolerance, and tracks how the within dataset diversity parameter changes, showing that narrow-tolerance (“specialist”) communities produce noisier, lower evenness, while wide-tolerance (“generalist”) communities stay stable and high.</p>
-<p><span style="color:lime"><em>Why is it here:</em></span> this is the final example presented in this project, illustrating a concrete use case for <code>data_sim_ph_driven.R</code>: simulating how generalist and specialist bacteria respond differently to the same environmental pH.</p>
+<p><span style="color:lime"><em>Why is it here:</em></span> this is the final script presented in this project. <code>data_sim_ph_driven.R</code> is, in my humble opinion, a good simulation tool, but a tool with no job to do is just a tool, so it needed to be put to work and see what it could actually produce. Rather than reaching for something overly elaborate, I chose to explore a result most people would already expect intuitively: specialist taxa tend to generate environments with lower diversity.</p>
 <p><span style="color:lime"><em>How it works:</em></span> loops over a pH gradient for five tolerance scenarios, computes <code>pielou_ind()</code> at each point, plots the five curves, and combines them into a single figure.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="co"># brings the ph_dataset_diversity_confrontation script into scope</span></span>
-<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(</span>
-<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
-<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">path =</span> <span class="fu">here</span>(),</span>
-<span id="cb65-5"><a href="#cb65-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">"^ph_dataset_diversity_confrontation</span><span class="sc">\\</span><span class="st">.R$"</span>,</span>
-<span id="cb65-6"><a href="#cb65-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb65-7"><a href="#cb65-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">recursive =</span> <span class="cn">TRUE</span></span>
-<span id="cb65-8"><a href="#cb65-8" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb65-9"><a href="#cb65-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="co"># brings the ph_dataset_diversity_confrontation script into scope</span></span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(</span>
+<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(</span>
+<span id="cb79-4"><a href="#cb79-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">path =</span> <span class="fu">here</span>(),</span>
+<span id="cb79-5"><a href="#cb79-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">"^ph_dataset_diversity_confrontation</span><span class="sc">\\</span><span class="st">.R$"</span>,</span>
+<span id="cb79-6"><a href="#cb79-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">full.names =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb79-7"><a href="#cb79-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">recursive =</span> <span class="cn">TRUE</span></span>
+<span id="cb79-8"><a href="#cb79-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb79-9"><a href="#cb79-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>
 Caricamento pacchetto: 'gridExtra'</code></pre>
@@ -1155,6 +1261,59 @@ The final plot has been saved in the &lt;Plots&gt; folder
 #----------------------------------------------------------------------#</code></pre>
 </div>
 </div>
+</section>
+</section>
+<section id="project-explanation" class="level2">
+<h2 class="anchored" data-anchor-id="project-explanation"><span style="color:violet">Project explanation</span></h2>
+<p>The previous sections documented each script <em>in isolation</em>: what it does, why it exists, and how it works, each with a small, self-contained example. This section instead follows the <em>actual logical path</em> of the project, from the initial research question to the final results, showing how the base functions and orchestrators are chained together into the two standalone analyses.<br>
+In short: earlier, we looked at the tools in the toolbox, now we look why and how we needed those tools.</p>
+<section id="starting-point-and-research-question" class="level3">
+<h3 class="anchored" data-anchor-id="starting-point-and-research-question"><span style="color:cyan">Starting point and research question</span></h3>
+<p>The project starts from a specific claim made in the original paper (Fuschi et al., 2025): that the CLR transformation, combined with Pearson’s correlation, is a reliable way to estimate taxon-taxon correlations in high-dimensional, compositional metagenomic data, and that this reliability improves with dimensionality (the “blessing of dimensionality”).<br>
+Two questions follow directly from this claim:</p>
+<ol type="1">
+<li><em>How much</em> compositional bias does CLR actually remove compared to a simpler normalization (L1), and how does this depend on the number of taxa (D) and on how evenly abundances are distributed within a sample (P, the Pielou index)?</li>
+<li>Can the sparsity patterns typically simulated to test this kind of method be made more biologically realistic, instead of relying on a single, arbitrary zero-inflation parameter shared by every taxon?</li>
+</ol>
+<p>These two questions map directly onto the two standalone analyses of the project.</p>
+</section>
+<section id="building-the-tools-in-the-order-they-were-needed" class="level3">
+<h3 class="anchored" data-anchor-id="building-the-tools-in-the-order-they-were-needed"><span style="color:cyan">Building the tools, in the order they were needed</span></h3>
+<p>To answer question 1 (<code>compositional_bias_D_P.R</code>), three ingredients were needed first:</p>
+<ul>
+<li>a way to measure within-dataset diversity for any simulated dataset → <code>pielou_ind()</code>;</li>
+<li>a way to compute CLR (reused directly inside <code>compositional_bias_D_P.R</code>, following the same logic already implemented for real data in <code>clr_pearson.R</code>);</li>
+<li>no correlation matrix generator was needed here, since the ground truth for this analysis is deliberately the identity matrix (zero true correlation everywhere), so that any correlation measured after normalization is attributable only to the compositional constraint.</li>
+</ul>
+<p>To answer question 2 (<code>data_sim_ph_driven.R</code>, used in <code>ph_dataset_diversity_confrontation.R</code>), a different chain of tools was needed:</p>
+<ul>
+<li>a way to generate a controlled, valid correlation matrix for the simulated taxa → <code>generate_matrix_factors()</code>;</li>
+<li>a way to turn that correlation matrix into a realistic, sparse count dataset → the NorTA approach, first implemented with a single shared zero-inflation parameter in <code>NorTa_simulation.R</code>;</li>
+<li>the actual extension of the project: replacing that single shared parameter with a per-taxon, pH-driven zero-inflation probability → <code>data_sim_ph_driven.R</code>;</li>
+<li><code>pielou_ind()</code> again, this time to measure how the <em>pattern</em> of sparsity (not just its overall amount) affects within-dataset diversity along a pH gradient.</li>
+</ul>
+<p>In parallel, on the real-data side of the project, <code>datasummary.R</code>, <code>filt_data.R</code> and <code>pseudocount.R</code> were written to bring a real OTU table into a state where CLR is applicable (no zeroes, low-quality OTUs removed), and <code>clr_pearson.R</code> orchestrates them into the same CLR + Pearson pipeline that the simulation-based analyses are meant to stress-test.</p>
+</section>
+<section id="the-full-pipeline" class="level3">
+<h3 class="anchored" data-anchor-id="the-full-pipeline"><span style="color:cyan">The full pipeline</span></h3>
+<p>Putting everything together, the analysis follows this order:</p>
+<ol type="1">
+<li><p><strong>Real-data pipeline</strong> (<code>clr_pearson.R</code>, using <code>datasummary.R</code>, <code>filt_data.R</code>, <code>pseudocount.R</code>): a raw OTU table is summarized, filtered, pseudocounted and CLR-transformed, producing an OTU x OTU Pearson correlation matrix. This is the concrete instance of the method whose reliability the original paper discusses, and which the rest of the project investigates more systematically.</p></li>
+<li><p><strong>Compositional bias analysis</strong> (<code>compositional_bias_D_P.R</code>, using <code>pielou_ind()</code>): stepping back from any single real dataset, this analysis asks how much bias CLR (and, for comparison, L1) introduces <em>in general</em>, as a function of D (dimensionality) and P (within dataset diversity), using fully uncorrelated synthetic data as ground truth.<br>
+The output (the MAE heatmap) is a direct, quantitative confirm on the “blessing of dimensionality” claim.</p></li>
+<li><p><strong>Realistic sparsity simulation</strong> (<code>generate_matrix_factors.R</code> → <code>NorTa_simulation.R</code> → <code>data_sim_ph_driven.R</code>): moving from an arbitrary, single zero-inflation parameter to a per-taxon, ecologically motivated one, this chain produces simulated datasets whose sparsity pattern has a biological interpretation (pH niches), rather than being a free simulation knob.</p></li>
+<li><p><strong>pH-driven diversity analysis</strong> (<code>ph_dataset_diversity_confrontation.R</code>, using <code>data_sim_ph_driven()</code> and <code>pielou_ind()</code>): the pH-driven simulator is finally used to study how community evenness responds to an environmental gradient, contrasting specialist (narrow pH tolerance) and generalist (wide pH tolerance) taxa.</p></li>
+</ol>
+<p>Steps 1-2 and 3-4 can be run independently of each other: they answer the two separate research questions above, and neither depends on the other’s output. What they share is the same underlying toolkit (<code>pielou_ind()</code>, and the CLR logic), which is why both are presented in the same project rather than as two unrelated scripts.</p>
+</section>
+<section id="how-to-reproduce-it" class="level3">
+<h3 class="anchored" data-anchor-id="how-to-reproduce-it"><span style="color:cyan">How to reproduce it</span></h3>
+<p>To reproduce the whole analysis from scratch (as opposed to the pre-generated <code>.rds</code> files loaded above for the interactive scripts):</p>
+<ul>
+<li>run <code>compositional_bias_D_P.R</code> on its own: it has no interactive input and, when sourced, regenerates <code>outputs/compositional_bias_results.rds</code> and <code>outputs/compositional_bias_heatmap.png</code> from scratch;</li>
+<li>run <code>ph_dataset_diversity_confrontation.R</code> on its own: it also has no interactive input, and regenerates <code>Plots/ph_dataset_diversity_confrontation.png</code> from scratch;</li>
+<li>for the real-data pipeline (<code>clr_pearson.R</code>), either supply <code>prevalence_threshold</code> explicitly to <code>filt_data()</code> and answer the <code>pseudocount()</code> prompt, or use <code>for_notebook.R</code> as a template for a non-interactive run with fixed thresholds, exactly as was done to produce the <code>.rds</code> files loaded in this notebook.</li>
+</ul>
 </section>
 </section>
 <section id="conclusions" class="level2">
