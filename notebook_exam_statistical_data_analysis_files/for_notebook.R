@@ -57,7 +57,7 @@ source(
 #     recursive = TRUE
 #   )
 # )
-#
+
 # # generate data for the filt_data.R explanation code chunk for the notebook
 # data_for_notebook <- data_sim_ph_driven(n_taxa = 9,
 #                                         N_sample = 8,
@@ -66,12 +66,21 @@ source(
 #                                         sigma_min = 0.01,
 #                                         sigma_max = 0.2,
 #                                         seed = 42)
-#
+# 
 # # take the simulated data from the list and put it into another variable
 # data_for_notebook_count <- data_for_notebook$sim_counts
-#
+# 
+# # print title for correlation matrix
+# cat("\ndata_for_notebook\n")
+# 
 # # show the generated data
 # print(data_for_notebook_count)
+# 
+# # print title for correlation matrix
+# cat("\nCorrelation matrix of data_for_notebook\n")
+# 
+# # print correlation matrix of the newly generated data
+# print(data_for_notebook$mat)
 #
 # # separation line
 # cat("\n#---------------------------------------------------------------------------#")
@@ -79,9 +88,9 @@ source(
 # # show and impervious message to the user to remember that this is the filt_data chunk
 # cat("\nTHIS IS FOR THE FILT_DATA CHUNK! READ MEEEEEEE!\n")
 #
-# # apply the filt_data() function
-# filtered_data_for_notebook_count <- filt_data(data_for_notebook_count)
-#
+# # apply the filt_data() function using 0.33 as prevalence threshold
+# filtered_data_for_notebook_count <- filt_data(data_for_notebook_count, prevalence_threshold = 0.33)
+# #
 # # show the newly filtered data
 # print(filtered_data_for_notebook_count)
 #
@@ -95,6 +104,21 @@ source(
 # cat("\n#---------------------------------------------------------------------------#")
 
 
+
+
+
+
+# -------- pseudocount.R code chunk --------
+
+# brings into scope the filt_data.R script
+source(
+  list.files(
+    path = here(),
+    pattern = "^pseudocount\\.R$",
+    full.names = TRUE,
+    recursive = TRUE
+  )
+)
 
 
 
@@ -191,72 +215,117 @@ source(
 # # save the correlation matrix as .rds file
 # saveRDS(as.matrix(processed_data$cor_matrix), here("notebook_exam_statistical_data_analysis_files", "clr_on_data_output", "processed_data_cor_matrix.rds"))
 
-
-
-# -------- NorTa_simulation.R code chunk --------
-
-# brings into scope the NorTa_simulation.R script
+# brings the clr_pearson script into scope
 source(
   list.files(
     path = here(),
-    pattern = "^NorTa_simulation\\.R$",
+    pattern = "^clr_pearson\\.R$",
     full.names = TRUE,
     recursive = TRUE
   )
 )
 
-# explain the user how the datas are generated with which parameters
-cat("\nThe following data are generated with the norta_simulation()
-function defined in the NorTa_simulation.R script, using the
-following parameters:
-      - n = 9;\n
-      - n_groups = 3;\n
-      - N = 11;\n
-      - seed = 42;\n")
+# generate data for the example
+data_for_clr_pearson <- data_sim_ph_driven(
+  n_taxa = 15,
+  N_sample = 25,
+  n_groups = 7,
+  ph = 6.0,
+  sigma_min = 0.01,
+  sigma_max = 0.2,
+  seed = 42
+)
 
-# additional space 
-cat("\n")
+# isolate the count from the newly generated data
+data_for_clr_pearson_counts <- data_for_clr_pearson$sim_counts
 
-# generate data with n = 9, n_groups = 3, N = 11, seed = 42
-norta_data_01 <- norta_simulation(n = 9, n_groups = 3, N = 11, seed = 42) 
+# print the counts
+print(data_for_clr_pearson_counts)
 
-# title of the data
-cat("\nData generated with n_groups = 3 and n = 9\n")
-# print generated data sim_counts
-print(norta_data_01$sim_counts)
+# apply clr_on_data() function to the newly generated data
+transf_data <- clr_on_data(data_for_clr_pearson_counts,
+                           prevalence_threshold = 0.3,
+                           threshold_pct = 0.5
+)
 
-# title of the first correlation matrix
-cat("\nCorrelation matrix with n_groups = 3 and n = 9\n")
-# print generated data sim_counts
-print(norta_data_01$R_true)
+# print the filtered data
+print(round(transf_data$samp_filt, 2))
 
-# explain the user how the datas are generated with which parameters
-cat("\nThe following data are generated with the norta_simulation()
-function defined in the NorTa_simulation.R script, using the
-following parameters:
-      - n = 10;\n
-      - n_groups = 10;\n
-      - N = 10;\n
-      - seed = 42;\n
-With a number of groups (n_groups) equal to the number of taxa 
-(number of taxa is the parameter n), it will resolve in having
-zero taxa correlated to each other, leading to a unitary correlation matrix.\n")
+# print the log-transformed data
+print(round(transf_data$y_clr, 2))
 
-# additional space 
-cat("\n")
+# print the sums of the rows
+row_sums <- rowSums(transf_data$y_clr)
+# set a tolerance for very small values
+tol <- 1e-14
+# impose value = 0 for values < tolerance
+row_sums[abs(row_sums) < tol] <- 0
+# row sums
+print(row_sums)
+# -------- NorTa_simulation.R code chunk --------
 
-# generate data with n = 10, n_groups = 10, N = 10, seed = 42 (gives an identity matrix)
-norta_data_02 <- norta_simulation(n = 10, n_groups = 10, N = 10, seed = 42) 
-
-# title of the data
-cat("\nData generated with n_groups = n\n")
-# print generated data sim_counts
-print(norta_data_02$sim_counts)
-
-# title of the second correlation matrix
-cat("\nCorrelation matrix with n_groups = n\n")
-# print generated data sim_counts
-print(norta_data_02$R_true)
+# # brings into scope the NorTa_simulation.R script
+# source(
+#   list.files(
+#     path = here(),
+#     pattern = "^NorTa_simulation\\.R$",
+#     full.names = TRUE,
+#     recursive = TRUE
+#   )
+# )
+# 
+# # explain the user how the datas are generated with which parameters
+# cat("\nThe following data are generated with the norta_simulation()
+# function defined in the NorTa_simulation.R script, using the
+# following parameters:
+#       - n = 9;\n
+#       - n_groups = 3;\n
+#       - N = 11;\n
+#       - seed = 42;\n")
+# 
+# # additional space 
+# cat("\n")
+# 
+# # generate data with n = 9, n_groups = 3, N = 11, seed = 42
+# norta_data_01 <- norta_simulation(n = 9, n_groups = 3, N = 11, seed = 42) 
+# 
+# # title of the data
+# cat("\nData generated with n_groups = 3 and n = 9\n")
+# # print generated data sim_counts
+# print(norta_data_01$sim_counts)
+# 
+# # title of the first correlation matrix
+# cat("\nCorrelation matrix with n_groups = 3 and n = 9\n")
+# # print generated data sim_counts
+# print(norta_data_01$R_true)
+# 
+# # explain the user how the datas are generated with which parameters
+# cat("\nThe following data are generated with the norta_simulation()
+# function defined in the NorTa_simulation.R script, using the
+# following parameters:
+#       - n = 10;\n
+#       - n_groups = 10;\n
+#       - N = 10;\n
+#       - seed = 42;\n
+# With a number of groups (n_groups) equal to the number of taxa 
+# (number of taxa is the parameter n), it will resolve in having
+# zero taxa correlated to each other, leading to a unitary correlation matrix.\n")
+# 
+# # additional space 
+# cat("\n")
+# 
+# # generate data with n = 10, n_groups = 10, N = 10, seed = 42 (gives an identity matrix)
+# norta_data_02 <- norta_simulation(n = 10, n_groups = 10, N = 10, seed = 42) 
+# 
+# # title of the data
+# cat("\nData generated with n_groups = n\n")
+# # print generated data sim_counts
+# print(norta_data_02$sim_counts)
+# 
+# # title of the second correlation matrix
+# cat("\nCorrelation matrix with n_groups = n\n")
+# # print generated data sim_counts
+# print(norta_data_02$R_true)
 
 
 # # write Data in .rds file format

@@ -66,7 +66,10 @@ filt_data <- function(x, prevalence_threshold = NULL, abundance_threshold = 5) {
   cat("\n #-----------------------------------------------------------------------# \n")
   # show the "before" summary; datasum() prints its own stats and
   # invisibly returns them, so no extra cat() is needed around it
-  cat("\n", "###-----###", "Summary of data BEFORE filtering the zeroes", "###-----###", "\n")
+  cat("\n", "-----", "Summary of data BEFORE filtering the zeroes", "-----", "\n")
+  # print space
+  cat("\n")
+  # print datasum
   datasum(x)
   # keep asking until the user provides a valid number between 0 and 1
   if (is.null(prevalence_threshold)) {
@@ -106,6 +109,7 @@ filt_data <- function(x, prevalence_threshold = NULL, abundance_threshold = 5) {
   cat("#-----------------------------------------------------------------------# \n")
   # show the "after" summary
   cat("\n", "-----", "Summary of data AFTER filtering the zeroes", "-----", "\n")
+  cat("\n")
   datasum(samp_filt)
   cat("Used prevalence threshold was", prevalence_threshold, "\n")
   cat("Used abundance threshold was", abundance_threshold, "\n")
