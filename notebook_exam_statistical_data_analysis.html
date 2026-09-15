@@ -563,13 +563,17 @@ gamma 0.02 0.04 0.06</code></pre>
 <p><span style="color:lime"><em>What it does:</em></span> defines the function <code>generate_matrix_factors()</code>, which builds a valid <code>nxn</code> correlation matrix (symmetric, unit diagonal, positive semi-definite, values from -1 to +1) with an exact, controlled zero pattern, by splitting taxa into <code>n_groups</code> latent groups.</p>
 <p><span style="color:lime"><em>Why is it here:</em></span> in the data_sim_ph_driven.R script, the function “rmvnorm” (“Random MultiVariateNORMal”) is used, which makes it possible to generate random multivariate normal distributions.<br>
 One of the inputs of the “rmvnorm” function is the correlation matrix. Using this script makes it possible to obtain a controlled (and yet partially randomized) correlation matrix.</p>
-<p><span style="color:lime"><em>How it works:</em></span> <code>generate_matrix_factors(n, n_groups, ...)</code>:</p>
+<p><span style="color:lime"><em>How it works:</em></span> <code>generate_matrix_factors(n, n_groups, ...)</code> builds the correlation matrix indirectly, through a small latent-factor model, instead of generating random values directly and then fixing them up to be a valid correlation matrix:</p>
 <ul>
-<li>randomly assigns each of the <code>n</code> taxa to one of <code>n_groups</code> groups;</li>
-<li>builds a loadings matrix <span class="math inline">\(\Lambda\)</span> where each taxon has a random value only in the column of its own group;</li>
-<li>computes <span class="math inline">\(\Sigma = \Lambda\Lambda'\)</span> (always PSD, whatever <span class="math inline">\(\Lambda\)</span> is);</li>
-<li>rescales it to a proper correlation matrix (unit diagonal);</li>
-<li>returns the matrix, the group assignment, and the exact number of zero pairs (taxa in different groups end up with correlation exactly 0).</li>
+<li><p>randomly assigns each of the <code>n</code> taxa to one of <code>n_groups</code> groups;</p></li>
+<li><p>builds a loadings matrix <span class="math inline">\(\Lambda\)</span> (dimension <code>n x n_groups</code>): each taxon (row) gets a single random value only in the column of its own group, and 0 everywhere else. In other words, each taxon’s loading vector “points” only along its own group’s axis;</p></li>
+</ul>
+<p><span style="color:red">Note: so far we have seen taxa placed only in columns, while in this specific passage they are put in rows. This was necessary due to how the matrix product works since <span class="math inline">\(\Lambda\)</span> = <code>n x n_groups</code> then <span class="math inline">\(\Lambda'\)</span> must be = <code>n_groups x n</code>. This is necessary to obtain a final <code>nxn</code> matrix</span></p>
+<ul>
+<li><p>computes <span class="math inline">\(\Sigma = \Lambda\Lambda'\)</span>: this is the <strong>Gram matrix</strong> of the taxa’s loading vectors, i.e.&nbsp;the matrix of all pairwise dot products between them. Two taxa in <strong>different</strong> groups have loading vectors that are non-zero in different columns, so their dot product is exactly 0 (no shared direction); two taxa in the <strong>same</strong> group have a dot product equal to the product of their two loading values (generally non-zero). This is exactly why the zero pattern of <span class="math inline">\(\Sigma\)</span> is controlled and exact, not just approximately zero;</p></li>
+<li><p>because <span class="math inline">\(\Sigma\)</span> is built as <span class="math inline">\(\Lambda\Lambda'\)</span>, it is guaranteed to be positive semi-definite (PSD) for <em>any</em> <span class="math inline">\(\Lambda\)</span>: for any vector <span class="math inline">\(x\)</span>, <span class="math inline">\(x'\Sigma x = x'\Lambda\Lambda'x = \lVert \Lambda' x \rVert^2 \geq 0\)</span>. This is the whole point of using a Gram matrix construction here: it sidesteps the usual problem of generating a random matrix and then having to “fix” it into a valid (PSD) correlation matrix afterwards (e.g.&nbsp;via <code>nearPD()</code>), at the cost of only being able to reach correlation structures that come from this latent-group form;</p></li>
+<li><p>rescales <span class="math inline">\(\Sigma\)</span> to a proper correlation matrix (dividing by the geometric mean of each pair’s standard deviations, so the diagonal becomes exactly 1);</p></li>
+<li><p>returns the matrix, the group assignment, and the exact number of zero pairs (taxa in different groups end up with correlation exactly 0).</p></li>
 </ul>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># brings the generate_matrix_factors script into scope</span></span>
@@ -1064,7 +1068,8 @@ Results saved to outputs/compositional_bias_results.rds ( 225 rows ).</code></pr
 <section id="ph_dataset_diversity_confrontation.r" class="level3">
 <h3 class="anchored" data-anchor-id="ph_dataset_diversity_confrontation.r"><span style="color:cyan">ph_dataset_diversity_confrontation.R</span></h3>
 <p><span style="color:lime"><em>What it does:</em></span> uses <code>data_sim_ph_driven()</code> across a pH gradient, at five different levels of pH tolerance, and tracks how the within dataset diversity parameter changes, showing that narrow-tolerance (“specialist”) communities produce noisier, lower evenness, while wide-tolerance (“generalist”) communities stay stable and high.</p>
-<p><span style="color:lime"><em>Why is it here:</em></span> this is the final script presented in this project. <code>data_sim_ph_driven.R</code> is, in my humble opinion, a good simulation tool, but a tool with no job to do is just a tool, so it needed to be put to work and see what it could actually produce. Rather than reaching for something overly elaborate, I chose to explore a result most people would already expect intuitively: specialist taxa tend to generate environments with lower diversity.</p>
+<p><span style="color:lime"><em>Why is it here:</em></span> this is the final script presented in this project. <code>data_sim_ph_driven.R</code> is, in my humble opinion, a good simulation tool, but a tool with no job to do is just a tool, so it needed to be put to work and see what it could actually produce.<br>
+Rather than reaching for something overly elaborate, I chose to explore a result most people would already expect intuitively: specialist taxa tend to generate environments with lower diversity.</p>
 <p><span style="color:lime"><em>How it works:</em></span> loops over a pH gradient for five tolerance scenarios, computes <code>pielou_ind()</code> at each point, plots the five curves, and combines them into a single figure.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="co"># brings the ph_dataset_diversity_confrontation script into scope</span></span>
@@ -1272,7 +1277,7 @@ In short: earlier, we looked at the tools in the toolbox, now we look why and ho
 <p>The project starts from a specific claim made in the original paper (Fuschi et al., 2025): that the CLR transformation, combined with Pearson’s correlation, is a reliable way to estimate taxon-taxon correlations in high-dimensional, compositional metagenomic data, and that this reliability improves with dimensionality (the “blessing of dimensionality”).<br>
 Two questions follow directly from this claim:</p>
 <ol type="1">
-<li><em>How much</em> compositional bias does CLR actually remove compared to a simpler normalization (L1), and how does this depend on the number of taxa (D) and on how evenly abundances are distributed within a sample (P, the Pielou index)?</li>
+<li><em>How much</em> compositional bias does CLR actually remove compared to a simpler normalization (L1), and how does this depend on the number of taxa (D) and on how evenly abundances are distributed within a sample (P, within dataset diversity)?</li>
 <li>Can the sparsity patterns typically simulated to test this kind of method be made more biologically realistic, instead of relying on a single, arbitrary zero-inflation parameter shared by every taxon?</li>
 </ol>
 <p>These two questions map directly onto the two standalone analyses of the project.</p>

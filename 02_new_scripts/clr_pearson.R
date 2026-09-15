@@ -7,6 +7,12 @@
 #
 # Input:
 #   - a metagenomic OTU count table (samples x OTUs)
+#   - prevalence_threshold: a numeric value between 0 and 1, passed on to
+#     filt_data(). If NULL (default), filt_data() asks for it interactively;
+#     if provided, the interactive prompt is skipped.
+#   - threshold_pct: a numeric value between 0 and 1, passed on to
+#     pseudocount(). If NULL (default), pseudocount() asks for it
+#     interactively; if provided, the interactive prompt is skipped.
 #
 # Output:
 #   - the CLR-transformed OTU table
@@ -19,7 +25,11 @@
 #
 # Note:
 #   This script only defines clr_on_data(). To run the pipeline on real
-#   data, see demo_clr_pearson.R.
+#   data, see demo_clr_pearson.R. clr_on_data() can be run either
+#   interactively (default, both thresholds requested via prompt) or
+#   non-interactively (passing prevalence_threshold and/or threshold_pct
+#   explicitly), which is useful for reproducible notebooks and
+#   sensitivity analyses over a range of thresholds.
 
 # here: builds file paths relative to the project root
 # https://cran.r-project.org/web/packages/here/index.html
@@ -68,32 +78,54 @@ source(
 #'
 #' @param x a data.frame, tibble, or matrix with samples on rows and
 #'   OTUs on columns (raw counts).
+#' @param prevalence_threshold numeric or NULL. Forwarded to
+#'   filt_data(): the minimum fraction of samples in which an OTU must
+#'   be present (non-zero) to be kept. If NULL (default), filt_data()
+#'   asks for it interactively; if provided, the interactive prompt is
+#'   skipped, enabling non-interactive/automated use.
+#' @param threshold_pct numeric or NULL. Forwarded to pseudocount(): the
+#'   fraction of each row's detection limit used as the pseudocount for
+#'   that row. If NULL (default), pseudocount() asks for it
+#'   interactively; if provided, the interactive prompt is skipped,
+#'   enabling non-interactive/automated use.
 #'
 #' @return an invisible list with samp_filt (the filtered OTU table),
 #'   y_clr (the CLR-transformed OTU table), and cor_matrix (the OTU x
 #'   OTU Pearson correlation matrix).
 #'
+#' @examples
+#' \dontrun{
+#' # interactive use: asks for both thresholds at the prompt
+#' clr_on_data(otu_table)
+#'
+#' # non-interactive use: same pipeline, but repeatable and safe to run
+#' # inside a knitted/rendered notebook
+#' clr_on_data(otu_table, prevalence_threshold = 0.33, threshold_pct = 0.5)
+#' }
 #' @export
 
 
 # -------- body of the function --------
 
-clr_on_data <- function(x) {
+clr_on_data <- function(x, prevalence_threshold = NULL, threshold_pct = NULL) {
   
   # -------- step 1: filter rare/low-quality OTUs --------
   
-  # filt_data() prints a before/after summary and asks the user for a
-  # prevalence threshold interactively
-  filt_result <- filt_data(x)
+  # filt_data() prints a before/after summary; if prevalence_threshold is
+  # NULL it asks the user for it interactively, otherwise it uses the
+  # value passed in directly and skips the prompt
+  filt_result <- filt_data(x, prevalence_threshold = prevalence_threshold)
   samp_filt <- filt_result$samp_filt
-
+  
   # -------- step 2: replace zeroes with row-specific pseudocounts --------
   
-  # pseudocount() converts counts to row-wise proportions and asks the
-  # user for a percentage threshold of the detection limit interactively;
-  # the returned tibble no longer contains any zeroes
-  y_prop <- as.matrix(pseudocount(samp_filt))
-
+  # pseudocount() converts counts to row-wise proportions; if
+  # threshold_pct is NULL it asks the user for a percentage threshold of
+  # the detection limit interactively, otherwise it uses the value passed
+  # in directly and skips the prompt. Either way, the returned tibble no
+  # longer contains any zeroes
+  y_prop <- as.matrix(pseudocount(samp_filt, threshold_pct = threshold_pct))
+  
   # -------- step 3: CLR transformation --------
   
   # log of every value (safe: y_prop has no zeroes left, thanks to
@@ -102,14 +134,14 @@ clr_on_data <- function(x) {
   log_data <- log(y_prop)
   log_geo_mean <- rowMeans(log_data)
   y_clr <- log_data - log_geo_mean
-
+  
   # -------- step 4: Pearson correlation on CLR-transformed data --------
   
   # cor() computes correlations between columns (OTUs) by default,
   # yielding the OTU x OTU correlation matrix
   cor_matrix <- cor(y_clr, method = "pearson")
-
-
+  
+  
   # -------- return the invisible values --------
   
   invisible(list(
