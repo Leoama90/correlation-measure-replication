@@ -48,12 +48,15 @@ cat("#--------------------------------------------------------------------------
 
 # -------- parameters explanation --------
 
-cat("\npseudocount() takes a single argument, x: a numeric matrix/data\n")
-cat("frame of non-negative counts (samples on rows, taxa on columns).\n")
-cat("It then asks, interactively, for a threshold between 0 and 1: each\n")
-cat("zero is replaced with that fraction of the sample's detection limit\n")
-cat("(1 / library size). E.g. entering 0.5 replaces a zero with half of\n")
-cat("the smallest proportion technically detectable in that sample.\n")
+cat("\npseudocount() takes two arguments: x, a numeric matrix/data frame\n")
+cat("of non-negative counts (samples on rows, taxa on columns), and\n")
+cat("threshold_pct, a number between 0 and 1 (default NULL). If\n")
+cat("threshold_pct is not supplied, the function asks for it\n")
+cat("interactively, as this demo does below. Whichever way it is\n")
+cat("obtained, each zero is replaced with that fraction of the sample's\n")
+cat("detection limit (1 / library size). E.g. a threshold of 0.5\n")
+cat("replaces a zero with half of the smallest proportion technically\n")
+cat("detectable in that sample.\n")
 
 
 # -------- demo data --------
@@ -65,8 +68,8 @@ cat("zero in each row, in a different column each time:\n\n")
 demo_otu <- matrix(
   c(
     10, 0, 5,
-     2, 3, 0,
-     0, 1, 20  
+    2, 3, 0,
+    0, 1, 20  
   ), ncol = 3,
   nrow = 3, byrow = TRUE,
   dimnames = list(NULL, c("OTU1", "OTU2", "OTU3"))
@@ -80,8 +83,9 @@ cat("Detection limits (1 / library size):", round(1 / rowSums(demo_otu), 4), "\n
 # -------- run pseudocount() interactively --------
 
 cat("\n#------------------------------------------------------------------------------#\n")
-cat("\nCalling pseudocount(demo_otu) now. You will be asked to enter a\n")
-cat("threshold between 0 and 1 (try 0.5 for a first look).\n")
+cat("\nCalling pseudocount(demo_otu) now, with no threshold_pct supplied,\n")
+cat("so you will be asked to enter a threshold between 0 and 1 at the\n")
+cat("prompt (try 0.5 for a first look).\n")
 cat("#------------------------------------------------------------------------------#\n\n")
 
 demo_result <- pseudocount(demo_otu)

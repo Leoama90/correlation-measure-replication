@@ -195,6 +195,7 @@ Here follows the tree structure:
 
 ```
 .
+.
 ├── 00_data/
 │   ├── dataprocess.R
 │   ├── meta_HMP2.rds
@@ -260,9 +261,12 @@ Here follows the tree structure:
 ├── 03_discarded_methods/
 │   ├── demo_clr_pearson_old.R
 │   └── generate_matrix_with_zeroes.R 
+├── literature_review.qmd
+├── notebook_exam_statistical_data_analysis.qmd
 ├── outputs/
 │   └── methods_comparison_outputs/
 ├── Plots/
+├── report_statistical_data_analysis.qmd
 ├── requirements/
 │   └── requirements.R
 └── test/
@@ -317,7 +321,7 @@ Here follows the tree structure:
     │   ├── test-ph_pielou_confrontation.R
     │   └── test-pseudocount.R
     └── test_03_discarded_methods/
-        └── test-generate_matrix_with_zeroes.R  
+        └── test-generate_matrix_with_zeroes.R
 ```
 
 *Note: the folders "outputs" and "Plots" contain files that are not listed in the tree structure (which are the plots and outputs of all the scripts of this project).  

@@ -89,7 +89,7 @@ pseudocount <- function(x, threshold_pct = NULL) {
         )
       )
       threshold_pct <- suppressWarnings(as.numeric(threshold_input))
-      # Stop only if the input is valid.
+      # exit only if the input is valid.
       if (!is.na(threshold_pct) && threshold_pct >= 0 && threshold_pct <= 1) {
         break
       }

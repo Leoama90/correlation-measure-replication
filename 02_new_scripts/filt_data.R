@@ -71,7 +71,8 @@ filt_data <- function(x, prevalence_threshold = NULL, abundance_threshold = 5) {
   cat("\n")
   # print datasum
   datasum(x)
-  # keep asking until the user provides a valid number between 0 and 1
+  # if no prevalence_threshold was supplied, ask the user interactively,
+  # looping until a valid number between 0 and 1 is entered
   if (is.null(prevalence_threshold)) {
     repeat {
       # explain and ask in a single prompt, so the user sees the full
@@ -90,17 +91,16 @@ filt_data <- function(x, prevalence_threshold = NULL, abundance_threshold = 5) {
       if (!is.na(question_num) && question_num >= 0 && question_num <= 1) {
         break
       }
-
+      
       # otherwise, scold the user and loop back to ask again
       cat("I appreciate the enthusiasm, but we only need a number between 0 and 1!\n")
     }
     prevalence_threshold <- question_num
   }
-  # filter the OTU table by the prevalence threshold chosen by the user
-  # drop = FALSE keeps the result as a data.frame/matrix even if only
-  # one OTU survives the filter
+  # filter the OTU table using prevalence_threshold (either supplied as an
+  # argument or collected interactively above)
   samp_filt <- x[, colSums(x > 0) / nrow(x) >= prevalence_threshold, drop = FALSE]
-
+  
   # median of non-zero values >= abundance_threshold (default 5 reads)
   # (the anonymous function's argument is named "col", not "x", to avoid
   # shadowing the outer function's x parameter)
