@@ -37,7 +37,7 @@ library(here)
 source(
   list.files(
     path = here(),
-    pattern = "^ph_pielou_confrontation\\.R$",
+    pattern = "^ph_dataset_diversity_confrontation\\.R$",
     full.names = TRUE,
     recursive = TRUE
   )

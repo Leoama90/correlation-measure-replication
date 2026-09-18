@@ -142,11 +142,10 @@ $$\underline P_ = \frac{1}{N} \sum_{i=1}^{N} P_i(x)$$
 Implemented in `pielou_ind.R`.  
 The script `pielou_ind.R` is used in `ph_pielou_confrontation.R` to generate the bar plots.
 
-
 ## Research goal
 
 This project reproduces the paper's core pipeline (filtering, CLR, Pearson correlation) on the same real data (HMP2, subject 69-001), validating it against a value reported in the paper (Pielou index ≈ 0.68).   
-It also fixes a methodological gap found along the way: the standard method to simulate a correlation matrix with controlled sparsity (random values corrected with `nearPD()`) destroys nearly all the imposed zeroes, so this repository builds correlation matrixes that are valid by construction instead (`generate_matrix_factors.R`).  
+It also fixes a methodological gap found along the way: the standard method to simulate a correlation matrix with controlled sparsity destroys nearly all the imposed zeroes, so this repository builds correlation matrixes that are valid by construction instead (`generate_matrix_factors.R`).  
 Then, it proposes a new approach to sparsity, the paper's main open problem: instead of a fixed zero-inflation parameter, sparsity here depends on an environmental driver (pH) and each taxon's ecological niche (`data_sim_ph_driven.R`).  
 Finally, the project allows to generate a small family of bar plots that
 allow to observe how the Pielou Index varies in function of the (fake) taxa's ph tolerances.
@@ -259,7 +258,6 @@ Here follows the tree structure:
 │   ├── pielou_ind.R
 │   └── pseudocount.R
 ├── 03_discarded_methods/
-│   ├── demo_clr_pearson_old.R
 │   └── generate_matrix_with_zeroes.R 
 ├── literature_review.qmd
 ├── notebook_exam_statistical_data_analysis.qmd
@@ -364,6 +362,15 @@ combined plot named `ph_pielou_confrontation.png`.
 
 **Demos** (`02_new_scripts/demo/`)  
 Each demo shows one of the functions above in action, with explanatory `cat()` output and, where relevant, printed results.
+
+### Scripts in 03_discarded_methods/
+
+Inside this folder, there is one script: generate_matrix_with_zeroes.R.
+The script generates independent random values in the upper triangle of a matrix, forcing a chosen number of them to zero.  
+However, this does not guarantee that the result is a valid correlation matrix: being symmetric with a unit diagonal is not enough. The matrix must also be positive semi-definite (PSD).  
+This was verified empirically using eigen(): the generated matrices frequently had negative eigenvalues.  
+The folder was created to store this script for didactic purposes only, since seeing an incorrect approach can be instructive.
+
 
 ## Versions
 
