@@ -137,7 +137,7 @@ Two samples with the same D can have very different Pielou values: if every taxo
 **Within dataset diversity**  
 Starting from the Pielou index definition, the paper defines the within dataset diversity as the mean of the Pielou indexes computed from the datasets:
 
-$$\underline P_ = \frac{1}{N} \sum_{i=1}^{N} P_i(x)$$
+$$\underline P = \frac{1}{N} \sum_{i=1}^{N} P_i(x)$$
 
 Implemented in `pielou_ind.R`.  
 The script `pielou_ind.R` is used in `ph_pielou_confrontation.R` to generate the bar plots.
@@ -148,7 +148,7 @@ This project reproduces the paper's core pipeline (filtering, CLR, Pearson corre
 It also fixes a methodological gap found along the way: the standard method to simulate a correlation matrix with controlled sparsity destroys nearly all the imposed zeroes, so this repository builds correlation matrixes that are valid by construction instead (`generate_matrix_factors.R`).  
 Then, it proposes a new approach to sparsity, the paper's main open problem: instead of a fixed zero-inflation parameter, sparsity here depends on an environmental driver (pH) and each taxon's ecological niche (`data_sim_ph_driven.R`).  
 Finally, the project allows to generate a small family of bar plots that
-allow to observe how the Pielou Index varies in function of the (fake) taxa's ph tolerances.
+allow to observe how the within dataset diversity index varies in function of the (fake) taxa's ph tolerances.
 
 ## Structure of the repository
 
@@ -176,7 +176,7 @@ Their order mirrors the one in the original repository.
 - **02_new_scripts**: contains all the new scripts that do not come from the original paper.   
 The "demo" subfolder contains demonstrative scripts for some of the other scripts inside `02_new_scripts` (the idea was to write them so they could explain some of the most complicated scripts in that folder).
 
-- **03_discarded_methods**: a somewhat misleading folder name, it contains a couple of scripts that I abandoned because they turned out not to be useful for the project as a whole.
+- **03_discarded_methods**: a somewhat misleading folder name, it contains a script that I abandoned because it turned out not to be useful for the project as a whole.
 
 - **outputs**: present in the original repository; stores the outputs coming mainly from `01_from_paper/` (like in the original project) which are not necessarily plots.
 
@@ -352,7 +352,8 @@ Here are their explanations:
 
 - `NorTa_simulation.R`: brings the `norta_simulation()`, simulates a sparse dataset with a known correlation structure (NorTA approach), with a single zero-inflation probability shared by all taxa.
 
-- `data_sim_ph_driven.R`: the key `data_sim_ph_driven()`, same NorTA approach, but zero-inflation is derived per-taxon from an environmental pH gradient instead of being fixed.
+- `data_sim_ph_driven.R`: the key `data_sim_ph_driven()`, same NorTA approach, but zero-inflation is derived per-taxon from an environmental pH gradient instead of being fixed.  
+Also, this script allows to generate simulated with more different parameters to control the generation.  
 
 **Standalone analysis**
 - `compositional_bias_D_P.R`: quantifies L1 vs CLR bias as a function of dimensionality (D) and diversity (P), replicating the paper's Analysis 1 on a reduced grid. Produces `compositional_bias_results.rds` and a heatmap.
@@ -365,11 +366,15 @@ Each demo shows one of the functions above in action, with explanatory `cat()` o
 
 ### Scripts in 03_discarded_methods/
 
-Inside this folder, there is one script: generate_matrix_with_zeroes.R.
+Inside this folder, there is one script: `generate_matrix_with_zeroes.R`.
 The script generates independent random values in the upper triangle of a matrix, forcing a chosen number of them to zero.  
 However, this does not guarantee that the result is a valid correlation matrix: being symmetric with a unit diagonal is not enough. The matrix must also be positive semi-definite (PSD).  
 This was verified empirically using eigen(): the generated matrices frequently had negative eigenvalues.  
-The folder was created to store this script for didactic purposes only, since seeing an incorrect approach can be instructive.
+The folder was created to store this script for didactic purposes only, since seeing an incorrect approach can be instructive.  
+So, why not putting `NorTa_simulation.R` in this folder?  
+Clever question, the difference is minimal, but conceptual: while `generate_matrix_with_zeroes.R` leads to a not working result, 
+`NorTa_simulation.R` was a replication of the original paper's results, which lead me in the end to obtain `data_sim_ph_driven.R`.  
+In short: while `generate_matrix_with_zeroes.R` was a dead end, `NorTa_simulation.R` was a necessary milestone.  
 
 
 ## Versions
