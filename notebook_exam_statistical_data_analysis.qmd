@@ -22,9 +22,9 @@ library(here)
 library(tidyverse)
 ```
 
-# Introduction 
+# Introduction
 
-*Note: in the top right corner there's the switch to pass from light to dark mode and vice versa*  
+*Note: in the top right corner there's the switch to pass from light to dark mode and vice versa*\
 The aim of this notebook is to explain the scripts found in the folder `02_new_scripts/`.\
 Scripts that would normally ask the user for input (a threshold, a fraction) are called here with those values passed directly as arguments, so every chunk in this notebook runs on its own, with no manual input required.\
 Scripts can be divided into three categories:
@@ -42,9 +42,7 @@ Scripts can be divided into three categories:
 
   - `pielou_ind.R`
 
-- **Orchestrators**: these scripts are more complex than 
-the base functions and combine them to perform more elaborate tasks.
-  The orchestrators are:
+- **Orchestrators**: these scripts are more complex than the base functions and combine them to perform more elaborate tasks. The orchestrators are:
 
   - `clr_pearson.R`
 
@@ -57,6 +55,27 @@ the base functions and combine them to perform more elaborate tasks.
   - `compositional_bias_D_P.R`
 
   - `ph_dataset_diversity_confrontation.R`
+
+In the folder 02_new_scripts/ there is a folder named `demos/`.  
+Inside the `demos/` folder there are 8 demonstrative scripts that explain how 
+some scripts in the upper folder work.  
+The demos are for the scripts:
+
+- clr_pearson,
+
+- data_sim_ph_driven,
+
+- datasummary,
+
+- filt_data,
+
+- generate_matrix_factors,
+
+- NorTa_simulation,
+
+- pielou_ind,
+
+- pseudocount.
 
 Let's start by looking at the **base functions** scripts:
 
@@ -134,7 +153,7 @@ Before any downstream analysis, it is important to remove rare and low-abundance
 
 - prints a summary of the data **before** filtering using `datasum()`;
 - asks the user for a **prevalence threshold** (a number between 0 and 1), i.e. the minimum fraction of samples in which an OTU must be present (non-zero) to be kept (this part is skipped if the user provides a number for the prevalence_threshold).\
-If the user enters an invalid value, the script prints a friendly warning and asks again;
+  If the user enters an invalid value, the script prints a friendly warning and asks again;
 - keeps only OTUs whose prevalence is at least this threshold;
 - then applies an **abundance filter**: among the remaining OTUs, it keeps only those whose median non-zero count is at least `abundance_threshold` (default = 5);
 - prints a summary of the data **after** filtering and reports the thresholds used;
@@ -227,9 +246,7 @@ cat("\n#-----------------------------------------------------------------------#
 
 *How it works:*
 
-- the script first asks the user for a number between 0 and 1 (if the user does not provide a valid one, the script keeps asking for it), that will be used as threshold. 
-If the user provides a pseudocount threshold before the script, the interactive part 
-will be skipped;
+- the script first asks the user for a number between 0 and 1 (if the user does not provide a valid one, the script keeps asking for it), that will be used as threshold. If the user provides a pseudocount threshold before the script, the interactive part will be skipped;
 
 - it computes the detection limit as 1 / (the sum of the values in the row);
 
@@ -634,9 +651,8 @@ cat("\n#-----------------------------------------------------------------------#
 Rather than treating sparsity as an arbitrary simulation parameter, it derives it from a biological environmental parameter (pH), so that the resulting sparsity pattern has an ecological interpretation.\
 This script was my main goal for this project: a fully functional simulation that can generate data depending on a single environmental parameter.
 
-*Function parameters:*  
-This chapter is unique, because the function works with lots of customizable 
-parameters which will be described here:
+*Function parameters:*\
+This chapter is unique, because the function works with lots of customizable parameters which will be described here:
 
 - `n_taxa`: integer. Number of simulated taxa.
 
